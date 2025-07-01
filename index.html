@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="Mobile-first game template with PWA capabilities">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Game Template">
+    
+    <title>Game Template</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/mobile.css">
+    <link rel="stylesheet" href="styles/desktop.css" media="(min-width: 768px)">
+    
+    <!-- Cache busting -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+<body>
+    <!-- Game Container -->
+    <div id="game-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen active">
+            <div class="loading-content">
+                <h1>Game Template</h1>
+                <div class="loading-spinner"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+        
+        <!-- Main Menu -->
+        <div id="menu-screen" class="screen">
+            <div class="menu-content">
+                <h1 class="game-title">Game Template</h1>
+                <div class="menu-buttons">
+                    <button id="play-button" class="game-button primary">Play</button>
+                    <button id="settings-button" class="game-button">Settings</button>
+                    <button id="about-button" class="game-button">About</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <!-- Game Canvas/Area -->
+            <canvas id="game-canvas" width="800" height="600"></canvas>
+            
+            <!-- Game HUD -->
+            <div id="game-hud">
+                <div class="hud-top">
+                    <div id="score">Score: <span id="score-value">0</span></div>
+                    <button id="pause-button" class="hud-button">⏸</button>
+                </div>
+                
+                <!-- Mobile Touch Controls -->
+                <div id="touch-controls" class="mobile-only">
+                    <div class="control-pad">
+                        <button class="control-btn" id="up-btn" data-action="up">↑</button>
+                        <div class="control-row">
+                            <button class="control-btn" id="left-btn" data-action="left">←</button>
+                            <div class="control-center"></div>
+                            <button class="control-btn" id="right-btn" data-action="right">→</button>
+                        </div>
+                        <button class="control-btn" id="down-btn" data-action="down">↓</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn" id="action-a" data-action="a">A</button>
+                        <button class="action-btn" id="action-b" data-action="b">B</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pause Screen -->
+        <div id="pause-screen" class="screen overlay">
+            <div class="pause-content">
+                <h2>Paused</h2>
+                <div class="pause-buttons">
+                    <button id="resume-button" class="game-button primary">Resume</button>
+                    <button id="restart-button" class="game-button">Restart</button>
+                    <button id="menu-button" class="game-button">Main Menu</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Over Screen -->
+        <div id="gameover-screen" class="screen overlay">
+            <div class="gameover-content">
+                <h2>Game Over</h2>
+                <div id="final-score">Final Score: <span id="final-score-value">0</span></div>
+                <div class="gameover-buttons">
+                    <button id="play-again-button" class="game-button primary">Play Again</button>
+                    <button id="back-to-menu-button" class="game-button">Main Menu</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen">
+            <div class="settings-content">
+                <h2>Settings</h2>
+                <div class="settings-options">
+                    <div class="setting-item">
+                        <label for="sound-toggle">Sound Effects</label>
+                        <input type="checkbox" id="sound-toggle" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="music-toggle">Music</label>
+                        <input type="checkbox" id="music-toggle" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="vibration-toggle">Vibration</label>
+                        <input type="checkbox" id="vibration-toggle" checked>
+                    </div>
+                </div>
+                <button id="settings-back-button" class="game-button">Back</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="scripts/game.js"></script>
+    
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html> 

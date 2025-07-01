@@ -1,0 +1,24 @@
+tests/test_results/
+tests/screenshots/
+*.log
+.DS_Store
+node_modules/
+
+# Game-specific ignores (customize per project)
+# assets/temp/
+# build/
+# dist/
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp 

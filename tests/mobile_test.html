@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mobile Test - Game Template</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 1rem;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        .test-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 2px solid #333;
+            border-radius: 10px;
+        }
+        .test-section h2 {
+            color: #00ffff;
+            margin-bottom: 1rem;
+        }
+        .viewport-info {
+            background: #111;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .touch-test-area {
+            background: #222;
+            border: 2px dashed #00ffff;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .control-test {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            max-width: 200px;
+            margin: 1rem auto;
+        }
+        .test-btn {
+            background: rgba(0, 255, 255, 0.3);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .test-btn:active {
+            background: rgba(0, 255, 255, 0.7);
+            transform: scale(0.95);
+        }
+        .test-btn.center { grid-column: 2; grid-row: 2; }
+        .test-btn.up { grid-column: 2; grid-row: 1; }
+        .test-btn.down { grid-column: 2; grid-row: 3; }
+        .test-btn.left { grid-column: 1; grid-row: 2; }
+        .test-btn.right { grid-column: 3; grid-row: 2; }
+        .action-btns {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 0, 100, 0.3);
+            border: 2px solid #ff0064;
+            color: #ff0064;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-btn:active {
+            background: rgba(255, 0, 100, 0.7);
+            transform: scale(0.95);
+        }
+        .test-results {
+            background: #111;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            min-height: 100px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+        .pass { color: #0f0; }
+        .fail { color: #f00; }
+        .info { color: #ff0; }
+        .back-btn {
+            background: #00ffff;
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 2rem 0;
+            min-height: 44px;
+        }
+        .performance-monitor {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #0f0;
+            z-index: 1000;
+        }
+        @media (max-width: 360px) {
+            .test-btn { padding: 0.8rem; font-size: 0.9rem; }
+            .action-btn { width: 50px; height: 50px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="performance-monitor" id="performance">
+        FPS: <span id="fps">--</span><br>
+        Latency: <span id="latency">--</span>ms
+    </div>
+    
+    <div class="test-container">
+        <h1>📱 Mobile Test Suite</h1>
+        <p>Test touch controls, gestures, and mobile-specific features</p>
+        
+        <div class="test-section">
+            <h2>📏 Viewport Information</h2>
+            <div class="viewport-info" id="viewport-info">
+                Loading viewport data...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>👆 Touch Response Test</h2>
+            <p>Tap, hold, and swipe in the area below:</p>
+            <div class="touch-test-area" id="touch-area">
+                <div>Touch here to test responsiveness</div>
+                <div style="font-size: 0.8rem; color: #888; margin-top: 1rem;">
+                    Try: tap, long press, swipe in all directions
+                </div>
+            </div>
+            <div class="test-results" id="touch-results">
+                Waiting for touch input...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎮 Virtual Controls Test</h2>
+            <p>Test the game's virtual d-pad and action buttons:</p>
+            
+            <div class="control-test">
+                <button class="test-btn up" data-action="up">↑</button>
+                <button class="test-btn left" data-action="left">←</button>
+                <button class="test-btn center" data-action="center">⊙</button>
+                <button class="test-btn right" data-action="right">→</button>
+                <button class="test-btn down" data-action="down">↓</button>
+            </div>
+            
+            <div class="action-btns">
+                <button class="action-btn" data-action="a">A</button>
+                <button class="action-btn" data-action="b">B</button>
+            </div>
+            
+            <div class="test-results" id="control-results">
+                Waiting for control input...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>⚡ Performance Test</h2>
+            <p>Monitor FPS and touch latency (target: 60 FPS, &lt;50ms latency)</p>
+            <div class="test-results" id="performance-results">
+                Performance monitoring active...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📳 Device Features</h2>
+            <div class="test-results" id="device-features">
+                Checking device capabilities...
+            </div>
+        </div>
+        
+        <button class="back-btn" onclick="window.location.href='../index.html'">
+            ← Back to Game
+        </button>
+    </div>
+    
+    <script>
+        class MobileTestSuite {
+            constructor() {
+                this.touchStartTime = 0;
+                this.frameCount = 0;
+                this.lastFPSUpdate = 0;
+                this.touchResults = [];
+                this.controlResults = [];
+                
+                this.init();
+            }
+            
+            init() {
+                this.updateViewportInfo();
+                this.setupTouchTests();
+                this.setupControlTests();
+                this.startPerformanceMonitoring();
+                this.checkDeviceFeatures();
+                
+                // Update viewport info on resize/orientation change
+                window.addEventListener('resize', () => this.updateViewportInfo());
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => this.updateViewportInfo(), 500);
+                });
+            }
+            
+            updateViewportInfo() {
+                const info = document.getElementById('viewport-info');
+                const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+                const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+                const dpr = window.devicePixelRatio || 1;
+                const orientation = screen.orientation ? screen.orientation.angle : 'unknown';
+                
+                info.innerHTML = `
+                    Viewport: ${vw} × ${vh}px<br>
+                    Device Pixel Ratio: ${dpr}<br>
+                    Orientation: ${orientation}°<br>
+                    User Agent: ${navigator.userAgent.substring(0, 50)}...<br>
+                    Touch Support: ${('ontouchstart' in window) ? 'YES' : 'NO'}<br>
+                    Screen: ${screen.width} × ${screen.height}px
+                `;
+            }
+            
+            setupTouchTests() {
+                const touchArea = document.getElementById('touch-area');
+                const results = document.getElementById('touch-results');
+                
+                // Touch events
+                touchArea.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.touchStartTime = performance.now();
+                    this.logTouch('Touch Start', e.touches.length, e.touches[0]);
+                });
+                
+                touchArea.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    this.logTouch('Touch Move', e.touches.length, e.touches[0]);
+                });
+                
+                touchArea.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    const latency = performance.now() - this.touchStartTime;
+                    this.logTouch('Touch End', e.changedTouches.length, e.changedTouches[0], latency);
+                    document.getElementById('latency').textContent = Math.round(latency);
+                });
+                
+                // Long press test
+                let longPressTimer;
+                touchArea.addEventListener('touchstart', () => {
+                    longPressTimer = setTimeout(() => {
+                        this.logTouch('Long Press Detected', 1);
+                        if ('vibrate' in navigator) {
+                            navigator.vibrate(100);
+                        }
+                    }, 500);
+                });
+                
+                touchArea.addEventListener('touchend', () => {
+                    clearTimeout(longPressTimer);
+                });
+            }
+            
+            setupControlTests() {
+                const buttons = document.querySelectorAll('.test-btn, .action-btn');
+                const results = document.getElementById('control-results');
+                
+                buttons.forEach(button => {
+                    button.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        const action = button.dataset.action;
+                        const startTime = performance.now();
+                        
+                        this.logControl(`${action.toUpperCase()} pressed`, startTime);
+                        
+                        // Visual feedback
+                        button.style.background = 'rgba(0, 255, 255, 0.8)';
+                    });
+                    
+                    button.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        const action = button.dataset.action;
+                        const endTime = performance.now();
+                        
+                        this.logControl(`${action.toUpperCase()} released`, endTime);
+                        
+                        // Reset visual feedback
+                        setTimeout(() => {
+                            button.style.background = '';
+                        }, 100);
+                    });
+                });
+            }
+            
+            startPerformanceMonitoring() {
+                const fpsDisplay = document.getElementById('fps');
+                const performanceResults = document.getElementById('performance-results');
+                
+                const updateFPS = () => {
+                    this.frameCount++;
+                    const now = performance.now();
+                    
+                    if (now - this.lastFPSUpdate >= 1000) {
+                        const fps = Math.round((this.frameCount * 1000) / (now - this.lastFPSUpdate));
+                        fpsDisplay.textContent = fps;
+                        
+                        // Log performance status
+                        const status = fps >= 60 ? 'PASS' : 'FAIL';
+                        const className = fps >= 60 ? 'pass' : 'fail';
+                        
+                        this.logPerformance(`FPS: ${fps} (${status})`, className);
+                        
+                        this.frameCount = 0;
+                        this.lastFPSUpdate = now;
+                    }
+                    
+                    requestAnimationFrame(updateFPS);
+                };
+                
+                requestAnimationFrame(updateFPS);
+            }
+            
+            checkDeviceFeatures() {
+                const features = document.getElementById('device-features');
+                const checks = [];
+                
+                // Touch support
+                checks.push(`Touch Events: ${('ontouchstart' in window) ? '✅' : '❌'}`);
+                
+                // Vibration API
+                checks.push(`Vibration: ${('vibrate' in navigator) ? '✅' : '❌'}`);
+                
+                // Service Worker
+                checks.push(`Service Worker: ${('serviceWorker' in navigator) ? '✅' : '❌'}`);
+                
+                // Web App Manifest
+                checks.push(`PWA Manifest: ${(document.querySelector('link[rel="manifest"]')) ? '✅' : '❌'}`);
+                
+                // Device Orientation
+                checks.push(`Orientation: ${('orientation' in screen) ? '✅' : '❌'}`);
+                
+                // Local Storage
+                checks.push(`Local Storage: ${('localStorage' in window) ? '✅' : '❌'}`);
+                
+                // Canvas support
+                const canvas = document.createElement('canvas');
+                checks.push(`Canvas: ${(canvas.getContext && canvas.getContext('2d')) ? '✅' : '❌'}`);
+                
+                features.innerHTML = checks.join('<br>');
+            }
+            
+            logTouch(event, touchCount, touch, latency) {
+                const results = document.getElementById('touch-results');
+                const timestamp = new Date().toLocaleTimeString();
+                const x = touch ? Math.round(touch.clientX) : 0;
+                const y = touch ? Math.round(touch.clientY) : 0;
+                const latencyText = latency ? ` (${Math.round(latency)}ms)` : '';
+                
+                const entry = `[${timestamp}] ${event}: ${touchCount} touch(es) at (${x}, ${y})${latencyText}`;
+                this.touchResults.unshift(entry);
+                
+                if (this.touchResults.length > 10) {
+                    this.touchResults.pop();
+                }
+                
+                results.innerHTML = this.touchResults.join('<br>');
+            }
+            
+            logControl(event, timestamp) {
+                const results = document.getElementById('control-results');
+                const time = new Date().toLocaleTimeString();
+                
+                const entry = `[${time}] ${event}`;
+                this.controlResults.unshift(entry);
+                
+                if (this.controlResults.length > 8) {
+                    this.controlResults.pop();
+                }
+                
+                results.innerHTML = this.controlResults.join('<br>');
+            }
+            
+            logPerformance(message, className = 'info') {
+                const results = document.getElementById('performance-results');
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = `<span class="${className}">[${timestamp}] ${message}</span>`;
+                
+                results.innerHTML = entry + '<br>' + results.innerHTML;
+                
+                // Keep only last 5 entries
+                const lines = results.innerHTML.split('<br>');
+                if (lines.length > 5) {
+                    results.innerHTML = lines.slice(0, 5).join('<br>');
+                }
+            }
+        }
+        
+        // Initialize test suite
+        document.addEventListener('DOMContentLoaded', () => {
+            new MobileTestSuite();
+        });
+    </script>
+</body>
+</html> 

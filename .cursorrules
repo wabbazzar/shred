@@ -1,0 +1,20 @@
+Game Template Development Rules:
+
+1. VISUAL VERIFICATION: Test every feature visually in browser, never trust console logs alone
+2. MOBILE FIRST: Implement touch controls before keyboard/mouse. Test on 320px-428px viewports
+3. PERFORMANCE: Maintain 60 FPS on mobile. Touch response must be <50ms
+4. UNIFIED INPUT: Single methods handle touch/mouse/keyboard (no separate code paths)
+5. GIT WORKFLOW: Commit after each phase, before risks, when tests pass
+6. VISUAL POLISH: Every interaction needs visual feedback. Smooth animations mandatory
+7. PWA FEATURES: Include manifest.json, service worker, offline capability
+8. TOUCH TARGETS: Minimum 44px for all interactive elements
+9. GESTURE SUPPORT: Implement swipe/tap/long-press where appropriate
+10. CACHE BUSTING: Include cache headers in every HTML file
+
+Template-Specific Rules:
+- This is a template repository - maintain generic structure
+- Keep placeholder content for easy customization
+- Include comprehensive test infrastructure
+- Document all patterns for reuse across projects
+- Maintain mobile-first architecture throughout
+- Ensure all files are template-ready with clear customization points 
