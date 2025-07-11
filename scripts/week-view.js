@@ -100,6 +100,12 @@ class WeekView {
             const isToday = this.isToday(week, day);
             const isCurrent = this.app.currentWeek === week && this.app.currentDay === day;
             
+            // Debug Tuesday specifically
+            if (day === 2) {
+                console.log(`🐛 Week View: Week ${week}, Tuesday completion: ${dayCompletion}%`);
+                console.log(`🐛 Week View: isToday: ${isToday}, isCurrent: ${isCurrent}`);
+            }
+            
             const completionClass = this.getCompletionClass(dayCompletion);
             const extraClasses = [];
             if (isToday) extraClasses.push('today');

@@ -364,6 +364,35 @@ class WorkoutApp {
         }
     }
 
+    // Method to clear specific day completion data
+    clearDayData(dayNum, dayName = null) {
+        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const actualDayName = dayName || dayNames[dayNum - 1];
+        
+        console.log(`🧹 Clearing all ${actualDayName} (Day ${dayNum}) completion data...`);
+        
+        // Find and remove all entries for this day
+        const keysToRemove = [];
+        for (const key in this.userProgress) {
+            if (key.includes(`-d${dayNum}-`)) {
+                keysToRemove.push(key);
+            }
+        }
+        
+        keysToRemove.forEach(key => {
+            delete this.userProgress[key];
+            console.log(`Removed: ${key}`);
+        });
+        
+        // Save the cleaned data
+        this.dataManager.saveUserProgress();
+        
+        console.log(`✅ Cleared ${keysToRemove.length} ${actualDayName} entries`);
+        
+        // Refresh all views
+        this.refreshAllViews();
+    }
+
     // Method to clear all Friday completion data
     clearFridayData() {
         console.log('🧹 Clearing all Friday completion data...');

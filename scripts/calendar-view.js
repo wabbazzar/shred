@@ -71,6 +71,12 @@ class CalendarView {
             const isToday = this.isToday(week, day);
             const isCurrent = this.app.currentWeek === week && this.app.currentDay === day;
             
+            // Debug Tuesday specifically
+            if (day === 2) {
+                console.log(`🐛 Calendar: Week ${week}, Tuesday completion: ${dayCompletion}%`);
+                console.log(`🐛 Calendar: isToday: ${isToday}, isCurrent: ${isCurrent}`);
+                console.log(`🐛 Calendar: App currentWeek: ${this.app.currentWeek}, currentDay: ${this.app.currentDay}`);
+            }
             
             const completionClass = this.getCompletionClass(dayCompletion);
             const extraClasses = [];
