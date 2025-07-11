@@ -248,15 +248,59 @@ class WorkoutApp {
     // Date Management
     setCurrentDate() {
         const today = new Date();
-        const programStart = new Date('2024-01-01'); // Configurable start date
+        
+        // Get start date from settings, fallback to default
+        const startDateStr = this.settings?.startDate || new Date().toISOString().split('T')[0];
+        const programStart = new Date(startDateStr);
+        
         const daysDiff = Math.floor((today - programStart) / (1000 * 60 * 60 * 24));
+        
+        console.log(`📅 Program started: ${programStart.toDateString()}, Days since start: ${daysDiff}`);
         
         if (daysDiff >= 0 && daysDiff < 42) { // 6 weeks = 42 days
             this.currentWeek = Math.floor(daysDiff / 7) + 1;
             this.currentDay = (daysDiff % 7) + 1;
+        } else if (daysDiff >= 42) {
+            // Program completed - show last week/day
+            this.currentWeek = 6;
+            this.currentDay = 7;
+            console.log(`📅 Program completed! Showing final week/day`);
+        } else {
+            // Program hasn't started yet - show first week/day
+            this.currentWeek = 1;
+            this.currentDay = 1;
+            console.log(`📅 Program starts in ${Math.abs(daysDiff)} days. Showing first week/day`);
         }
         
         console.log(`📅 Current date set: Week ${this.currentWeek}, Day ${this.currentDay}`);
+    }
+
+    // Method to set program start date
+    setProgramStartDate(dateString) {
+        try {
+            // Validate date format
+            const testDate = new Date(dateString);
+            if (isNaN(testDate.getTime())) {
+                throw new Error('Invalid date format');
+            }
+
+            // Update settings
+            this.dataManager.settings.startDate = dateString;
+            this.dataManager.saveSettings();
+            
+            // Recalculate current week/day
+            this.setCurrentDate();
+            
+            // Refresh all views to reflect new current day
+            this.refreshAllViews();
+            
+            console.log(`📅 Program start date updated to: ${testDate.toDateString()}`);
+            return { success: true, startDate: testDate.toDateString() };
+            
+        } catch (error) {
+            console.error('❌ Failed to set program start date:', error);
+            return { success: false, error: error.message };
+        }
     }
 
     // Service Worker Setup
