@@ -2,13 +2,13 @@
   "name": "6-Week Engagement Workout Tracker",
   "short_name": "6Week Shred",
   "description": "Track your 6-week engagement photo prep workout program with offline support",
-  "start_url": "/",
+  "start_url": "/shred/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#121212",
   "theme_color": "#FF6B00",
   "lang": "en",
-  "scope": "/",
+  "scope": "/shred/",
   "icons": [
     {
       "src": "assets/icons/app_icon.png",
@@ -77,14 +77,14 @@
       "name": "Today's Workout",
       "short_name": "Today",
       "description": "Jump to today's workout",
-      "url": "/#day",
+      "url": "/shred/#day",
       "icons": [{ "src": "assets/icons/app_icon.png", "sizes": "192x192" }]
     },
     {
       "name": "Week View",
       "short_name": "Week",
       "description": "View weekly progress",
-      "url": "/#week",
+      "url": "/shred/#week",
       "icons": [{ "src": "assets/icons/app_icon.png", "sizes": "192x192" }]
     }
   ]
