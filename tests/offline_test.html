@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Offline & PWA Test Suite - 6-Week Workout Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #121212;
+            color: #FFFFFF;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+        }
+
+        .test-title {
+            color: #FF6B00;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #FF6B00;
+            padding-bottom: 5px;
+        }
+
+        .test-description {
+            color: #B3B3B3;
+            margin-bottom: 20px;
+        }
+
+        /* Status Indicators */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background-color: #2D2D2D;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.online {
+            background-color: #00C851;
+            box-shadow: 0 0 10px rgba(0, 200, 81, 0.5);
+        }
+
+        .status-indicator.offline {
+            background-color: #FF5252;
+            box-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
+        }
+
+        .status-indicator.unknown {
+            background-color: #666666;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: #B3B3B3;
+            margin-bottom: 8px;
+        }
+
+        .status-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        /* Test Controls */
+        .test-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .test-btn {
+            background-color: #FF6B00;
+            color: #121212;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .test-btn:hover {
+            background-color: #e55a00;
+        }
+
+        .test-btn:active {
+            transform: scale(0.95);
+        }
+
+        .test-btn:disabled {
+            background-color: #666666;
+            color: #B3B3B3;
+            cursor: not-allowed;
+        }
+
+        .test-btn.secondary {
+            background-color: transparent;
+            color: #FF6B00;
+            border: 2px solid #FF6B00;
+        }
+
+        .test-btn.secondary:hover {
+            background-color: #FF6B00;
+            color: #121212;
+        }
+
+        /* Cache Status */
+        .cache-list {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .cache-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #333333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cache-item:last-child {
+            border-bottom: none;
+        }
+
+        .cache-url {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #B3B3B3;
+            flex: 1;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .cache-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .cache-status.cached {
+            background-color: #00C851;
+            color: #121212;
+        }
+
+        .cache-status.missing {
+            background-color: #FF5252;
+            color: #FFFFFF;
+        }
+
+        /* Test Results */
+        .test-results {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #333333;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .result-status.pass {
+            background-color: #00C851;
+            color: #121212;
+        }
+
+        .result-status.fail {
+            background-color: #FF5252;
+            color: #FFFFFF;
+        }
+
+        .result-status.pending {
+            background-color: #666666;
+            color: #FFFFFF;
+        }
+
+        /* Network Simulation */
+        .network-simulation {
+            background-color: #2D2D2D;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .speed-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .speed-option {
+            background-color: #333333;
+            border: 1px solid #666666;
+            color: #FFFFFF;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .speed-option.active {
+            background-color: #FF6B00;
+            color: #121212;
+            border-color: #FF6B00;
+        }
+
+        .speed-option:hover {
+            border-color: #FF6B00;
+        }
+
+        .back-link {
+            color: #FF6B00;
+            text-decoration: none;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .log-output {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 3px 0;
+        }
+
+        .log-entry.info {
+            color: #B3B3B3;
+        }
+
+        .log-entry.success {
+            color: #00C851;
+        }
+
+        .log-entry.error {
+            color: #FF5252;
+        }
+
+        .log-entry.warning {
+            color: #FF6B00;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>📱 Offline & PWA Test Suite</h1>
+            <p>Test Progressive Web App features and offline functionality</p>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Connection Status</h2>
+            <p class="test-description">Monitor online/offline status and network conditions</p>
+            
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="status-indicator unknown" id="connection-indicator"></div>
+                    <div class="status-label">Network Status</div>
+                    <div class="status-value" id="connection-status">Checking...</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-indicator unknown" id="sw-indicator"></div>
+                    <div class="status-label">Service Worker</div>
+                    <div class="status-value" id="sw-status">Checking...</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-indicator unknown" id="cache-indicator"></div>
+                    <div class="status-label">Cache Status</div>
+                    <div class="status-value" id="cache-status">Checking...</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-indicator unknown" id="storage-indicator"></div>
+                    <div class="status-label">Local Storage</div>
+                    <div class="status-value" id="storage-status">Checking...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">PWA Installation Test</h2>
+            <p class="test-description">Test Progressive Web App installation capabilities</p>
+            
+            <div class="test-controls">
+                <button class="test-btn" id="check-installable">Check Installable</button>
+                <button class="test-btn" id="trigger-install" disabled>Trigger Install Prompt</button>
+                <button class="test-btn secondary" id="check-installed">Check if Installed</button>
+            </div>
+            
+            <div id="install-status" class="log-output"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Service Worker Test</h2>
+            <p class="test-description">Test service worker registration and functionality</p>
+            
+            <div class="test-controls">
+                <button class="test-btn" id="register-sw">Register Service Worker</button>
+                <button class="test-btn" id="update-sw">Check for Updates</button>
+                <button class="test-btn secondary" id="unregister-sw">Unregister</button>
+            </div>
+            
+            <div id="sw-log" class="log-output"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Cache Management Test</h2>
+            <p class="test-description">Test caching functionality and offline asset availability</p>
+            
+            <div class="test-controls">
+                <button class="test-btn" id="check-cache">Check Cache</button>
+                <button class="test-btn" id="test-offline-assets">Test Offline Assets</button>
+                <button class="test-btn secondary" id="clear-cache">Clear Cache</button>
+            </div>
+            
+            <div class="cache-list" id="cache-list">
+                <div class="cache-item">
+                    <span class="cache-url">Loading cache status...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Local Storage Test</h2>
+            <p class="test-description">Test local data persistence and workout data storage</p>
+            
+            <div class="test-controls">
+                <button class="test-btn" id="test-storage">Test Storage</button>
+                <button class="test-btn" id="save-workout-data">Save Test Workout</button>
+                <button class="test-btn secondary" id="clear-storage">Clear Storage</button>
+            </div>
+            
+            <div id="storage-log" class="log-output"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Network Simulation</h2>
+            <p class="test-description">Simulate different network conditions (requires browser dev tools)</p>
+            
+            <div class="network-simulation">
+                <div class="speed-selector">
+                    <div class="speed-option active" data-speed="online">Online</div>
+                    <div class="speed-option" data-speed="slow-3g">Slow 3G</div>
+                    <div class="speed-option" data-speed="fast-3g">Fast 3G</div>
+                    <div class="speed-option" data-speed="offline">Offline</div>
+                </div>
+                <div style="color: #B3B3B3; font-size: 0.9rem;">
+                    Open DevTools → Network tab → Throttling to manually test different speeds
+                </div>
+            </div>
+        </div>
+
+        <div class="test-results">
+            <h3 style="color: #FF6B00; margin-bottom: 15px;">Test Results</h3>
+            <div class="result-item">
+                <span>Service Worker Registered</span>
+                <span class="result-status pending" id="sw-register-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>Assets Cached</span>
+                <span class="result-status pending" id="cache-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>Offline Functionality</span>
+                <span class="result-status pending" id="offline-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>Local Storage Working</span>
+                <span class="result-status pending" id="storage-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>PWA Installable</span>
+                <span class="result-status pending" id="install-result">Pending</span>
+            </div>
+        </div>
+
+        <a href="../index.html" class="back-link">← Back to Workout Tracker</a>
+    </div>
+
+    <script>
+        // Logging utilities
+        function addLog(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Update result status
+        function updateResult(elementId, status) {
+            const element = document.getElementById(elementId);
+            element.className = `result-status ${status}`;
+            element.textContent = status === 'pass' ? 'Pass' : status === 'fail' ? 'Fail' : 'Pending';
+        }
+
+        // Update status indicator
+        function updateStatus(indicatorId, statusId, status, text) {
+            const indicator = document.getElementById(indicatorId);
+            const statusText = document.getElementById(statusId);
+            
+            indicator.className = `status-indicator ${status}`;
+            statusText.textContent = text;
+        }
+
+        // Connection Status Monitoring
+        function checkConnectionStatus() {
+            const online = navigator.onLine;
+            updateStatus('connection-indicator', 'connection-status', 
+                        online ? 'online' : 'offline', 
+                        online ? 'Online' : 'Offline');
+        }
+
+        // Service Worker Tests
+        function checkServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration()
+                    .then(registration => {
+                        if (registration) {
+                            updateStatus('sw-indicator', 'sw-status', 'online', 'Registered');
+                            updateResult('sw-register-result', 'pass');
+                            addLog('sw-log', 'Service Worker is registered', 'success');
+                        } else {
+                            updateStatus('sw-indicator', 'sw-status', 'offline', 'Not Registered');
+                            addLog('sw-log', 'Service Worker not found', 'warning');
+                        }
+                    })
+                    .catch(error => {
+                        updateStatus('sw-indicator', 'sw-status', 'offline', 'Error');
+                        addLog('sw-log', `Service Worker error: ${error.message}`, 'error');
+                    });
+            } else {
+                updateStatus('sw-indicator', 'sw-status', 'offline', 'Not Supported');
+                addLog('sw-log', 'Service Worker not supported', 'error');
+            }
+        }
+
+        // Cache Tests
+        function checkCache() {
+            if ('caches' in window) {
+                caches.keys()
+                    .then(cacheNames => {
+                        if (cacheNames.length > 0) {
+                            updateStatus('cache-indicator', 'cache-status', 'online', 
+                                        `${cacheNames.length} cache(s)`);
+                            updateResult('cache-result', 'pass');
+                            
+                            // Check specific assets
+                            return caches.open(cacheNames[0]);
+                        } else {
+                            updateStatus('cache-indicator', 'cache-status', 'offline', 'No Caches');
+                            throw new Error('No caches found');
+                        }
+                    })
+                    .then(cache => {
+                        const assetsToCheck = [
+                            '/',
+                            '/index.html',
+                            '/styles/app.css',
+                            '/manifest.json'
+                        ];
+                        
+                        const cacheList = document.getElementById('cache-list');
+                        cacheList.innerHTML = '';
+                        
+                        assetsToCheck.forEach(asset => {
+                            cache.match(asset)
+                                .then(response => {
+                                    const item = document.createElement('div');
+                                    item.className = 'cache-item';
+                                    item.innerHTML = `
+                                        <span class="cache-url">${asset}</span>
+                                        <span class="cache-status ${response ? 'cached' : 'missing'}">
+                                            ${response ? 'Cached' : 'Missing'}
+                                        </span>
+                                    `;
+                                    cacheList.appendChild(item);
+                                });
+                        });
+                    })
+                    .catch(error => {
+                        updateStatus('cache-indicator', 'cache-status', 'offline', 'Error');
+                        updateResult('cache-result', 'fail');
+                    });
+            } else {
+                updateStatus('cache-indicator', 'cache-status', 'offline', 'Not Supported');
+                updateResult('cache-result', 'fail');
+            }
+        }
+
+        // Storage Tests
+        function checkStorage() {
+            try {
+                const testKey = 'offline-test';
+                const testValue = 'test-data';
+                
+                localStorage.setItem(testKey, testValue);
+                const retrieved = localStorage.getItem(testKey);
+                localStorage.removeItem(testKey);
+                
+                if (retrieved === testValue) {
+                    updateStatus('storage-indicator', 'storage-status', 'online', 'Working');
+                    updateResult('storage-result', 'pass');
+                    addLog('storage-log', 'Local Storage test passed', 'success');
+                } else {
+                    throw new Error('Storage test failed');
+                }
+            } catch (error) {
+                updateStatus('storage-indicator', 'storage-status', 'offline', 'Error');
+                updateResult('storage-result', 'fail');
+                addLog('storage-log', `Storage error: ${error.message}`, 'error');
+            }
+        }
+
+        // PWA Installation Tests
+        let deferredPrompt;
+
+        function checkInstallPrompt() {
+            if (deferredPrompt) {
+                document.getElementById('trigger-install').disabled = false;
+                updateResult('install-result', 'pass');
+                addLog('install-status', 'PWA installation available', 'success');
+            } else {
+                addLog('install-status', 'PWA installation prompt not available', 'warning');
+                addLog('install-status', 'This may be normal if already installed or criteria not met', 'info');
+            }
+        }
+
+        // Event Listeners
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            addLog('install-status', 'Install prompt captured', 'success');
+            document.getElementById('trigger-install').disabled = false;
+        });
+
+        window.addEventListener('online', () => {
+            checkConnectionStatus();
+            addLog('sw-log', 'Connection restored', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            checkConnectionStatus();
+            addLog('sw-log', 'Connection lost - testing offline mode', 'warning');
+        });
+
+        // Button Event Handlers
+        document.getElementById('check-installable').addEventListener('click', checkInstallPrompt);
+
+        document.getElementById('trigger-install').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    addLog('install-status', `User ${choiceResult.outcome} installation`, 'info');
+                    deferredPrompt = null;
+                    document.getElementById('trigger-install').disabled = true;
+                });
+            }
+        });
+
+        document.getElementById('check-installed').addEventListener('click', () => {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                addLog('install-status', 'App is running as installed PWA', 'success');
+            } else {
+                addLog('install-status', 'App is running in browser', 'info');
+            }
+        });
+
+        document.getElementById('register-sw').addEventListener('click', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('../service-worker.js')
+                    .then(registration => {
+                        addLog('sw-log', 'Service Worker registered successfully', 'success');
+                        updateResult('sw-register-result', 'pass');
+                        checkServiceWorker();
+                    })
+                    .catch(error => {
+                        addLog('sw-log', `Registration failed: ${error.message}`, 'error');
+                        updateResult('sw-register-result', 'fail');
+                    });
+            }
+        });
+
+        document.getElementById('update-sw').addEventListener('click', () => {
+            navigator.serviceWorker.getRegistration()
+                .then(registration => {
+                    if (registration) {
+                        registration.update();
+                        addLog('sw-log', 'Checking for Service Worker updates', 'info');
+                    }
+                });
+        });
+
+        document.getElementById('unregister-sw').addEventListener('click', () => {
+            navigator.serviceWorker.getRegistration()
+                .then(registration => {
+                    if (registration) {
+                        registration.unregister();
+                        addLog('sw-log', 'Service Worker unregistered', 'warning');
+                        checkServiceWorker();
+                    }
+                });
+        });
+
+        document.getElementById('check-cache').addEventListener('click', checkCache);
+
+        document.getElementById('test-offline-assets').addEventListener('click', () => {
+            const assetsToTest = [
+                '../index.html',
+                '../styles/app.css',
+                '../manifest.json'
+            ];
+            
+            let passCount = 0;
+            let testCount = assetsToTest.length;
+            
+            assetsToTest.forEach(asset => {
+                fetch(asset, { cache: 'force-cache' })
+                    .then(response => {
+                        if (response.ok) {
+                            passCount++;
+                            addLog('sw-log', `${asset} available offline`, 'success');
+                        } else {
+                            addLog('sw-log', `${asset} failed to load offline`, 'error');
+                        }
+                        
+                        if (passCount === testCount) {
+                            updateResult('offline-result', 'pass');
+                        } else if (passCount < testCount) {
+                            updateResult('offline-result', 'fail');
+                        }
+                    })
+                    .catch(error => {
+                        addLog('sw-log', `${asset} error: ${error.message}`, 'error');
+                        updateResult('offline-result', 'fail');
+                    });
+            });
+        });
+
+        document.getElementById('clear-cache').addEventListener('click', () => {
+            caches.keys()
+                .then(cacheNames => {
+                    return Promise.all(
+                        cacheNames.map(cacheName => caches.delete(cacheName))
+                    );
+                })
+                .then(() => {
+                    addLog('sw-log', 'All caches cleared', 'warning');
+                    checkCache();
+                });
+        });
+
+        document.getElementById('test-storage').addEventListener('click', checkStorage);
+
+        document.getElementById('save-workout-data').addEventListener('click', () => {
+            const testWorkout = {
+                date: new Date().toISOString().split('T')[0],
+                exercises: [
+                    { name: 'Push-ups', reps: 20, completed: true },
+                    { name: 'Squats', reps: 30, completed: true }
+                ],
+                completion: 100
+            };
+            
+            try {
+                localStorage.setItem('test-workout', JSON.stringify(testWorkout));
+                addLog('storage-log', 'Test workout data saved', 'success');
+                updateResult('storage-result', 'pass');
+            } catch (error) {
+                addLog('storage-log', `Failed to save workout: ${error.message}`, 'error');
+                updateResult('storage-result', 'fail');
+            }
+        });
+
+        document.getElementById('clear-storage').addEventListener('click', () => {
+            localStorage.clear();
+            addLog('storage-log', 'Local storage cleared', 'warning');
+        });
+
+        // Network simulation
+        document.querySelectorAll('.speed-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.speed-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                
+                const speed = this.dataset.speed;
+                addLog('sw-log', `Network simulation: ${speed}`, 'info');
+                
+                if (speed === 'offline') {
+                    addLog('sw-log', 'Test offline functionality now', 'warning');
+                }
+            });
+        });
+
+        // Initialize tests
+        function initializeOfflineTests() {
+            checkConnectionStatus();
+            checkServiceWorker();
+            checkCache();
+            checkStorage();
+            checkInstallPrompt();
+            
+            addLog('install-status', 'Offline test suite initialized', 'info');
+            addLog('sw-log', 'Service Worker tests ready', 'info');
+            addLog('storage-log', 'Storage tests ready', 'info');
+        }
+
+        // Start tests when page loads
+        document.addEventListener('DOMContentLoaded', initializeOfflineTests);
+    </script>
+</body>
+</html>

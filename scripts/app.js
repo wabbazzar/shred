@@ -1,0 +1,352 @@
+// 6-Week Engagement Workout Tracker - Main Application
+// Mobile-first PWA with offline functionality
+
+class WorkoutApp {
+    constructor() {
+        this.currentView = 'day';
+        this.currentWeek = 1;
+        this.currentDay = 1;
+        
+        // Initialize core modules
+        this.dataManager = new DataManager();
+        this.navigationManager = null; // Will be initialized after DOM setup
+        
+        this.init();
+    }
+
+    async init() {
+        console.log('🚀 Workout Tracker initializing...');
+        
+        try {
+            // Wait for data manager to initialize
+            await this.dataManager.init();
+            
+            // Initialize navigation system
+            this.navigationManager = new NavigationManager(this);
+            
+            // Set up settings button
+            this.setupSettingsButton();
+            
+            // Set up service worker
+            await this.setupServiceWorker();
+            
+            // Initialize views
+            this.initializeViews();
+            
+            // Set current day/week based on date
+            this.setCurrentDate();
+            
+            // Show initial view
+            this.showView(this.currentView);
+            
+            console.log('✅ Workout Tracker initialized successfully');
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize app:', error);
+            this.showError('Failed to load workout data. Please refresh the page.');
+        }
+    }
+
+    // Data Access Methods (delegate to DataManager)
+    get workoutData() {
+        return this.dataManager.workoutData;
+    }
+
+    get userProgress() {
+        return this.dataManager.userProgress;
+    }
+
+    get settings() {
+        return this.dataManager.settings;
+    }
+
+    // Data manipulation methods (delegate to DataManager)
+    updateExerciseProgress(week, day, exerciseIndex, data) {
+        return this.dataManager.updateExerciseProgress(week, day, exerciseIndex, data);
+    }
+
+    getExerciseProgress(week, day, exerciseIndex) {
+        return this.dataManager.getExerciseProgress(week, day, exerciseIndex);
+    }
+
+    getDayCompletion(week, day) {
+        return this.dataManager.calculateDayCompletion(week, day);
+    }
+
+    getWeekCompletion(week) {
+        return this.dataManager.calculateWeekCompletion(week);
+    }
+
+    // Settings button setup (navigation handles tabs)
+    setupSettingsButton() {
+        const settingsBtn = document.querySelector('.settings-btn');
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => {
+                this.showSettings();
+            });
+        }
+        console.log('⚙️ Settings button setup complete');
+    }
+
+    showView(viewName) {
+        // Update current view
+        this.currentView = viewName;
+        
+        // Hide all views
+        document.querySelectorAll('.view').forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        // Show selected view
+        const targetView = document.getElementById(`${viewName}-view`);
+        if (targetView) {
+            targetView.classList.add('active');
+        }
+        
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const activeTab = document.querySelector(`[data-view="${viewName}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+        
+        // Initialize view-specific functionality
+        this.initializeCurrentView();
+        
+        console.log(`📱 Switched to ${viewName} view`);
+    }
+
+    initializeCurrentView() {
+        switch (this.currentView) {
+            case 'day':
+                this.initializeDayView();
+                break;
+            case 'week':
+                this.initializeWeekView();
+                break;
+            case 'calendar':
+                this.initializeCalendarView();
+                break;
+        }
+    }
+
+    initializeViews() {
+        // Create placeholder content for views that don't exist yet
+        this.createPlaceholderContent();
+    }
+
+    createPlaceholderContent() {
+        const dayView = document.getElementById('day-view');
+        const weekView = document.getElementById('week-view');
+        const calendarView = document.getElementById('calendar-view');
+
+        if (dayView && !dayView.innerHTML.trim()) {
+            dayView.innerHTML = `
+                <div class="day-header">
+                    <h2>Week ${this.currentWeek}, Day ${this.currentDay}</h2>
+                    <div class="completion-badge">0%</div>
+                </div>
+                <div class="placeholder-content">
+                    <h3>Day View</h3>
+                    <p>Detailed workout view will be implemented here</p>
+                    <p>Current: Week ${this.currentWeek}, Day ${this.currentDay}</p>
+                </div>
+            `;
+        }
+
+        if (weekView && !weekView.innerHTML.trim()) {
+            weekView.innerHTML = `
+                <div class="week-header">
+                    <h2>Week ${this.currentWeek}</h2>
+                    <div class="week-controls">
+                        <button class="week-nav" id="prev-week">‹</button>
+                        <button class="week-nav" id="next-week">›</button>
+                    </div>
+                </div>
+                <div class="placeholder-content">
+                    <h3>Week View</h3>
+                    <p>Weekly overview grid will be implemented here</p>
+                    <div class="week-grid">
+                        ${Array.from({length: 7}, (_, i) => `
+                            <div class="day-tile" data-day="${i + 1}">
+                                <div>Day ${i + 1}</div>
+                                <div>0%</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        if (calendarView && !calendarView.innerHTML.trim()) {
+            calendarView.innerHTML = `
+                <div class="calendar-header">
+                    <h2>6-Week Program Calendar</h2>
+                </div>
+                <div class="placeholder-content">
+                    <h3>Calendar View</h3>
+                    <p>6-week calendar grid will be implemented here</p>
+                    <div class="calendar-grid">
+                        ${Array.from({length: 42}, (_, i) => `
+                            <div class="calendar-day" data-day="${i + 1}">
+                                <div>${i + 1}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    initializeDayView() {
+        // Day view specific initialization
+        console.log('📅 Day view initialized');
+    }
+
+    initializeWeekView() {
+        // Week navigation
+        const prevBtn = document.getElementById('prev-week');
+        const nextBtn = document.getElementById('next-week');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (this.currentWeek > 1) {
+                    this.currentWeek--;
+                    this.updateWeekView();
+                }
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (this.currentWeek < 6) {
+                    this.currentWeek++;
+                    this.updateWeekView();
+                }
+            });
+        }
+
+        // Day tile clicks
+        document.querySelectorAll('.day-tile').forEach(tile => {
+            tile.addEventListener('click', () => {
+                this.currentDay = parseInt(tile.dataset.day);
+                this.showView('day');
+            });
+        });
+        
+        console.log('📋 Week view initialized');
+    }
+
+    initializeCalendarView() {
+        // Calendar specific initialization
+        console.log('🗓️ Calendar view initialized');
+    }
+
+    updateWeekView() {
+        const weekHeader = document.querySelector('.week-header h2');
+        if (weekHeader) {
+            weekHeader.textContent = `Week ${this.currentWeek}`;
+        }
+    }
+
+    // Date Management
+    setCurrentDate() {
+        const today = new Date();
+        const programStart = new Date('2024-01-01'); // Configurable start date
+        const daysDiff = Math.floor((today - programStart) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff >= 0 && daysDiff < 42) { // 6 weeks = 42 days
+            this.currentWeek = Math.floor(daysDiff / 7) + 1;
+            this.currentDay = (daysDiff % 7) + 1;
+        }
+        
+        console.log(`📅 Current date set: Week ${this.currentWeek}, Day ${this.currentDay}`);
+    }
+
+    // Service Worker Setup
+    async setupServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.register('./service-worker.js');
+                console.log('🔧 Service Worker registered:', registration);
+                
+                // Listen for updates
+                registration.addEventListener('updatefound', () => {
+                    console.log('🔄 Service Worker update found');
+                });
+                
+            } catch (error) {
+                console.warn('⚠️ Service Worker registration failed:', error);
+            }
+        }
+    }
+
+    // Utility Methods
+    showError(message) {
+        console.error('❌ Error:', message);
+        // Could implement toast notifications here
+        alert(message); // Temporary error display
+    }
+
+    showSettings() {
+        console.log('⚙️ Settings modal would open here');
+        // Settings modal implementation will come later
+    }
+
+    // Completion Tracking
+    getExerciseCompletion(week, day, exerciseIndex) {
+        const key = `${week}-${day}-${exerciseIndex}`;
+        return this.userProgress[key] || { completed: false, data: {} };
+    }
+
+    updateExerciseCompletion(week, day, exerciseIndex, data) {
+        const key = `${week}-${day}-${exerciseIndex}`;
+        this.userProgress[key] = {
+            completed: this.isExerciseComplete(data),
+            data: data,
+            timestamp: new Date().toISOString()
+        };
+        
+        this.saveUserProgress();
+        this.updateCompletionIndicators();
+    }
+
+    isExerciseComplete(exerciseData) {
+        // Simple completion check - has any data been entered
+        return Object.values(exerciseData).some(value => value && value.trim && value.trim() !== '');
+    }
+
+    getDayCompletion(week, day) {
+        const dayExercises = this.workoutData.exercises[week]?.[day]?.exercises || [];
+        if (dayExercises.length === 0) return 0;
+        
+        let completed = 0;
+        dayExercises.forEach((_, index) => {
+            if (this.getExerciseCompletion(week, day, index).completed) {
+                completed++;
+            }
+        });
+        
+        return Math.round((completed / dayExercises.length) * 100);
+    }
+
+    updateCompletionIndicators() {
+        // Update UI completion indicators
+        // This will be expanded when views are fully implemented
+        console.log('📊 Completion indicators updated');
+    }
+}
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🌟 Starting 6-Week Engagement Workout Tracker...');
+    window.workoutApp = new WorkoutApp();
+});
+
+// Export for testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = WorkoutApp;
+}

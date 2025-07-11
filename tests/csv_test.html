@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>CSV Import/Export Test Suite - 6-Week Workout Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #121212;
+            color: #FFFFFF;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+        }
+
+        .test-title {
+            color: #FF6B00;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #FF6B00;
+            padding-bottom: 5px;
+        }
+
+        .test-description {
+            color: #B3B3B3;
+            margin-bottom: 20px;
+        }
+
+        /* Test Controls */
+        .test-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .test-btn {
+            background-color: #FF6B00;
+            color: #121212;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .test-btn:hover {
+            background-color: #e55a00;
+        }
+
+        .test-btn:active {
+            transform: scale(0.95);
+        }
+
+        .test-btn:disabled {
+            background-color: #666666;
+            color: #B3B3B3;
+            cursor: not-allowed;
+        }
+
+        .test-btn.secondary {
+            background-color: transparent;
+            color: #FF6B00;
+            border: 2px solid #FF6B00;
+        }
+
+        .test-btn.secondary:hover {
+            background-color: #FF6B00;
+            color: #121212;
+        }
+
+        /* File Input */
+        .file-input-container {
+            background-color: #2D2D2D;
+            border: 2px dashed #666666;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 15px;
+        }
+
+        .file-input-container:hover {
+            border-color: #FF6B00;
+            background-color: rgba(255, 107, 0, 0.1);
+        }
+
+        .file-input-container.dragover {
+            border-color: #FF6B00;
+            background-color: rgba(255, 107, 0, 0.2);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-info {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        /* CSV Preview */
+        .csv-preview {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .csv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .csv-table th,
+        .csv-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #333333;
+        }
+
+        .csv-table th {
+            background-color: #2D2D2D;
+            color: #FF6B00;
+            font-weight: 600;
+        }
+
+        .csv-table td {
+            color: #FFFFFF;
+        }
+
+        .csv-table tr:hover {
+            background-color: rgba(255, 107, 0, 0.1);
+        }
+
+        /* Validation Results */
+        .validation-results {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .validation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #333333;
+        }
+
+        .validation-item:last-child {
+            border-bottom: none;
+        }
+
+        .validation-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .validation-status.pass {
+            background-color: #00C851;
+            color: #121212;
+        }
+
+        .validation-status.fail {
+            background-color: #FF5252;
+            color: #FFFFFF;
+        }
+
+        .validation-status.warning {
+            background-color: #FF6B00;
+            color: #121212;
+        }
+
+        /* Sample Data */
+        .sample-data {
+            background-color: #2D2D2D;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .sample-title {
+            color: #FF6B00;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .sample-csv {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            color: #B3B3B3;
+        }
+
+        /* Log Output */
+        .log-output {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 3px 0;
+        }
+
+        .log-entry.info {
+            color: #B3B3B3;
+        }
+
+        .log-entry.success {
+            color: #00C851;
+        }
+
+        .log-entry.error {
+            color: #FF5252;
+        }
+
+        .log-entry.warning {
+            color: #FF6B00;
+        }
+
+        .back-link {
+            color: #FF6B00;
+            text-decoration: none;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Test Results */
+        .test-results {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #333333;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .result-status.pass {
+            background-color: #00C851;
+            color: #121212;
+        }
+
+        .result-status.fail {
+            background-color: #FF5252;
+            color: #FFFFFF;
+        }
+
+        .result-status.pending {
+            background-color: #666666;
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>📊 CSV Import/Export Test Suite</h1>
+            <p>Test CSV data import/export functionality and validation</p>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Sample CSV Data</h2>
+            <p class="test-description">Example workout program data in CSV format</p>
+            
+            <div class="sample-data">
+                <div class="sample-title">Workout Program CSV Format:</div>
+                <div class="sample-csv">week,day,exercise_name,category,sets,reps,weight,time,distance,notes
+1,1,Bench Press,strength,4,5,185,,,"Focus on form"
+1,1,Pull-ups,strength,3,8-12,,,,"Use assistance if needed"
+1,1,Plank,time,3,,,"45,60,55","Hold position"
+1,2,Running,cardio,1,,,20,3,"Steady pace"
+1,2,Bicep Curls,strength,3,12,25,,,"Controlled movement"</div>
+            </div>
+
+            <div class="test-controls">
+                <button class="test-btn" id="generate-sample">Generate Sample CSV</button>
+                <button class="test-btn secondary" id="download-template">Download Template</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">CSV Import Test</h2>
+            <p class="test-description">Upload and validate CSV workout data files</p>
+            
+            <div class="file-input-container" id="file-drop-zone">
+                <input type="file" id="csv-file-input" class="file-input" accept=".csv" />
+                <div>📁 Click to select CSV file or drag and drop</div>
+                <div style="font-size: 0.9rem; color: #B3B3B3; margin-top: 10px;">
+                    Supports .csv files up to 5MB
+                </div>
+            </div>
+
+            <div id="file-info" class="file-info" style="display: none;"></div>
+            
+            <div class="test-controls">
+                <button class="test-btn" id="validate-csv" disabled>Validate CSV</button>
+                <button class="test-btn" id="import-csv" disabled>Import Data</button>
+                <button class="test-btn secondary" id="clear-import">Clear</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">CSV Preview</h2>
+            <p class="test-description">Preview imported CSV data structure</p>
+            
+            <div class="csv-preview" id="csv-preview" style="display: none;">
+                <table class="csv-table" id="csv-table">
+                    <thead id="csv-header"></thead>
+                    <tbody id="csv-body"></tbody>
+                </table>
+            </div>
+            
+            <div id="csv-stats" style="display: none; color: #B3B3B3; font-size: 0.9rem;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Validation Results</h2>
+            <p class="test-description">CSV data validation and error checking</p>
+            
+            <div class="validation-results" id="validation-results">
+                <div class="validation-item">
+                    <span>No file selected</span>
+                    <span class="validation-status pending">Pending</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">CSV Export Test</h2>
+            <p class="test-description">Test data export functionality</p>
+            
+            <div class="test-controls">
+                <button class="test-btn" id="export-sample">Export Sample Data</button>
+                <button class="test-btn" id="export-progress">Export Progress Data</button>
+                <button class="test-btn secondary" id="export-blank">Export Blank Template</button>
+            </div>
+            
+            <div id="export-log" class="log-output"></div>
+        </div>
+
+        <div class="test-results">
+            <h3 style="color: #FF6B00; margin-bottom: 15px;">Test Results</h3>
+            <div class="result-item">
+                <span>CSV File Reading</span>
+                <span class="result-status pending" id="read-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>Data Validation</span>
+                <span class="result-status pending" id="validation-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>Data Import</span>
+                <span class="result-status pending" id="import-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>CSV Export</span>
+                <span class="result-status pending" id="export-result">Pending</span>
+            </div>
+            <div class="result-item">
+                <span>Error Handling</span>
+                <span class="result-status pending" id="error-result">Pending</span>
+            </div>
+        </div>
+
+        <a href="../index.html" class="back-link">← Back to Workout Tracker</a>
+    </div>
+
+    <script>
+        let currentCSVData = null;
+        let validationResults = {};
+
+        // Logging utilities
+        function addLog(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Update result status
+        function updateResult(elementId, status) {
+            const element = document.getElementById(elementId);
+            element.className = `result-status ${status}`;
+            element.textContent = status === 'pass' ? 'Pass' : status === 'fail' ? 'Fail' : 'Pending';
+        }
+
+        // CSV Parser
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length === 0) return null;
+            
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                if (values.length === headers.length) {
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index];
+                    });
+                    data.push(row);
+                }
+            }
+            
+            return { headers, data };
+        }
+
+        // CSV Validator
+        function validateCSV(csvData) {
+            const results = {
+                headerValidation: { pass: false, message: '' },
+                dataValidation: { pass: false, message: '' },
+                exerciseValidation: { pass: false, message: '' },
+                formatValidation: { pass: false, message: '' }
+            };
+            
+            // Required headers
+            const requiredHeaders = ['week', 'day', 'exercise_name', 'category'];
+            const optionalHeaders = ['sets', 'reps', 'weight', 'time', 'distance', 'notes'];
+            
+            // Header validation
+            const missingHeaders = requiredHeaders.filter(h => !csvData.headers.includes(h));
+            if (missingHeaders.length === 0) {
+                results.headerValidation.pass = true;
+                results.headerValidation.message = 'All required headers present';
+            } else {
+                results.headerValidation.message = `Missing headers: ${missingHeaders.join(', ')}`;
+            }
+            
+            // Data validation
+            if (csvData.data.length > 0) {
+                results.dataValidation.pass = true;
+                results.dataValidation.message = `${csvData.data.length} rows of data`;
+            } else {
+                results.dataValidation.message = 'No data rows found';
+            }
+            
+            // Exercise validation
+            const validCategories = ['strength', 'cardio', 'flexibility', 'time', 'distance', 'bodyweight'];
+            const invalidExercises = csvData.data.filter(row => 
+                !row.exercise_name || !validCategories.includes(row.category)
+            );
+            
+            if (invalidExercises.length === 0) {
+                results.exerciseValidation.pass = true;
+                results.exerciseValidation.message = 'All exercises have valid categories';
+            } else {
+                results.exerciseValidation.message = `${invalidExercises.length} exercises with invalid data`;
+            }
+            
+            // Format validation
+            const weekNumbers = csvData.data.map(row => parseInt(row.week)).filter(w => !isNaN(w));
+            const dayNumbers = csvData.data.map(row => parseInt(row.day)).filter(d => !isNaN(d));
+            
+            if (weekNumbers.length > 0 && dayNumbers.length > 0) {
+                results.formatValidation.pass = true;
+                results.formatValidation.message = `Weeks: ${Math.min(...weekNumbers)}-${Math.max(...weekNumbers)}, Days: ${Math.min(...dayNumbers)}-${Math.max(...dayNumbers)}`;
+            } else {
+                results.formatValidation.message = 'Invalid week/day number format';
+            }
+            
+            return results;
+        }
+
+        // Display validation results
+        function displayValidationResults(results) {
+            const container = document.getElementById('validation-results');
+            container.innerHTML = '';
+            
+            Object.keys(results).forEach(key => {
+                const result = results[key];
+                const item = document.createElement('div');
+                item.className = 'validation-item';
+                
+                const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                const status = result.pass ? 'pass' : 'fail';
+                
+                item.innerHTML = `
+                    <span>${label}</span>
+                    <span class="validation-status ${status}">${result.message}</span>
+                `;
+                
+                container.appendChild(item);
+            });
+            
+            // Update overall validation result
+            const allPassed = Object.values(results).every(r => r.pass);
+            updateResult('validation-result', allPassed ? 'pass' : 'fail');
+        }
+
+        // Display CSV preview
+        function displayCSVPreview(csvData) {
+            const preview = document.getElementById('csv-preview');
+            const table = document.getElementById('csv-table');
+            const header = document.getElementById('csv-header');
+            const body = document.getElementById('csv-body');
+            const stats = document.getElementById('csv-stats');
+            
+            // Clear previous content
+            header.innerHTML = '';
+            body.innerHTML = '';
+            
+            // Create header
+            const headerRow = document.createElement('tr');
+            csvData.headers.forEach(h => {
+                const th = document.createElement('th');
+                th.textContent = h;
+                headerRow.appendChild(th);
+            });
+            header.appendChild(headerRow);
+            
+            // Create data rows (limit to first 10 for preview)
+            const previewData = csvData.data.slice(0, 10);
+            previewData.forEach(row => {
+                const tr = document.createElement('tr');
+                csvData.headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = row[header] || '';
+                    tr.appendChild(td);
+                });
+                body.appendChild(tr);
+            });
+            
+            // Show preview and stats
+            preview.style.display = 'block';
+            stats.style.display = 'block';
+            stats.textContent = `Showing ${previewData.length} of ${csvData.data.length} rows | ${csvData.headers.length} columns`;
+        }
+
+        // File handling
+        function handleFile(file) {
+            if (!file) return;
+            
+            const fileInfo = document.getElementById('file-info');
+            fileInfo.style.display = 'block';
+            fileInfo.innerHTML = `
+                <strong>File:</strong> ${file.name}<br>
+                <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
+                <strong>Type:</strong> ${file.type || 'text/csv'}<br>
+                <strong>Last Modified:</strong> ${new Date(file.lastModified).toLocaleString()}
+            `;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csvText = e.target.result;
+                    currentCSVData = parseCSV(csvText);
+                    
+                    if (currentCSVData) {
+                        updateResult('read-result', 'pass');
+                        document.getElementById('validate-csv').disabled = false;
+                        displayCSVPreview(currentCSVData);
+                        addLog('export-log', `CSV file loaded: ${currentCSVData.data.length} rows`, 'success');
+                    } else {
+                        throw new Error('Failed to parse CSV data');
+                    }
+                } catch (error) {
+                    updateResult('read-result', 'fail');
+                    addLog('export-log', `File reading error: ${error.message}`, 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                updateResult('read-result', 'fail');
+                addLog('export-log', 'File reading failed', 'error');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Generate sample CSV
+        function generateSampleCSV() {
+            const sampleData = [
+                ['week', 'day', 'exercise_name', 'category', 'sets', 'reps', 'weight', 'time', 'distance', 'notes'],
+                ['1', '1', 'Bench Press', 'strength', '4', '5', '185', '', '', 'Focus on form'],
+                ['1', '1', 'Pull-ups', 'strength', '3', '8-12', '', '', '', 'Use assistance if needed'],
+                ['1', '1', 'Plank', 'time', '3', '', '', '45,60,55', '', 'Hold position'],
+                ['1', '2', 'Running', 'cardio', '1', '', '', '20', '3', 'Steady pace'],
+                ['1', '2', 'Bicep Curls', 'strength', '3', '12', '25', '', '', 'Controlled movement'],
+                ['1', '3', 'Deadlift', 'strength', '3', '5', '225', '', '', 'Proper hip hinge'],
+                ['1', '3', 'Push-ups', 'bodyweight', '3', '15', '', '', '', 'Full range of motion']
+            ];
+            
+            const csvContent = sampleData.map(row => row.join(',')).join('\n');
+            currentCSVData = parseCSV(csvContent);
+            
+            if (currentCSVData) {
+                document.getElementById('validate-csv').disabled = false;
+                displayCSVPreview(currentCSVData);
+                updateResult('read-result', 'pass');
+                addLog('export-log', 'Sample CSV data generated', 'success');
+            }
+        }
+
+        // Export CSV
+        function exportCSV(data, filename) {
+            try {
+                const csvContent = data.map(row => row.join(',')).join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                
+                window.URL.revokeObjectURL(url);
+                updateResult('export-result', 'pass');
+                addLog('export-log', `Exported: ${filename}`, 'success');
+            } catch (error) {
+                updateResult('export-result', 'fail');
+                addLog('export-log', `Export failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('file-drop-zone').addEventListener('click', () => {
+            document.getElementById('csv-file-input').click();
+        });
+
+        document.getElementById('csv-file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop
+        const dropZone = document.getElementById('file-drop-zone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        // Button event listeners
+        document.getElementById('generate-sample').addEventListener('click', generateSampleCSV);
+
+        document.getElementById('download-template').addEventListener('click', () => {
+            const templateData = [
+                ['week', 'day', 'exercise_name', 'category', 'sets', 'reps', 'weight', 'time', 'distance', 'notes'],
+                ['1', '1', 'Exercise Name', 'strength', '3', '10', '50', '', '', 'Notes here'],
+                ['', '', '', '', '', '', '', '', '', '']
+            ];
+            exportCSV(templateData, 'workout_template.csv');
+        });
+
+        document.getElementById('validate-csv').addEventListener('click', () => {
+            if (currentCSVData) {
+                validationResults = validateCSV(currentCSVData);
+                displayValidationResults(validationResults);
+                
+                const allPassed = Object.values(validationResults).every(r => r.pass);
+                if (allPassed) {
+                    document.getElementById('import-csv').disabled = false;
+                    addLog('export-log', 'CSV validation passed', 'success');
+                } else {
+                    addLog('export-log', 'CSV validation failed - check errors above', 'warning');
+                }
+            }
+        });
+
+        document.getElementById('import-csv').addEventListener('click', () => {
+            if (currentCSVData && Object.values(validationResults).every(r => r.pass)) {
+                // Simulate import to local storage
+                try {
+                    localStorage.setItem('imported-workout-data', JSON.stringify(currentCSVData));
+                    updateResult('import-result', 'pass');
+                    addLog('export-log', 'Workout data imported successfully', 'success');
+                } catch (error) {
+                    updateResult('import-result', 'fail');
+                    addLog('export-log', `Import failed: ${error.message}`, 'error');
+                }
+            }
+        });
+
+        document.getElementById('clear-import').addEventListener('click', () => {
+            currentCSVData = null;
+            validationResults = {};
+            document.getElementById('file-info').style.display = 'none';
+            document.getElementById('csv-preview').style.display = 'none';
+            document.getElementById('csv-stats').style.display = 'none';
+            document.getElementById('csv-file-input').value = '';
+            document.getElementById('validate-csv').disabled = true;
+            document.getElementById('import-csv').disabled = true;
+            
+            const validationContainer = document.getElementById('validation-results');
+            validationContainer.innerHTML = '<div class="validation-item"><span>No file selected</span><span class="validation-status pending">Pending</span></div>';
+            
+            addLog('export-log', 'Import cleared', 'info');
+        });
+
+        document.getElementById('export-sample').addEventListener('click', () => {
+            generateSampleCSV();
+            if (currentCSVData) {
+                const exportData = [currentCSVData.headers, ...currentCSVData.data.map(row => currentCSVData.headers.map(h => row[h]))];
+                exportCSV(exportData, 'sample_workout_data.csv');
+            }
+        });
+
+        document.getElementById('export-progress').addEventListener('click', () => {
+            // Generate sample progress data
+            const progressData = [
+                ['date', 'week', 'day', 'exercise_name', 'completed_sets', 'completed_reps', 'weight_used', 'time_recorded', 'notes'],
+                ['2024-01-01', '1', '1', 'Bench Press', '4', '5,5,5,5', '185,185,185,185', '', 'Felt strong'],
+                ['2024-01-01', '1', '1', 'Pull-ups', '3', '10,8,6', 'bodyweight', '', 'Getting better'],
+                ['2024-01-03', '1', '2', 'Running', '1', '', '', '22:30', '3.2 miles']
+            ];
+            
+            exportCSV(progressData, 'workout_progress.csv');
+        });
+
+        document.getElementById('export-blank').addEventListener('click', () => {
+            const blankTemplate = [
+                ['week', 'day', 'exercise_name', 'category', 'sets', 'reps', 'weight', 'time', 'distance', 'notes']
+            ];
+            exportCSV(blankTemplate, 'blank_workout_template.csv');
+        });
+
+        // Initialize
+        function initializeCSVTests() {
+            addLog('export-log', 'CSV test suite initialized', 'info');
+            addLog('export-log', 'Ready to test import/export functionality', 'info');
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeCSVTests);
+    </script>
+</body>
+</html>

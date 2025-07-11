@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Visual Test Suite - 6-Week Workout Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #121212;
+            color: #FFFFFF;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+        }
+
+        .test-title {
+            color: #FF6B00;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #FF6B00;
+            padding-bottom: 5px;
+        }
+
+        .test-description {
+            color: #B3B3B3;
+            margin-bottom: 20px;
+        }
+
+        /* Color Palette Test */
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .color-sample {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            border: 2px solid transparent;
+        }
+
+        .color-sample.bg-primary {
+            background-color: #121212;
+            color: #FFFFFF;
+            border-color: #333333;
+        }
+
+        .color-sample.bg-secondary {
+            background-color: #1E1E1E;
+            color: #FFFFFF;
+        }
+
+        .color-sample.bg-tertiary {
+            background-color: #2D2D2D;
+            color: #FFFFFF;
+        }
+
+        .color-sample.accent-orange {
+            background-color: #FF6B00;
+            color: #121212;
+        }
+
+        .color-sample.accent-green {
+            background-color: #00C851;
+            color: #121212;
+        }
+
+        .color-sample.accent-red {
+            background-color: #FF5252;
+            color: #121212;
+        }
+
+        /* Typography Test */
+        .typography-test {
+            margin-bottom: 30px;
+        }
+
+        .typography-test h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+        }
+
+        .typography-test h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+        }
+
+        .typography-test h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+        }
+
+        .typography-test p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #FFFFFF;
+            margin-bottom: 15px;
+        }
+
+        .typography-test .text-secondary {
+            color: #B3B3B3;
+        }
+
+        .typography-test .text-muted {
+            color: #666666;
+        }
+
+        /* Component Test */
+        .component-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .component-demo {
+            padding: 20px;
+            background-color: #2D2D2D;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .demo-button {
+            background-color: #FF6B00;
+            color: #121212;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 5px;
+            min-height: 44px;
+        }
+
+        .demo-button:hover {
+            background-color: #e55a00;
+            transform: translateY(-2px);
+        }
+
+        .demo-button:active {
+            transform: scale(0.98);
+        }
+
+        .demo-button.secondary {
+            background-color: transparent;
+            color: #FF6B00;
+            border: 2px solid #FF6B00;
+        }
+
+        .demo-button.secondary:hover {
+            background-color: #FF6B00;
+            color: #121212;
+        }
+
+        .demo-input {
+            width: 100%;
+            padding: 12px;
+            background-color: #1E1E1E;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            color: #FFFFFF;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        .demo-input:focus {
+            outline: none;
+            border-color: #FF6B00;
+        }
+
+        .demo-input::placeholder {
+            color: #666666;
+        }
+
+        /* Mock UI Elements */
+        .mock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .mock-dropdown {
+            background-color: #2D2D2D;
+            color: #FFFFFF;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 1rem;
+            min-width: 200px;
+        }
+
+        .mock-settings-btn {
+            background-color: transparent;
+            border: none;
+            color: #B3B3B3;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .mock-settings-btn:hover {
+            background-color: #2D2D2D;
+            color: #FFFFFF;
+        }
+
+        .mock-tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+
+        .mock-tab {
+            background-color: transparent;
+            border: none;
+            color: #B3B3B3;
+            cursor: pointer;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-height: 44px;
+        }
+
+        .mock-tab.active {
+            color: #FF6B00;
+            background-color: #2D2D2D;
+        }
+
+        .mock-tab:hover {
+            background-color: #2D2D2D;
+            color: #FFFFFF;
+        }
+
+        .mock-day-tile {
+            background-color: #1E1E1E;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 10px;
+        }
+
+        .mock-day-tile.partial {
+            background-color: #FF6B00;
+            color: #121212;
+        }
+
+        .mock-day-tile.complete {
+            background-color: #00C851;
+            color: #121212;
+        }
+
+        .mock-day-tile:hover {
+            border-color: #FF6B00;
+            transform: translateY(-2px);
+        }
+
+        .day-tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .exercise-demo {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 10px 0;
+            transition: all 0.2s ease;
+        }
+
+        .exercise-demo.partial {
+            border-color: #FF6B00;
+            background-color: rgba(255, 107, 0, 0.1);
+        }
+
+        .exercise-demo.complete {
+            border-color: #00C851;
+            background-color: rgba(0, 200, 81, 0.1);
+        }
+
+        .exercise-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .exercise-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .exercise-input {
+            flex: 1;
+            padding: 8px;
+            background-color: #1E1E1E;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            color: #FFFFFF;
+            text-align: center;
+            min-height: 44px;
+        }
+
+        .exercise-input:focus {
+            outline: none;
+            border-color: #FF6B00;
+        }
+
+        .back-link {
+            color: #FF6B00;
+            text-decoration: none;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .viewport-info {
+            background-color: #2D2D2D;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .viewport-info strong {
+            color: #FF6B00;
+        }
+
+        @media (max-width: 767px) {
+            .mobile-indicator {
+                color: #00C851;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .desktop-indicator {
+                color: #00C851;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🎨 Visual Test Suite</h1>
+            <p>Cross-platform design system verification</p>
+        </div>
+
+        <div class="viewport-info">
+            <strong>Current Viewport:</strong> 
+            <span id="viewport-size"></span> |
+            <span class="mobile-indicator">📱 Mobile</span>
+            <span class="desktop-indicator">💻 Desktop</span>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Dark Theme Color Palette</h2>
+            <p class="test-description">Testing color consistency and contrast ratios</p>
+            
+            <div class="color-palette">
+                <div class="color-sample bg-primary">
+                    <div>#121212</div>
+                    <div>Primary BG</div>
+                </div>
+                <div class="color-sample bg-secondary">
+                    <div>#1E1E1E</div>
+                    <div>Secondary BG</div>
+                </div>
+                <div class="color-sample bg-tertiary">
+                    <div>#2D2D2D</div>
+                    <div>Tertiary BG</div>
+                </div>
+                <div class="color-sample accent-orange">
+                    <div>#FF6B00</div>
+                    <div>Orange Accent</div>
+                </div>
+                <div class="color-sample accent-green">
+                    <div>#00C851</div>
+                    <div>Green Success</div>
+                </div>
+                <div class="color-sample accent-red">
+                    <div>#FF5252</div>
+                    <div>Red Error</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Typography Scale</h2>
+            <p class="test-description">Testing font sizes and hierarchy</p>
+            
+            <div class="typography-test">
+                <h1>H1 Heading - 2.5rem</h1>
+                <h2>H2 Heading - 2rem</h2>
+                <h3>H3 Heading - 1.5rem</h3>
+                <p>Body text - 1rem with proper line height for readability</p>
+                <p class="text-secondary">Secondary text - #B3B3B3</p>
+                <p class="text-muted">Muted text - #666666</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Button Components</h2>
+            <p class="test-description">Testing button states and interactions</p>
+            
+            <div class="component-showcase">
+                <div class="component-demo">
+                    <h3>Primary Buttons</h3>
+                    <button class="demo-button">Normal State</button>
+                    <button class="demo-button" style="background-color: #e55a00;">Hover State</button>
+                    <button class="demo-button" style="transform: scale(0.98);">Active State</button>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Secondary Buttons</h3>
+                    <button class="demo-button secondary">Normal State</button>
+                    <button class="demo-button secondary" style="background-color: #FF6B00; color: #121212;">Hover State</button>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>Form Inputs</h3>
+                    <input type="text" class="demo-input" placeholder="Weight (lbs)">
+                    <input type="text" class="demo-input" placeholder="Reps" style="border-color: #FF6B00;">
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">App Header Layout</h2>
+            <p class="test-description">Testing header component responsiveness</p>
+            
+            <div class="mock-header">
+                <select class="mock-dropdown">
+                    <option>6-Week Engagement Program</option>
+                </select>
+                <button class="mock-settings-btn">⚙️</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Tab Navigation</h2>
+            <p class="test-description">Testing bottom tab navigation component</p>
+            
+            <div class="mock-tabs">
+                <button class="mock-tab active">
+                    📅
+                    <span>Day</span>
+                </button>
+                <button class="mock-tab">
+                    📋
+                    <span>Week</span>
+                </button>
+                <button class="mock-tab">
+                    🗓️
+                    <span>Calendar</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Week View Grid</h2>
+            <p class="test-description">Testing completion states and hover effects</p>
+            
+            <div class="day-tiles-grid">
+                <div class="mock-day-tile">
+                    <div>Mon</div>
+                    <div style="font-size: 0.8rem; color: #B3B3B3;">0%</div>
+                </div>
+                <div class="mock-day-tile partial">
+                    <div>Tue</div>
+                    <div style="font-size: 0.8rem;">75%</div>
+                </div>
+                <div class="mock-day-tile complete">
+                    <div>Wed</div>
+                    <div style="font-size: 0.8rem;">100%</div>
+                </div>
+                <div class="mock-day-tile">
+                    <div>Thu</div>
+                    <div style="font-size: 0.8rem; color: #B3B3B3;">0%</div>
+                </div>
+                <div class="mock-day-tile partial">
+                    <div>Fri</div>
+                    <div style="font-size: 0.8rem;">50%</div>
+                </div>
+                <div class="mock-day-tile">
+                    <div>Sat</div>
+                    <div style="font-size: 0.8rem; color: #B3B3B3;">0%</div>
+                </div>
+                <div class="mock-day-tile">
+                    <div>Sun</div>
+                    <div style="font-size: 0.8rem; color: #B3B3B3;">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Exercise Components</h2>
+            <p class="test-description">Testing exercise completion states</p>
+            
+            <div class="exercise-demo">
+                <div class="exercise-name">Bench Press - 4 sets of 5 reps</div>
+                <div class="exercise-inputs">
+                    <input type="text" class="exercise-input" placeholder="185">
+                    <span style="color: #B3B3B3; display: flex; align-items: center;">lbs</span>
+                </div>
+            </div>
+            
+            <div class="exercise-demo partial">
+                <div class="exercise-name">Pull-ups x 8-12</div>
+                <div class="exercise-inputs">
+                    <input type="text" class="exercise-input" value="10" style="border-color: #FF6B00;">
+                    <span style="color: #B3B3B3; display: flex; align-items: center;">reps</span>
+                </div>
+            </div>
+            
+            <div class="exercise-demo complete">
+                <div class="exercise-name">Plank hold - 3 sets</div>
+                <div class="exercise-inputs">
+                    <input type="text" class="exercise-input" value="45" style="border-color: #00C851;">
+                    <input type="text" class="exercise-input" value="60" style="border-color: #00C851;">
+                    <input type="text" class="exercise-input" value="55" style="border-color: #00C851;">
+                </div>
+            </div>
+        </div>
+
+        <a href="../index.html" class="back-link">← Back to Workout Tracker</a>
+    </div>
+
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            document.getElementById('viewport-size').textContent = `${width}x${height}`;
+        }
+
+        // Update viewport info on load and resize
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+
+        // Add interactive hover effects
+        document.querySelectorAll('.mock-day-tile').forEach(tile => {
+            tile.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.borderColor = '#FF6B00';
+            });
+            
+            tile.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.borderColor = '#333333';
+            });
+        });
+
+        // Tab switching demo
+        document.querySelectorAll('.mock-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.mock-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

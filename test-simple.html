@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple JS Test</title>
+</head>
+<body>
+    <h1>Testing JavaScript Modules</h1>
+    <div id="test-output"></div>
+
+    <script>
+        console.log('Starting test...');
+        
+        function logTest(message) {
+            console.log(message);
+            document.getElementById('test-output').innerHTML += message + '<br>';
+        }
+        
+        logTest('✅ Basic JavaScript working');
+        
+        // Test if DataManager loads
+        try {
+            if (typeof DataManager !== 'undefined') {
+                logTest('✅ DataManager class found');
+                const dm = new DataManager();
+                logTest('✅ DataManager instantiated');
+            } else {
+                logTest('❌ DataManager not found');
+            }
+        } catch (error) {
+            logTest('❌ DataManager error: ' + error.message);
+        }
+        
+        // Test if NavigationManager loads
+        try {
+            if (typeof NavigationManager !== 'undefined') {
+                logTest('✅ NavigationManager class found');
+            } else {
+                logTest('❌ NavigationManager not found');
+            }
+        } catch (error) {
+            logTest('❌ NavigationManager error: ' + error.message);
+        }
+        
+        // Test if WorkoutApp loads
+        try {
+            if (typeof WorkoutApp !== 'undefined') {
+                logTest('✅ WorkoutApp class found');
+            } else {
+                logTest('❌ WorkoutApp not found');
+            }
+        } catch (error) {
+            logTest('❌ WorkoutApp error: ' + error.message);
+        }
+    </script>
+    
+    <!-- Load our modules -->
+    <script src="scripts/data-manager.js"></script>
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/app.js"></script>
+    
+    <script>
+        // Test after loading
+        setTimeout(() => {
+            logTest('--- After loading modules ---');
+            
+            try {
+                if (typeof DataManager !== 'undefined') {
+                    logTest('✅ DataManager loaded successfully');
+                } else {
+                    logTest('❌ DataManager still not found');
+                }
+            } catch (error) {
+                logTest('❌ DataManager test error: ' + error.message);
+            }
+            
+            try {
+                if (typeof NavigationManager !== 'undefined') {
+                    logTest('✅ NavigationManager loaded successfully');
+                } else {
+                    logTest('❌ NavigationManager still not found');
+                }
+            } catch (error) {
+                logTest('❌ NavigationManager test error: ' + error.message);
+            }
+            
+            try {
+                if (typeof WorkoutApp !== 'undefined') {
+                    logTest('✅ WorkoutApp loaded successfully');
+                } else {
+                    logTest('❌ WorkoutApp still not found');
+                }
+            } catch (error) {
+                logTest('❌ WorkoutApp test error: ' + error.message);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
