@@ -280,6 +280,24 @@ class WorkoutApp {
         alert(message); // Temporary error display
     }
 
+    // Debug method to check Friday completion issue
+    debugFridayCompletion() {
+        console.log('🐛 Debugging Friday completion...');
+        for (let week = 1; week <= 6; week++) {
+            const completion = this.getDayCompletion(week, 5); // Day 5 = Friday
+            const exercises = this.dataManager.getExercisesForDay(week, 5);
+            console.log(`Week ${week}, Friday: ${completion}% complete, ${exercises.length} exercises`);
+            
+            // Check individual exercise progress
+            exercises.forEach((exercise, index) => {
+                const progress = this.getExerciseProgress(week, 5, index);
+                if (progress && progress.completed) {
+                    console.log(`  - Exercise ${index} (${exercise.name}): COMPLETED`);
+                }
+            });
+        }
+    }
+
     showSettings() {
         console.log('⚙️ Settings modal would open here');
         // Settings modal implementation will come later

@@ -71,6 +71,11 @@ class CalendarView {
             const isToday = this.isToday(week, day);
             const isCurrent = this.app.currentWeek === week && this.app.currentDay === day;
             
+            // Debug logging for Friday completion issue
+            if (day === 5) { // Friday
+                console.log(`🐛 Week ${week}, Day ${day} (Friday) completion: ${dayCompletion}%`);
+            }
+            
             const completionClass = this.getCompletionClass(dayCompletion);
             const extraClasses = [];
             if (isToday) extraClasses.push('today');
