@@ -460,11 +460,15 @@ class WorkoutApp {
         console.log('✅ All views refreshed');
     }
 
-    showSettings() {
+    async showSettings() {
         console.log('🔧 Opening settings...');
         
         const modal = document.getElementById('settings-modal');
         const modalBody = modal.querySelector('.modal-body');
+        
+        // Get current program list for dropdown
+        const programList = await this.dataManager.getProgramList();
+        const currentProgram = await this.dataManager.getCurrentProgramInfo();
         
         // Create settings content with sections
         modalBody.innerHTML = `
@@ -481,7 +485,11 @@ class WorkoutApp {
                         </div>
                         <div class="settings-control">
                             <select class="settings-select" id="program-selector">
-                                <option value="6-Week Engagement Program">6-Week Engagement Program</option>
+                                ${programList.map(program => `
+                                    <option value="${program.id}" ${program.isActive ? 'selected' : ''}>
+                                        ${program.name}${program.isDefault ? ' (Default)' : ''}${program.hasProgress ? ' ⭐' : ''}
+                                    </option>
+                                `).join('')}
                             </select>
                         </div>
                     </div>
@@ -513,6 +521,35 @@ class WorkoutApp {
                         </div>
                         <div class="settings-control">
                             <button class="settings-btn danger" id="reset-program-btn">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Program List Management -->
+                    <div class="settings-item" style="flex-direction: column; align-items: stretch;">
+                        <div style="margin-bottom: 12px;">
+                            <div class="settings-label">Saved Programs</div>
+                            <div class="settings-description">Manage your saved workout programs</div>
+                        </div>
+                        <div id="program-list-container">
+                            ${programList.map(program => `
+                                <div class="program-item ${program.isActive ? 'active' : ''}" data-program-id="${program.id}">
+                                    <div class="program-info">
+                                        <div class="program-name">
+                                            ${program.name}
+                                            ${program.isDefault ? '<span style="color: var(--accent-orange); font-size: 0.8rem;"> (Default)</span>' : ''}
+                                            ${program.isActive ? '<span style="color: var(--accent-green); font-size: 0.8rem;"> (Active)</span>' : ''}
+                                        </div>
+                                        <div class="program-details">
+                                            Created: ${new Date(program.created).toLocaleDateString()}
+                                            ${program.hasProgress ? ' • Has Progress ⭐' : ''}
+                                        </div>
+                                    </div>
+                                    <div class="program-actions">
+                                        ${!program.isActive ? `<button class="program-action-btn" data-action="switch" data-program-id="${program.id}" title="Switch to this program">🔄</button>` : ''}
+                                        ${!program.isDefault && !program.isActive ? `<button class="program-action-btn" data-action="delete" data-program-id="${program.id}" title="Delete this program">🗑️</button>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
                 </div>
@@ -561,11 +598,11 @@ class WorkoutApp {
                 <div class="section-content-settings">
                     <div class="settings-item">
                         <div>
-                            <div class="settings-label">App Version</div>
-                            <div class="settings-description">6-Week Engagement Workout Tracker v1.0</div>
+                            <div class="settings-label">Current Program Info</div>
+                            <div class="settings-description">${currentProgram ? currentProgram.name : 'No program loaded'}</div>
                         </div>
                         <div class="settings-control">
-                            <span class="settings-label">v1.0.0</span>
+                            <span class="settings-label">${currentProgram ? (currentProgram.hasProgress ? 'In Progress' : 'Not Started') : 'N/A'}</span>
                         </div>
                     </div>
                     
@@ -638,6 +675,14 @@ class WorkoutApp {
             }
         });
         
+        // Program dropdown selector
+        const programSelector = document.getElementById('program-selector');
+        if (programSelector) {
+            programSelector.addEventListener('change', (e) => {
+                this.handleProgramSelection(e.target.value);
+            });
+        }
+        
         // Program management
         document.getElementById('save-program-btn').addEventListener('click', () => {
             this.showSaveProgramDialog();
@@ -649,6 +694,16 @@ class WorkoutApp {
         
         document.getElementById('start-date-input').addEventListener('change', (e) => {
             this.updateProgramStartDate(e.target.value);
+        });
+        
+        // Program list action buttons
+        const programActions = document.querySelectorAll('.program-action-btn');
+        programActions.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = e.target.dataset.action;
+                const programId = e.target.dataset.programId;
+                this.handleProgramAction(action, programId);
+            });
         });
         
         // Data export/import
@@ -699,21 +754,161 @@ class WorkoutApp {
         console.log('⚙️ Settings modal closed');
     }
     
-    showSaveProgramDialog() {
-        const programName = prompt('Enter a name for this program:', 'My Custom Program');
-        if (programName && programName.trim()) {
-            // TODO: Implement program saving
-            this.showSettingsMessage('Program saved successfully!', 'success');
-            console.log('💾 Program saved:', programName);
+    async handleProgramSelection(programId) {
+        try {
+            const currentProgram = await this.dataManager.getCurrentProgramInfo();
+            if (currentProgram && currentProgram.id === programId) {
+                return; // Already selected
+            }
+            
+            this.showProgramSwitchDialog(programId);
+        } catch (error) {
+            this.showSettingsMessage('Failed to handle program selection: ' + error.message, 'error');
+            console.error('❌ Program selection error:', error);
         }
     }
     
-    showResetProgramDialog() {
-        const confirmed = confirm('Are you sure you want to reset all progress? This cannot be undone.');
-        if (confirmed) {
-            // TODO: Implement program reset
-            this.showSettingsMessage('Program reset successfully!', 'success');
-            console.log('🔄 Program reset confirmed');
+    async handleProgramAction(action, programId) {
+        try {
+            switch (action) {
+                case 'switch':
+                    this.showProgramSwitchDialog(programId);
+                    break;
+                case 'delete':
+                    this.showDeleteProgramDialog(programId);
+                    break;
+                default:
+                    console.warn('Unknown program action:', action);
+            }
+        } catch (error) {
+            this.showSettingsMessage('Failed to perform action: ' + error.message, 'error');
+            console.error('❌ Program action error:', error);
+        }
+    }
+    
+    async showProgramSwitchDialog(programId) {
+        try {
+            const programList = await this.dataManager.getProgramList();
+            const targetProgram = programList.find(p => p.id === programId);
+            
+            if (!targetProgram) {
+                this.showSettingsMessage('Program not found', 'error');
+                return;
+            }
+            
+            const message = targetProgram.hasProgress
+                ? `Switch to "${targetProgram.name}"?\n\nThis program has saved progress. Do you want to:\n\n• Continue with saved progress?\n• Start fresh (progress will be lost)?`
+                : `Switch to "${targetProgram.name}"?\n\nYou will start this program from the beginning.`;
+            
+            let continueProgress = false;
+            let confirmed = false;
+            
+            if (targetProgram.hasProgress) {
+                const choice = prompt(message + '\n\nEnter "continue" to keep progress, or "fresh" to start over:', 'continue');
+                if (choice === null) return; // Cancelled
+                
+                if (choice.toLowerCase() === 'continue') {
+                    continueProgress = true;
+                    confirmed = true;
+                } else if (choice.toLowerCase() === 'fresh') {
+                    continueProgress = false;
+                    confirmed = true;
+                } else {
+                    this.showSettingsMessage('Invalid choice. Please enter "continue" or "fresh"', 'error');
+                    return;
+                }
+            } else {
+                confirmed = confirm(message);
+            }
+            
+            if (confirmed) {
+                await this.dataManager.switchToProgram(programId, continueProgress);
+                this.showSettingsMessage(`Switched to "${targetProgram.name}"!`, 'success');
+                
+                // Refresh the app views
+                this.refreshAllViews();
+                
+                // Refresh settings modal
+                setTimeout(() => {
+                    this.closeSettings();
+                    setTimeout(() => this.showSettings(), 300);
+                }, 1000);
+            }
+            
+        } catch (error) {
+            this.showSettingsMessage('Failed to switch program: ' + error.message, 'error');
+            console.error('❌ Program switch error:', error);
+        }
+    }
+    
+    async showDeleteProgramDialog(programId) {
+        try {
+            const programList = await this.dataManager.getProgramList();
+            const targetProgram = programList.find(p => p.id === programId);
+            
+            if (!targetProgram) {
+                this.showSettingsMessage('Program not found', 'error');
+                return;
+            }
+            
+            const message = `Delete "${targetProgram.name}"?\n\nThis action cannot be undone.${targetProgram.hasProgress ? '\n\nAll saved progress will be lost.' : ''}`;
+            const confirmed = confirm(message);
+            
+            if (confirmed) {
+                await this.dataManager.deleteProgram(programId);
+                this.showSettingsMessage(`Program "${targetProgram.name}" deleted!`, 'success');
+                
+                // Refresh settings modal
+                setTimeout(() => {
+                    this.closeSettings();
+                    setTimeout(() => this.showSettings(), 300);
+                }, 1000);
+            }
+            
+        } catch (error) {
+            this.showSettingsMessage('Failed to delete program: ' + error.message, 'error');
+            console.error('❌ Program deletion error:', error);
+        }
+    }
+    
+    async showSaveProgramDialog() {
+        try {
+            const programName = prompt('Enter a name for this program:', 'My Custom Program');
+            if (programName && programName.trim()) {
+                const programId = await this.dataManager.saveCurrentProgramAs(programName);
+                this.showSettingsMessage(`Program "${programName}" saved successfully!`, 'success');
+                console.log('💾 Program saved:', programName, 'ID:', programId);
+                
+                // Refresh settings modal to show new program
+                setTimeout(() => {
+                    this.closeSettings();
+                    setTimeout(() => this.showSettings(), 300);
+                }, 1000);
+            }
+        } catch (error) {
+            this.showSettingsMessage('Failed to save program: ' + error.message, 'error');
+            console.error('❌ Save program error:', error);
+        }
+    }
+    
+    async showResetProgramDialog() {
+        try {
+            const currentProgram = await this.dataManager.getCurrentProgramInfo();
+            const programName = currentProgram ? currentProgram.name : 'current program';
+            
+            const confirmed = confirm(`Reset "${programName}"?\n\nAll progress will be cleared and you'll start from the beginning.\n\nThis action cannot be undone.`);
+            if (confirmed) {
+                await this.dataManager.resetCurrentProgram();
+                this.showSettingsMessage('Program reset successfully!', 'success');
+                
+                // Refresh the app views
+                this.refreshAllViews();
+                
+                console.log('🔄 Program reset confirmed');
+            }
+        } catch (error) {
+            this.showSettingsMessage('Failed to reset program: ' + error.message, 'error');
+            console.error('❌ Reset program error:', error);
         }
     }
     

@@ -745,6 +745,262 @@ class DataManager {
         
         console.log('🗑️ All data cleared');
     }
+
+    // Program Management
+    async loadSavedPrograms() {
+        try {
+            const stored = localStorage.getItem('saved-programs');
+            if (stored) {
+                return JSON.parse(stored);
+            } else {
+                // Initialize with default program only
+                const defaultProgram = await this.getDefaultWorkoutProgram();
+                const savedPrograms = {
+                    [defaultProgram.id]: {
+                        ...defaultProgram,
+                        isDefault: true,
+                        lastAccessed: new Date().toISOString()
+                    }
+                };
+                await this.saveProgramList(savedPrograms);
+                return savedPrograms;
+            }
+        } catch (error) {
+            console.error('❌ Failed to load saved programs:', error);
+            return {};
+        }
+    }
+
+    async saveProgramList(programs) {
+        try {
+            localStorage.setItem('saved-programs', JSON.stringify(programs));
+            console.log('💾 Program list saved');
+        } catch (error) {
+            console.error('❌ Failed to save program list:', error);
+            throw error;
+        }
+    }
+
+    async saveCurrentProgramAs(programName) {
+        try {
+            if (!programName || !programName.trim()) {
+                throw new Error('Program name is required');
+            }
+
+            const trimmedName = programName.trim();
+            const savedPrograms = await this.loadSavedPrograms();
+            
+            // Check for duplicate names
+            const existingProgram = Object.values(savedPrograms).find(
+                program => program.name.toLowerCase() === trimmedName.toLowerCase()
+            );
+            
+            if (existingProgram) {
+                throw new Error('A program with this name already exists');
+            }
+
+            // Create new program ID
+            const programId = this.generateProgramId(trimmedName);
+            
+            // Create new program with current data and progress
+            const newProgram = {
+                id: programId,
+                name: trimmedName,
+                description: `Custom program: ${trimmedName}`,
+                version: '1.0.0',
+                created: new Date().toISOString(),
+                weeks: this.workoutData.weeks,
+                daysPerWeek: this.workoutData.daysPerWeek,
+                metadata: {
+                    ...this.workoutData.metadata,
+                    customProgram: true,
+                    originalProgram: this.workoutData.name
+                },
+                exercises: JSON.parse(JSON.stringify(this.workoutData.exercises)),
+                isDefault: false,
+                lastAccessed: new Date().toISOString(),
+                // Store current progress with the program
+                savedProgress: JSON.parse(JSON.stringify(this.userProgress)),
+                savedSettings: JSON.parse(JSON.stringify(this.settings))
+            };
+
+            // Add to saved programs
+            savedPrograms[programId] = newProgram;
+            await this.saveProgramList(savedPrograms);
+
+            console.log(`💾 Program "${trimmedName}" saved successfully`);
+            return programId;
+            
+        } catch (error) {
+            console.error('❌ Failed to save program:', error);
+            throw error;
+        }
+    }
+
+    async switchToProgram(programId, continueProgress = false) {
+        try {
+            const savedPrograms = await this.loadSavedPrograms();
+            const targetProgram = savedPrograms[programId];
+            
+            if (!targetProgram) {
+                throw new Error('Program not found');
+            }
+
+            // Store current state before switching
+            await this.saveUserProgress();
+            await this.saveSettings();
+
+            // Load target program
+            this.workoutData = {
+                id: targetProgram.id,
+                name: targetProgram.name,
+                description: targetProgram.description,
+                version: targetProgram.version,
+                created: targetProgram.created,
+                weeks: targetProgram.weeks,
+                daysPerWeek: targetProgram.daysPerWeek,
+                metadata: targetProgram.metadata,
+                exercises: targetProgram.exercises
+            };
+
+            if (continueProgress && targetProgram.savedProgress) {
+                // Continue with saved progress
+                this.userProgress = JSON.parse(JSON.stringify(targetProgram.savedProgress));
+                if (targetProgram.savedSettings) {
+                    this.settings = {
+                        ...this.settings,
+                        ...targetProgram.savedSettings
+                    };
+                }
+            } else {
+                // Start fresh
+                this.userProgress = {};
+                // Keep current settings but update current program
+                this.settings.currentProgram = programId;
+            }
+
+            // Update last accessed time
+            targetProgram.lastAccessed = new Date().toISOString();
+            savedPrograms[programId] = targetProgram;
+            await this.saveProgramList(savedPrograms);
+
+            // Save new state
+            await this.saveWorkoutData();
+            await this.saveUserProgress();
+            await this.saveSettings();
+
+            console.log(`🔄 Switched to program: ${targetProgram.name}`);
+            return true;
+
+        } catch (error) {
+            console.error('❌ Failed to switch program:', error);
+            throw error;
+        }
+    }
+
+    async deleteProgram(programId) {
+        try {
+            const savedPrograms = await this.loadSavedPrograms();
+            const targetProgram = savedPrograms[programId];
+            
+            if (!targetProgram) {
+                throw new Error('Program not found');
+            }
+
+            if (targetProgram.isDefault) {
+                throw new Error('Cannot delete the default program');
+            }
+
+            if (this.workoutData && this.workoutData.id === programId) {
+                throw new Error('Cannot delete the currently active program');
+            }
+
+            delete savedPrograms[programId];
+            await this.saveProgramList(savedPrograms);
+
+            console.log(`🗑️ Program "${targetProgram.name}" deleted`);
+            return true;
+
+        } catch (error) {
+            console.error('❌ Failed to delete program:', error);
+            throw error;
+        }
+    }
+
+    async getProgramList() {
+        const savedPrograms = await this.loadSavedPrograms();
+        return Object.values(savedPrograms).map(program => ({
+            id: program.id,
+            name: program.name,
+            description: program.description,
+            created: program.created,
+            lastAccessed: program.lastAccessed,
+            isDefault: program.isDefault || false,
+            isActive: this.workoutData && this.workoutData.id === program.id,
+            hasProgress: program.savedProgress && Object.keys(program.savedProgress).length > 0
+        })).sort((a, b) => {
+            // Sort: active first, then default, then by last accessed
+            if (a.isActive) return -1;
+            if (b.isActive) return 1;
+            if (a.isDefault) return -1;
+            if (b.isDefault) return 1;
+            return new Date(b.lastAccessed) - new Date(a.lastAccessed);
+        });
+    }
+
+    async getCurrentProgramInfo() {
+        if (!this.workoutData) return null;
+        
+        const savedPrograms = await this.loadSavedPrograms();
+        const currentProgram = savedPrograms[this.workoutData.id];
+        
+        return {
+            id: this.workoutData.id,
+            name: this.workoutData.name,
+            description: this.workoutData.description,
+            isDefault: currentProgram ? currentProgram.isDefault : false,
+            created: this.workoutData.created,
+            hasProgress: Object.keys(this.userProgress).length > 0
+        };
+    }
+
+    generateProgramId(programName) {
+        // Create URL-friendly ID from program name
+        const baseId = programName
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, '')
+            .replace(/\s+/g, '-')
+            .substring(0, 30);
+        
+        // Add timestamp to ensure uniqueness
+        const timestamp = Date.now().toString(36);
+        return `${baseId}-${timestamp}`;
+    }
+
+    async resetCurrentProgram() {
+        try {
+            // Clear all user progress but keep the program structure
+            this.userProgress = {};
+            
+            // Reset settings to defaults but keep program reference
+            const currentProgramId = this.workoutData ? this.workoutData.id : null;
+            this.settings = {
+                ...this.getDefaultSettings(),
+                currentProgram: currentProgramId
+            };
+
+            // Save reset state
+            await this.saveUserProgress();
+            await this.saveSettings();
+
+            console.log('🔄 Current program reset successfully');
+            return true;
+
+        } catch (error) {
+            console.error('❌ Failed to reset program:', error);
+            throw error;
+        }
+    }
 }
 
 // Export for module use
