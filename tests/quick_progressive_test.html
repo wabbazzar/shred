@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Progressive Auto-Fill Test - Shred</title>
+    <link rel="stylesheet" href="../styles/app.css">
+    <link rel="stylesheet" href="../styles/mobile.css">
+    <style>
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-title {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .test-description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .test-button {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 10px 5px;
+        }
+        
+        .test-button:hover {
+            background: #e55a00;
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: rgba(0, 200, 81, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .nav-button {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .nav-button:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-orange);
+        }
+        
+        .nav-button.active {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+            border-color: var(--accent-orange);
+        }
+        
+        .week-display {
+            background: var(--bg-primary);
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .week-label {
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .exercise-demo {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .exercise-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .input-demo {
+            display: flex;
+            gap: 10px;
+            margin: 5px 0;
+        }
+        
+        .input-demo label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            min-width: 60px;
+        }
+        
+        .demo-input {
+            flex: 1;
+            max-width: 100px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .status-empty {
+            background: rgba(102, 102, 102, 0.3);
+            color: var(--text-muted);
+        }
+        
+        .status-suggested {
+            background: rgba(255, 107, 0, 0.3);
+            color: var(--accent-orange);
+        }
+        
+        .status-filled {
+            background: rgba(0, 200, 81, 0.3);
+            color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="color: var(--accent-orange); text-align: center; margin-bottom: 30px;">
+            Quick Progressive Auto-Fill Test
+        </h1>
+        
+        <div class="test-section">
+            <div class="test-title">🚀 Immediate Progressive Auto-Fill Demo</div>
+            <div class="test-description">
+                This test demonstrates that progressive auto-fill works immediately when you navigate to any week,
+                without needing to complete full weeks first. The system finds the most recent data from previous weeks.
+            </div>
+            
+            <button class="test-button" onclick="setupTestData()">Setup Test Data</button>
+            <button class="test-button" onclick="clearTestData()">Clear Test Data</button>
+            
+            <div class="navigation-buttons">
+                <button class="nav-button active" onclick="showWeek(1)">Week 1</button>
+                <button class="nav-button" onclick="showWeek(2)">Week 2</button>
+                <button class="nav-button" onclick="showWeek(3)">Week 3</button>
+                <button class="nav-button" onclick="showWeek(4)">Week 4</button>
+                <button class="nav-button" onclick="showWeek(5)">Week 5</button>
+                <button class="nav-button" onclick="showWeek(6)">Week 6</button>
+            </div>
+            
+            <div id="week-display" class="week-display">
+                <div class="week-label">Week 1 - Monday (Baseline)</div>
+                <div class="exercise-demo">
+                    <div class="exercise-name">Bench Press</div>
+                    <div class="input-demo">
+                        <label>Weight:</label>
+                        <input type="number" class="exercise-input demo-input" id="w1-bench-weight" placeholder="Weight">
+                        <span class="status-indicator status-empty" id="w1-bench-weight-status">EMPTY</span>
+                    </div>
+                    <div class="input-demo">
+                        <label>Reps:</label>
+                        <input type="number" class="exercise-input demo-input" id="w1-bench-reps" placeholder="Reps">
+                        <span class="status-indicator status-empty" id="w1-bench-reps-status">EMPTY</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-demo">
+                    <div class="exercise-name">Pull-ups (EMOM)</div>
+                    <div class="input-demo">
+                        <label>Reps:</label>
+                        <input type="number" class="exercise-input demo-input" id="w1-pullups-reps" placeholder="Reps">
+                        <span class="status-indicator status-empty" id="w1-pullups-reps-status">EMPTY</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-demo">
+                    <div class="exercise-name">Plank Hold</div>
+                    <div class="input-demo">
+                        <label>Time:</label>
+                        <input type="text" class="exercise-input demo-input" id="w1-plank-time" placeholder="Time">
+                        <span class="status-indicator status-empty" id="w1-plank-time-status">EMPTY</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="test-result" class="test-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">📋 Test Instructions</div>
+            <div class="test-description">
+                <strong>Step 1:</strong> Click "Setup Test Data" to add some sample Week 1 data<br>
+                <strong>Step 2:</strong> Click on Week 2, 3, 4, etc. tabs to see progressive suggestions<br>
+                <strong>Step 3:</strong> Notice how Week 3+ shows suggestions even if Week 2 is empty<br>
+                <strong>Step 4:</strong> Double-tap any suggested input to auto-fill it<br>
+                <strong>Step 5:</strong> Try "Clear Test Data" and notice suggestions disappear
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/day-view.js"></script>
+    <script>
+        // Mock data structure for testing
+        let testData = {};
+        let currentWeek = 1;
+        
+        // Mock DayView for testing
+        class MockDayView {
+            constructor() {
+                this.currentWeek = 1;
+                this.currentDay = 1;
+            }
+            
+            getExerciseProgress(week, day, exerciseIndex) {
+                const key = `w${week}-d${day}-e${exerciseIndex}`;
+                return testData[key] || null;
+            }
+            
+            findMostRecentExerciseData(exerciseIndex) {
+                for (let searchWeek = this.currentWeek - 1; searchWeek >= 1; searchWeek--) {
+                    const progress = this.getExerciseProgress(searchWeek, this.currentDay, exerciseIndex);
+                    
+                    if (progress && progress.data && Object.keys(progress.data).length > 0) {
+                        const numericData = {};
+                        Object.keys(progress.data).forEach(key => {
+                            if (key !== '_manualComplete' && key !== 'notes' && progress.data[key]) {
+                                numericData[key] = progress.data[key];
+                            }
+                        });
+                        
+                        if (Object.keys(numericData).length > 0) {
+                            return {
+                                data: numericData,
+                                sourceWeek: searchWeek
+                            };
+                        }
+                    }
+                }
+                return null;
+            }
+            
+            calculateProgressiveValues(previousData, currentWeek, exerciseIndex, sourceWeek = null) {
+                const progressiveValues = {};
+                const weeksToProgress = sourceWeek ? (currentWeek - sourceWeek) : 1;
+                
+                // Mock exercise categories
+                const exerciseCategories = {
+                    0: 'strength',  // Bench Press
+                    1: 'emom',      // Pull-ups
+                    2: 'time'       // Plank Hold
+                };
+                const exerciseCategory = exerciseCategories[exerciseIndex] || 'general';
+                
+                Object.keys(previousData).forEach(field => {
+                    const previousValue = previousData[field];
+                    let progressiveValue = previousValue;
+                    
+                    if (field === '_manualComplete' || field === 'notes') return;
+                    
+                    if (field.includes('weight')) {
+                        progressiveValue = this.calculateWeightProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
+                    } else if (field.includes('reps')) {
+                        progressiveValue = this.calculateRepsProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
+                    } else if (field.includes('time')) {
+                        progressiveValue = this.calculateTimeProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
+                    }
+                    
+                    progressiveValues[field] = progressiveValue;
+                });
+                
+                return progressiveValues;
+            }
+            
+            calculateWeightProgression(previousWeight, currentWeek, exerciseCategory, weeksToProgress = 1) {
+                const weight = parseFloat(previousWeight);
+                if (isNaN(weight)) return previousWeight;
+                
+                let totalProgression = 0;
+                for (let i = 0; i < weeksToProgress; i++) {
+                    const weekNum = currentWeek - weeksToProgress + i + 1;
+                    let progressionRate = 0;
+                    
+                    if (exerciseCategory === 'strength') {
+                        if (weekNum <= 2) {
+                            progressionRate = weight >= 100 ? 5 : 2.5;
+                        } else if (weekNum <= 4) {
+                            progressionRate = weight >= 100 ? 2.5 : 2.5;
+                        } else {
+                            progressionRate = weight >= 100 ? 2.5 : 2.5;
+                        }
+                    } else {
+                        progressionRate = weight >= 50 ? 2.5 : 2.5;
+                    }
+                    
+                    totalProgression += progressionRate;
+                }
+                
+                const newWeight = weight + totalProgression;
+                return Math.round(newWeight / 2.5) * 2.5;
+            }
+            
+            calculateRepsProgression(previousReps, currentWeek, exerciseCategory, weeksToProgress = 1) {
+                const reps = parseInt(previousReps);
+                if (isNaN(reps)) return previousReps;
+                
+                if (exerciseCategory === 'strength') {
+                    return reps;
+                }
+                
+                let totalProgression = 0;
+                for (let i = 0; i < weeksToProgress; i++) {
+                    const weekNum = currentWeek - weeksToProgress + i + 1;
+                    let progressionAmount = 0;
+                    
+                    if (exerciseCategory === 'emom' || exerciseCategory === 'amrap') {
+                        progressionAmount = weekNum <= 3 ? 1 : 2;
+                    } else if (exerciseCategory === 'bodyweight') {
+                        const currentReps = reps + totalProgression;
+                        progressionAmount = currentReps < 10 ? 1 : currentReps < 20 ? 2 : 3;
+                    } else {
+                        progressionAmount = 1;
+                    }
+                    
+                    totalProgression += progressionAmount;
+                }
+                
+                return Math.max(reps + totalProgression, reps);
+            }
+            
+            calculateTimeProgression(previousTime, currentWeek, exerciseCategory, weeksToProgress = 1) {
+                const timeValue = this.parseTimeValue(previousTime);
+                if (timeValue === null) return previousTime;
+                
+                let totalProgressionSeconds = 0;
+                for (let i = 0; i < weeksToProgress; i++) {
+                    const currentTimeValue = timeValue + totalProgressionSeconds;
+                    let progressionSeconds = 0;
+                    
+                    if (exerciseCategory === 'time' || exerciseCategory === 'flexibility') {
+                        progressionSeconds = currentTimeValue < 30 ? 5 : currentTimeValue < 60 ? 10 : 15;
+                    } else if (exerciseCategory === 'cardio') {
+                        progressionSeconds = currentTimeValue < 120 ? 15 : 30;
+                    } else {
+                        progressionSeconds = 5;
+                    }
+                    
+                    totalProgressionSeconds += progressionSeconds;
+                }
+                
+                const newTimeSeconds = timeValue + totalProgressionSeconds;
+                return this.formatTimeValue(newTimeSeconds, previousTime);
+            }
+            
+            parseTimeValue(timeString) {
+                if (!timeString) return null;
+                
+                const cleanTime = timeString.toString().toLowerCase()
+                    .replace(/[^\d:]/g, '');
+                
+                if (cleanTime.includes(':')) {
+                    const parts = cleanTime.split(':');
+                    const minutes = parseInt(parts[0]) || 0;
+                    const seconds = parseInt(parts[1]) || 0;
+                    return minutes * 60 + seconds;
+                } else {
+                    const seconds = parseInt(cleanTime);
+                    return isNaN(seconds) ? null : seconds;
+                }
+            }
+            
+            formatTimeValue(seconds, originalFormat) {
+                if (originalFormat && originalFormat.includes(':')) {
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = seconds % 60;
+                    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+                } else {
+                    return seconds.toString();
+                }
+            }
+        }
+        
+        const mockDayView = new MockDayView();
+        
+        function setupTestData() {
+            // Add some sample Week 1 data
+            testData = {
+                'w1-d1-e0': {
+                    data: {
+                        'set1_weight': '135',
+                        'set1_reps': '5'
+                    },
+                    completed: true
+                },
+                'w1-d1-e1': {
+                    data: {
+                        'target_reps': '8'
+                    },
+                    completed: true
+                },
+                'w1-d1-e2': {
+                    data: {
+                        'hold_time': '45'
+                    },
+                    completed: true
+                }
+            };
+            
+            updateWeekDisplay();
+            
+            const result = document.getElementById('test-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <strong>✅ Test Data Setup Complete!</strong><br>
+                Week 1 data added:<br>
+                • Bench Press: 135 lbs, 5 reps<br>
+                • Pull-ups: 8 reps<br>
+                • Plank Hold: 45 seconds<br><br>
+                Now click on Week 2, 3, 4, etc. to see progressive suggestions!
+            `;
+        }
+        
+        function clearTestData() {
+            testData = {};
+            updateWeekDisplay();
+            
+            const result = document.getElementById('test-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <strong>🗑️ Test Data Cleared!</strong><br>
+                All data removed. Progressive suggestions will no longer appear.
+            `;
+        }
+        
+        function showWeek(week) {
+            currentWeek = week;
+            mockDayView.currentWeek = week;
+            
+            // Update active button
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            updateWeekDisplay();
+        }
+        
+        function updateWeekDisplay() {
+            const weekDisplay = document.getElementById('week-display');
+            const weekLabel = currentWeek === 1 ? `Week ${currentWeek} - Monday (Baseline)` : 
+                                                  `Week ${currentWeek} - Monday (Progressive)`;
+            
+            // Get progressive suggestions for this week
+            const exercises = [
+                { name: 'Bench Press', fields: ['weight', 'reps'], id: 'bench' },
+                { name: 'Pull-ups (EMOM)', fields: ['reps'], id: 'pullups' },
+                { name: 'Plank Hold', fields: ['time'], id: 'plank' }
+            ];
+            
+            let html = `<div class="week-label">${weekLabel}</div>`;
+            
+            exercises.forEach((exercise, index) => {
+                html += `<div class="exercise-demo">
+                    <div class="exercise-name">${exercise.name}</div>`;
+                
+                exercise.fields.forEach(field => {
+                    const inputId = `w${currentWeek}-${exercise.id}-${field}`;
+                    const statusId = `${inputId}-status`;
+                    
+                    let placeholder = field.charAt(0).toUpperCase() + field.slice(1);
+                    let statusText = 'EMPTY';
+                    let statusClass = 'status-empty';
+                    let inputClass = 'exercise-input demo-input';
+                    
+                    // Check if we have suggestions for this week
+                    if (currentWeek > 1) {
+                        const mostRecentData = mockDayView.findMostRecentExerciseData(index);
+                        if (mostRecentData) {
+                            const progressiveValues = mockDayView.calculateProgressiveValues(
+                                mostRecentData.data, 
+                                currentWeek, 
+                                index, 
+                                mostRecentData.sourceWeek
+                            );
+                            
+                            const fieldKey = field === 'weight' ? 'set1_weight' : 
+                                           field === 'reps' ? (exercise.id === 'bench' ? 'set1_reps' : 'target_reps') : 
+                                           'hold_time';
+                            
+                            if (progressiveValues[fieldKey]) {
+                                placeholder = progressiveValues[fieldKey];
+                                statusText = `SUGGESTED (from Week ${mostRecentData.sourceWeek})`;
+                                statusClass = 'status-suggested';
+                                inputClass += ' has-suggestion';
+                            }
+                        }
+                    }
+                    
+                    html += `
+                        <div class="input-demo">
+                            <label>${field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+                            <input type="${field === 'time' ? 'text' : 'number'}" 
+                                   class="${inputClass}" 
+                                   id="${inputId}" 
+                                   placeholder="${placeholder}"
+                                   data-suggested-value="${placeholder !== field.charAt(0).toUpperCase() + field.slice(1) ? placeholder : ''}"
+                                   data-original-placeholder="${field.charAt(0).toUpperCase() + field.slice(1)}">
+                            <span class="status-indicator ${statusClass}" id="${statusId}">${statusText}</span>
+                        </div>`;
+                });
+                
+                html += '</div>';
+            });
+            
+            weekDisplay.innerHTML = html;
+            
+            // Setup double-tap auto-fill for suggested inputs
+            document.querySelectorAll('.has-suggestion').forEach(input => {
+                input.addEventListener('dblclick', (e) => {
+                    const suggestedValue = e.target.getAttribute('data-suggested-value');
+                    if (suggestedValue) {
+                        e.target.value = suggestedValue;
+                        e.target.classList.add('auto-filled');
+                        e.target.classList.remove('has-suggestion');
+                        
+                        // Update status
+                        const statusElement = e.target.parentElement.querySelector('.status-indicator');
+                        statusElement.textContent = 'FILLED';
+                        statusElement.className = 'status-indicator status-filled';
+                        
+                        setTimeout(() => {
+                            e.target.classList.remove('auto-filled');
+                        }, 300);
+                    }
+                });
+            });
+        }
+        
+        // Initialize display
+        updateWeekDisplay();
+    </script>
+</body>
+</html> 

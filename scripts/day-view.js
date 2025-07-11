@@ -1207,7 +1207,7 @@ class DayView {
         
         // Rep inputs: advance after 2+ digits or double-digit number
         if (fieldName.includes('reps')) {
-            return value.length >= 2 && parseInt(value) >= 10;
+            return value.length >= 1 && parseInt(value) >= 10;
         }
         
         // Time/duration: advance after 2+ digits
@@ -1248,19 +1248,16 @@ class DayView {
         const exerciseItem = document.querySelector(`[data-exercise="${exerciseIndex}"]`);
         if (!exerciseItem) return;
         
-        // Get previous week's data for same day/exercise
-        const previousWeekProgress = this.app.getExerciseProgress(
-            this.currentWeek - 1, 
-            this.currentDay, 
-            exerciseIndex
-        );
+        // Find the most recent data from previous weeks
+        const mostRecentData = this.findMostRecentExerciseData(exerciseIndex);
         
-        if (previousWeekProgress && previousWeekProgress.data) {
-            // Calculate progressive values and set as placeholders
+        if (mostRecentData) {
+            // Calculate progressive values based on the most recent data
             const progressiveValues = this.calculateProgressiveValues(
-                previousWeekProgress.data, 
+                mostRecentData.data, 
                 this.currentWeek, 
-                exerciseIndex
+                exerciseIndex,
+                mostRecentData.sourceWeek
             );
             
             Object.keys(progressiveValues).forEach(field => {
@@ -1279,10 +1276,43 @@ class DayView {
         }
     }
 
-    calculateProgressiveValues(previousData, currentWeek, exerciseIndex) {
+    findMostRecentExerciseData(exerciseIndex) {
+        // Search backwards from current week to find the most recent data
+        for (let searchWeek = this.currentWeek - 1; searchWeek >= 1; searchWeek--) {
+            const progress = this.app.getExerciseProgress(
+                searchWeek, 
+                this.currentDay, 
+                exerciseIndex
+            );
+            
+            if (progress && progress.data && Object.keys(progress.data).length > 0) {
+                // Filter out non-numeric data
+                const numericData = {};
+                Object.keys(progress.data).forEach(key => {
+                    if (key !== '_manualComplete' && key !== 'notes' && progress.data[key]) {
+                        numericData[key] = progress.data[key];
+                    }
+                });
+                
+                if (Object.keys(numericData).length > 0) {
+                    return {
+                        data: numericData,
+                        sourceWeek: searchWeek
+                    };
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    calculateProgressiveValues(previousData, currentWeek, exerciseIndex, sourceWeek = null) {
         const progressiveValues = {};
         const exercise = this.app.dataManager.getExercisesForDay(this.currentWeek, this.currentDay)[exerciseIndex];
         const exerciseCategory = exercise?.category || 'general';
+        
+        // Calculate how many weeks to progress (if sourceWeek is provided)
+        const weeksToProgress = sourceWeek ? (currentWeek - sourceWeek) : 1;
         
         // Progressive overload rules based on exercise type and week progression
         Object.keys(previousData).forEach(field => {
@@ -1296,11 +1326,11 @@ class DayView {
             
             // Calculate progression based on field type
             if (field.includes('weight')) {
-                progressiveValue = this.calculateWeightProgression(previousValue, currentWeek, exerciseCategory);
+                progressiveValue = this.calculateWeightProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
             } else if (field.includes('reps')) {
-                progressiveValue = this.calculateRepsProgression(previousValue, currentWeek, exerciseCategory);
+                progressiveValue = this.calculateRepsProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
             } else if (field.includes('time')) {
-                progressiveValue = this.calculateTimeProgression(previousValue, currentWeek, exerciseCategory);
+                progressiveValue = this.calculateTimeProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
             }
             
             progressiveValues[field] = progressiveValue;
@@ -1309,77 +1339,104 @@ class DayView {
         return progressiveValues;
     }
 
-    calculateWeightProgression(previousWeight, currentWeek, exerciseCategory) {
+    calculateWeightProgression(previousWeight, currentWeek, exerciseCategory, weeksToProgress = 1) {
         const weight = parseFloat(previousWeight);
         if (isNaN(weight)) return previousWeight;
         
-        let progressionRate = 0;
+        let totalProgression = 0;
         
-        // Different progression rates based on exercise category and week
-        if (exerciseCategory === 'strength') {
-            // Strength exercises: 2.5-5 lbs per week, tapering as weeks progress
-            if (currentWeek <= 2) {
-                progressionRate = weight >= 100 ? 5 : 2.5; // Heavier weights progress more
-            } else if (currentWeek <= 4) {
-                progressionRate = weight >= 100 ? 2.5 : 2.5;
+        // Calculate progression for each week
+        for (let i = 0; i < weeksToProgress; i++) {
+            const weekNum = currentWeek - weeksToProgress + i + 1;
+            let progressionRate = 0;
+            
+            // Different progression rates based on exercise category and week
+            if (exerciseCategory === 'strength') {
+                // Strength exercises: 2.5-5 lbs per week, tapering as weeks progress
+                if (weekNum <= 2) {
+                    progressionRate = weight >= 100 ? 5 : 2.5; // Heavier weights progress more
+                } else if (weekNum <= 4) {
+                    progressionRate = weight >= 100 ? 2.5 : 2.5;
+                } else {
+                    progressionRate = weight >= 100 ? 2.5 : 2.5; // Maintain progression
+                }
             } else {
-                progressionRate = weight >= 100 ? 2.5 : 2.5; // Maintain progression
+                // Other categories: smaller progression
+                progressionRate = weight >= 50 ? 2.5 : 2.5;
             }
-        } else {
-            // Other categories: smaller progression
-            progressionRate = weight >= 50 ? 2.5 : 2.5;
+            
+            totalProgression += progressionRate;
         }
         
-        const newWeight = weight + progressionRate;
+        const newWeight = weight + totalProgression;
         
         // Round to nearest 2.5 lbs (standard plate increment)
         return Math.round(newWeight / 2.5) * 2.5;
     }
 
-    calculateRepsProgression(previousReps, currentWeek, exerciseCategory) {
+    calculateRepsProgression(previousReps, currentWeek, exerciseCategory, weeksToProgress = 1) {
         const reps = parseInt(previousReps);
         if (isNaN(reps)) return previousReps;
-        
-        let progressionAmount = 0;
         
         // Different progression based on exercise category
         if (exerciseCategory === 'strength') {
             // Strength exercises: maintain reps, focus on weight
             return reps; // No rep progression for strength
-        } else if (exerciseCategory === 'emom' || exerciseCategory === 'amrap') {
-            // EMOM/AMRAP: increase reps by 1-2 per week
-            progressionAmount = currentWeek <= 3 ? 1 : 2;
-        } else if (exerciseCategory === 'bodyweight') {
-            // Bodyweight: increase reps by 1-3 per week
-            progressionAmount = reps < 10 ? 1 : reps < 20 ? 2 : 3;
-        } else {
-            // General: small progression
-            progressionAmount = 1;
         }
         
-        return Math.max(reps + progressionAmount, reps);
+        let totalProgression = 0;
+        
+        // Calculate progression for each week
+        for (let i = 0; i < weeksToProgress; i++) {
+            const weekNum = currentWeek - weeksToProgress + i + 1;
+            let progressionAmount = 0;
+            
+            if (exerciseCategory === 'emom' || exerciseCategory === 'amrap') {
+                // EMOM/AMRAP: increase reps by 1-2 per week
+                progressionAmount = weekNum <= 3 ? 1 : 2;
+            } else if (exerciseCategory === 'bodyweight') {
+                // Bodyweight: increase reps by 1-3 per week
+                const currentReps = reps + totalProgression;
+                progressionAmount = currentReps < 10 ? 1 : currentReps < 20 ? 2 : 3;
+            } else {
+                // General: small progression
+                progressionAmount = 1;
+            }
+            
+            totalProgression += progressionAmount;
+        }
+        
+        return Math.max(reps + totalProgression, reps);
     }
 
-    calculateTimeProgression(previousTime, currentWeek, exerciseCategory) {
+    calculateTimeProgression(previousTime, currentWeek, exerciseCategory, weeksToProgress = 1) {
         // Parse time value (could be "45", "45 seconds", "1:30", etc.)
         const timeValue = this.parseTimeValue(previousTime);
         if (timeValue === null) return previousTime;
         
-        let progressionSeconds = 0;
+        let totalProgressionSeconds = 0;
         
-        // Different progression based on exercise category
-        if (exerciseCategory === 'time' || exerciseCategory === 'flexibility') {
-            // Timed holds: increase by 5-15 seconds per week
-            progressionSeconds = timeValue < 30 ? 5 : timeValue < 60 ? 10 : 15;
-        } else if (exerciseCategory === 'cardio') {
-            // Cardio: increase by 15-30 seconds per week
-            progressionSeconds = timeValue < 120 ? 15 : 30;
-        } else {
-            // General: small progression
-            progressionSeconds = 5;
+        // Calculate progression for each week
+        for (let i = 0; i < weeksToProgress; i++) {
+            const currentTimeValue = timeValue + totalProgressionSeconds;
+            let progressionSeconds = 0;
+            
+            // Different progression based on exercise category
+            if (exerciseCategory === 'time' || exerciseCategory === 'flexibility') {
+                // Timed holds: increase by 5-15 seconds per week
+                progressionSeconds = currentTimeValue < 30 ? 5 : currentTimeValue < 60 ? 10 : 15;
+            } else if (exerciseCategory === 'cardio') {
+                // Cardio: increase by 15-30 seconds per week
+                progressionSeconds = currentTimeValue < 120 ? 15 : 30;
+            } else {
+                // General: small progression
+                progressionSeconds = 5;
+            }
+            
+            totalProgressionSeconds += progressionSeconds;
         }
         
-        const newTimeSeconds = timeValue + progressionSeconds;
+        const newTimeSeconds = timeValue + totalProgressionSeconds;
         
         // Format back to original format
         return this.formatTimeValue(newTimeSeconds, previousTime);
