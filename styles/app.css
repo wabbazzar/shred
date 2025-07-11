@@ -63,6 +63,7 @@ body {
   flex-direction: column;
   overflow-y: visible;
   padding: var(--spacing-md);
+  padding-bottom: calc(80px + var(--spacing-lg)); /* Extra space beyond navigation */
 }
 
 .view.active {
@@ -432,6 +433,7 @@ body {
 /* Week Summary */
 .week-summary {
   margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
   padding: var(--spacing-lg);
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius);
@@ -475,6 +477,7 @@ body {
 .week-actions {
   display: flex;
   gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
 }
 
 .week-action-btn {
@@ -1151,6 +1154,7 @@ input:focus {
   display: flex;
   gap: var(--spacing-md);
   margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
   padding: var(--spacing-md);
 }
 
