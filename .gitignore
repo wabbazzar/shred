@@ -21,4 +21,11 @@ Desktop.ini
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp tests/test_results/
+tests/screenshots/
+*.log
+.DS_Store
+node_modules/
+dist/
+.cache/
+*.csv

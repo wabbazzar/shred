@@ -1,20 +1,40 @@
-Game Template Development Rules:
+Mobile-First PWA Development Rules for 6-Week Engagement Workout App:
 
-1. VISUAL VERIFICATION: Test every feature visually in browser, never trust console logs alone
-2. MOBILE FIRST: Implement touch controls before keyboard/mouse. Test on 320px-428px viewports
-3. PERFORMANCE: Maintain 60 FPS on mobile. Touch response must be <50ms
-4. UNIFIED INPUT: Single methods handle touch/mouse/keyboard (no separate code paths)
-5. GIT WORKFLOW: Commit after each phase, before risks, when tests pass
-6. VISUAL POLISH: Every interaction needs visual feedback. Smooth animations mandatory
-7. PWA FEATURES: Include manifest.json, service worker, offline capability
-8. TOUCH TARGETS: Minimum 44px for all interactive elements
-9. GESTURE SUPPORT: Implement swipe/tap/long-press where appropriate
-10. CACHE BUSTING: Include cache headers in every HTML file
+1. MOBILE FIRST: Design for 320px-428px viewports first. Test on iPhone SE baseline. Desktop is enhancement only.
+2. VISUAL VERIFICATION: Test every feature visually in browser, never trust console logs alone
+3. OFFLINE FIRST: App must work 100% offline. Service worker and local storage are critical.
+4. PERFORMANCE: Maintain 60 FPS on mobile. Touch response must be <50ms. Load time <3s on 3G.
+5. TOUCH TARGETS: Minimum 44px for ALL interactive elements. No exceptions.
+6. DARK THEME: Consistent dark UI with #121212 background, #FF6B00 orange accents, #00C851 green success
+7. PWA FEATURES: Include manifest.json, service worker, offline capability, home screen installation
+8. UNIFIED INPUT: Single methods handle all input types. No separate mobile/desktop code paths.
+9. GIT WORKFLOW: Commit after each phase, before risks, when tests pass
+10. DATA PERSISTENCE: All user data in local storage. CSV export/import for portability.
 
-Template-Specific Rules:
-- This is a template repository - maintain generic structure
-- Keep placeholder content for easy customization
-- Include comprehensive test infrastructure
-- Document all patterns for reuse across projects
-- Maintain mobile-first architecture throughout
-- Ensure all files are template-ready with clear customization points 
+App-Specific Rules:
+- Three-tab navigation (Day/Week/Calendar) with bottom placement for thumb access
+- Collapsible sections remember state between sessions
+- Exercise inputs have NO checkboxes - completion tracked by filled fields
+- Swipe gestures for day/week navigation with 30px threshold
+- Auto-suggestion from previous week's data as placeholders
+- Completion colors: Gray (0%), Orange (1-99%), Green (100%)
+- CSV format preserves complete workout history and structure
+- Dark theme throughout with high contrast for outdoor visibility
+- Program management allows multiple saved workout variations
+- Settings accessible via top-right gear icon
+
+Performance Requirements:
+- 60 FPS during all animations and transitions
+- Instant feedback for all touch interactions
+- Smooth section expand/collapse (300ms ease)
+- Tab transitions complete in 200ms
+- No jank during swipe navigation
+- Lazy load calendar view for performance
+
+Testing Requirements:
+- Test on real devices, not just emulators
+- Verify offline functionality frequently
+- Check touch targets with device inspector
+- Test CSV export/import data integrity
+- Validate all input types and ranges
+- Test on slow 3G network speeds 

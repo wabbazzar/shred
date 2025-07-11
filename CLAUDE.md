@@ -1,50 +1,61 @@
-# Game Template - Claude AI Development Context
+# 6-Week Engagement Workout Tracker - Claude AI Development Context
 
 ## Project Overview
-This is a master template repository for mobile-first game development. It provides a complete foundation for building cross-platform games that work seamlessly on mobile and desktop with PWA capabilities.
+A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
 
 ## Current Development Status
-- **Current Phase**: Template Initialization - Setting up reusable game development template
-- **Last Completed**: Phase -1 initialization with cursor rules and context files
-- **Next Steps**: Complete template structure with test infrastructure and example implementations
-- **Known Issues**: None - fresh template initialization
+- **Current Phase**: Phase -1 - Project initialization and setup
+- **Last Completed**: .cursorrules file created with PWA-specific development principles
+- **Next Steps**: Create Makefile, initialize git, then build project structure
+- **Known Issues**: None - fresh project initialization
 
 ## Project Structure
 ```
-game_template/
-├── index.html          # Main game file template
+six_week_shred/
+├── index.html          # Main PWA entry point
 ├── CLAUDE.md          # This file - AI context
 ├── .cursorrules       # Cursor IDE rules
-├── Makefile           # Build commands
-├── manifest.json      # PWA manifest template
-├── service-worker.js  # Offline support template
+├── Makefile           # Build and test commands
+├── manifest.json      # PWA manifest
+├── service-worker.js  # Offline functionality
 ├── assets/
-│   ├── sprites/       # Game graphics templates
-│   ├── audio/         # Sound effects templates
-│   └── fonts/         # Typography templates
+│   ├── icons/         # PWA icons (192px, 512px)
+│   └── data/          # Workout program data
+│       └── workout_program.json
 ├── styles/
-│   ├── mobile.css     # Mobile-first styles template
-│   └── desktop.css    # Desktop enhancements template
+│   ├── app.css        # Main application styles
+│   ├── mobile.css     # Mobile-specific styles
+│   └── desktop.css    # Desktop enhancements
 ├── scripts/
-│   └── game.js        # Main game logic template
+│   ├── app.js         # Main application logic
+│   ├── navigation.js  # Tab navigation handler
+│   ├── day-view.js    # Day view component
+│   ├── week-view.js   # Week view component
+│   ├── calendar-view.js # Calendar view component
+│   ├── data-manager.js # Local storage & state
+│   ├── csv-handler.js  # Export/import functionality
+│   └── service-worker-register.js
 ├── docs/
-│   └── todo-prompt-generator.md  # Master development guide
+│   ├── todo.md        # Development plan
+│   ├── workout_app_spec.md # App specification
+│   └── engagement_workout_plan.md # 6-week program
 └── tests/
-    ├── mobile_test.html    # Touch testing template
-    ├── visual_test.html    # Cross-platform template
-    ├── touch_test.html     # Gesture testing template
-    ├── render_verify.html  # Rendering verification template
-    ├── debug_render.html   # Performance debugging template
-    └── test_runner.js      # Automated test template
+    ├── mobile_test.html    # Touch interaction testing
+    ├── visual_test.html    # Cross-platform verification
+    ├── touch_test.html     # Gesture testing
+    ├── offline_test.html   # PWA offline testing
+    ├── csv_test.html       # Data export/import testing
+    └── test_runner.js      # Automated test suite
 ```
 
 ## Key Development Principles
-1. **Mobile-First**: Always test on 320px viewport first
-2. **Visual Verification**: Test in browser, not console
-3. **60 FPS Required**: Performance is non-negotiable
-4. **Touch Before Mouse**: Implement touch controls first
-5. **Git Commits**: After each successful phase
-6. **Template Reusability**: Keep all code generic and customizable
+1. **Mobile-First**: Design for 320px-428px viewports, test on iPhone SE
+2. **Offline-First**: 100% functionality without network connection
+3. **Visual Verification**: Test in browser, not console
+4. **Dark Theme**: Consistent UI with high contrast
+5. **Touch Optimized**: 44px minimum touch targets
+6. **60 FPS Required**: Smooth animations and transitions
+7. **Data Persistence**: Local storage with CSV export/import
 
 ## Testing Procedures
 ```bash
@@ -54,73 +65,95 @@ make serve
 # Test mobile experience first
 make mobile-test
 
-# Verify visual elements
-make visual-test
+# Test offline functionality
+make offline-test
 
-# Check performance
-make debug-render
+# Test CSV export/import
+make csv-test
+
+# Check touch interactions
+make touch-test
+
+# Verify all views
+make visual-test
 
 # Test PWA features
 make pwa-test
 ```
 
-## Success Criteria for Template
-- [ ] Complete mobile-first project structure
-- [ ] Comprehensive test infrastructure in tests/ directory
-- [ ] Working PWA manifest and service worker templates
-- [ ] Unified input handling system template
-- [ ] Performance monitoring and debugging tools
-- [ ] Cross-platform compatibility verified
-- [ ] Clear customization points documented
+## Success Criteria for Current Phase
+- [ ] Makefile created with all PWA testing commands
+- [ ] Git repository initialized with proper .gitignore
+- [ ] Project structure created with all directories
+- [ ] Initial test files in place
+- [ ] PWA manifest configured
+- [ ] Service worker registered
 
 ## Common Issues & Solutions
-1. **Touch not working**: Check tests/touch_test.html
-2. **Performance issues**: Run tests/debug_render.html
-3. **Visual glitches**: Use tests/visual_test.html
-4. **PWA not installing**: Verify manifest.json and service-worker.js
+1. **Touch not working**: Check tests/touch_test.html and verify 44px targets
+2. **Data not persisting**: Check local storage in DevTools
+3. **Offline not working**: Verify service worker registration
+4. **CSV issues**: Test with tests/csv_test.html
+5. **Performance problems**: Profile with Chrome DevTools
 
 ## Important Code Patterns
-```javascript
-// Unified input handler template
-class UnifiedInput {
-  constructor(gameInstance) {
-    this.game = gameInstance;
-    this.setupTouch();
-    this.setupKeyboard();
-    this.setupMouse();
-  }
-  
-  handleInput(action, inputType) {
-    // Single method for all input types
-    switch(action) {
-      case 'PRIMARY_ACTION':
-        this.game.handlePrimaryAction();
-        break;
-      // Add more actions as needed
-    }
-  }
-}
 
-// Game state management template
-const GameStates = {
-  LOADING: 'loading',
-  MENU: 'menu',
-  PLAYING: 'playing',
-  PAUSED: 'paused',
-  GAME_OVER: 'game_over',
-  VICTORY: 'victory'
+### Data Structure
+```javascript
+// CSV schema for workout data
+const CSV_COLUMNS = [
+  'program_name', 'week', 'day', 'day_name', 'section',
+  'exercise_name', 'prescribed_sets', 'actual_sets',
+  'prescribed_reps', 'actual_reps', 'prescribed_weight',
+  'actual_weight', 'prescribed_time', 'actual_time',
+  'exercise_type', 'notes'
+];
+
+// Exercise types determine input fields
+const ExerciseTypes = {
+  STRENGTH: 'strength',        // Weight input only
+  EMOM_AMRAP: 'emom_amrap',   // Rep count input
+  TIMED_SINGLE: 'timed_single', // Single time input
+  TIMED_MULTI: 'timed_multi',   // Multiple time inputs
+  BODYWEIGHT_SINGLE: 'bw_single', // Single rep input
+  BODYWEIGHT_MULTI: 'bw_multi'    // Multiple rep inputs
+};
+```
+
+### State Management
+```javascript
+// App state stored in local storage
+const AppState = {
+  currentProgram: '6-Week Engagement Program',
+  currentWeek: 1,
+  currentDay: 1,
+  workoutData: {},
+  sectionStates: {},  // Expanded/collapsed states
+  programList: []     // Saved programs
 };
 
-class GameStateManager {
+// Completion calculation
+function calculateCompletion(exercise) {
+  const filledFields = countFilledFields(exercise);
+  const totalFields = countTotalFields(exercise);
+  return (filledFields / totalFields) * 100;
+}
+```
+
+### Navigation Pattern
+```javascript
+// Tab navigation with swipe support
+class TabNavigator {
   constructor() {
-    this.currentState = GameStates.LOADING;
-    this.previousState = null;
+    this.tabs = ['day', 'week', 'calendar'];
+    this.currentTab = 'day';
+    this.setupSwipeGestures();
   }
   
-  changeState(newState) {
-    this.previousState = this.currentState;
-    this.currentState = newState;
-    this.onStateChange(newState, this.previousState);
+  switchTab(tabName) {
+    // Animate transition
+    // Update active states
+    // Load appropriate view
   }
 }
 ```
@@ -130,44 +163,36 @@ class GameStateManager {
 - Touch response: <50ms latency
 - Load time: <3 seconds on 3G
 - Memory: <100MB usage
-- Battery: 2+ hours continuous play
+- Smooth animations: 200-300ms transitions
 
-## Template Customization Guide
-When using this template for a new game:
+## App-Specific Features
 
-1. **Update CLAUDE.md**: Replace template info with game-specific details
-2. **Customize .cursorrules**: Add game-specific mechanics and visual style
-3. **Modify manifest.json**: Update name, description, icons, colors
-4. **Update index.html**: Replace placeholder content with game UI
-5. **Customize styles**: Adapt mobile.css and desktop.css for game theme
-6. **Implement game logic**: Replace template game.js with actual game mechanics
-7. **Add assets**: Replace placeholder sprites, audio, fonts with game assets
-8. **Update tests**: Customize test files for game-specific features
+### Three Navigation Views
+1. **Day View**: Primary interface with collapsible workout sections
+2. **Week View**: 7-day grid with completion indicators
+3. **Calendar View**: 6-week overview with tap navigation
+
+### Exercise Input Types
+1. **Strength**: Single weight field (e.g., "Bench Press - 4 sets")
+2. **EMOM/AMRAP**: Single rep field (e.g., "Pull-ups x 8-12")
+3. **Timed ≤4 sets**: Individual time fields
+4. **Timed >4 sets**: Single time field
+5. **Bodyweight ≤4 sets**: Individual rep fields
+6. **Bodyweight >4 sets**: Single rep field
+
+### Completion Colors
+- Gray: 0% complete
+- Orange (#FF6B00): 1-99% complete
+- Green (#00C851): 100% complete
+
+## Next Phase Planning
+After Phase -1 completion, Phase 0 will set up the mobile-first project structure with PWA manifest, service worker, and comprehensive test infrastructure.
 
 ## Notes for Claude
-- This is a template repository - maintain generic, reusable structure
-- Always test template features work across different game types
-- Keep customization points clearly documented
-- Update this file when template structure changes
-- Ensure all test files work with placeholder content
-- Maintain mobile-first architecture throughout
-- Template should work immediately after customization
-
-## Template Development Status
-- **Phase -1**: ✅ Cursor rules, CLAUDE.md, Makefile created
-- **Phase 0**: 🔄 Setting up test infrastructure and project structure
-- **Phase 1**: ⏳ Creating template game logic and unified input system
-- **Phase 2**: ⏳ Building PWA features and service worker
-- **Phase 3**: ⏳ Adding visual effects and polish templates
-- **Phase 4**: ⏳ Final testing and documentation
-
-## Template Validation Checklist
-- [ ] Works with arcade/action games (Tetris, Snake, Platformers)
-- [ ] Works with puzzle/strategy games (Card games, Match-3)
-- [ ] Works with educational/quiz games (Flashcards, Trivia)
-- [ ] Mobile touch controls function properly
-- [ ] Desktop keyboard/mouse enhancements work
-- [ ] PWA installation and offline play functional
-- [ ] Performance targets met on target devices
-- [ ] Visual effects and animations smooth
-- [ ] Cross-platform compatibility verified 
+- Always run visual tests before claiming completion
+- Update this file after major phase completions
+- Commit to git after each successful phase
+- Test on mobile viewport (320px) first
+- Verify offline functionality frequently
+- Check CSV export/import data integrity
+- Maintain dark theme consistency throughout 
