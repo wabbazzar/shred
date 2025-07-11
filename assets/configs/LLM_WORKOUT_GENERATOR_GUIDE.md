@@ -307,6 +307,6 @@ All generated JSON should validate against the schemas in `assets/configs/schema
 
 ## Example Complete Program Generation
 
-See the complete example in `assets/configs/programs/six-week-engagement-sessions.json` for a fully implemented program using all data types.
+See the complete example in `assets/configs/programs/six-week-shred-sessions.json` for a fully implemented program using all data types.
 
 This modular system allows infinite customization while maintaining structure and consistency. LLMs can focus on the training logic while the system handles the technical implementation.

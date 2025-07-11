@@ -277,7 +277,7 @@ class DataManager {
             const exercises = await this.loadWorkoutDataFromCSV('assets/workouts/default.csv');
             
             return {
-                id: 'six-week-engagement',
+                id: 'six-week-shred',
                 name: '6-Week Engagement Program',
                 description: 'Complete workout program for engagement photo preparation',
                 version: '1.0.0',
@@ -296,7 +296,7 @@ class DataManager {
             console.error('❌ Failed to load default CSV, falling back to generated data:', error);
             // Fallback to generated data if CSV fails
             return {
-                id: 'six-week-engagement',
+                id: 'six-week-shred',
                 name: '6-Week Engagement Program',
                 description: 'Complete workout program for engagement photo preparation',
                 version: '1.0.0',
@@ -667,7 +667,7 @@ class DataManager {
 
     getDefaultSettings() {
         return {
-            currentProgram: 'six-week-engagement',
+            currentProgram: 'six-week-shred',
             startDate: this.getTodayString(), // Default to today, user can change
             units: 'imperial', // or 'metric'
             darkMode: true,

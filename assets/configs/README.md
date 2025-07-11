@@ -31,7 +31,7 @@ assets/configs/
 │   ├── exercise-library.json
 │   └── section-definitions.json
 ├── programs/                   # Complete workout programs
-│   └── six-week-engagement-sessions.json
+│   └── six-week-shred-sessions.json
 └── LLM_WORKOUT_GENERATOR_GUIDE.md
 ```
 
