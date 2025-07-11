@@ -1558,6 +1558,69 @@ input:focus {
   font-style: italic;
 }
 
+/* Progressive Auto-Fill Suggestions */
+.exercise-input[data-suggested-value]::placeholder {
+  color: var(--accent-orange);
+  font-style: normal;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.exercise-input[data-suggested-value] {
+  border-color: var(--accent-orange);
+  border-width: 1px;
+  border-style: dashed;
+  position: relative;
+}
+
+.exercise-input[data-suggested-value]:focus {
+  border-style: solid;
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2);
+}
+
+/* Visual hint for double-tap to auto-fill */
+.exercise-input[data-suggested-value]:hover::before {
+  content: "Double-tap to auto-fill";
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  animation: fadeInTooltip 0.2s ease-in-out 0.5s forwards;
+}
+
+@keyframes fadeInTooltip {
+  from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Auto-fill success animation */
+.exercise-input.auto-filled {
+  animation: autoFillSuccess 0.3s ease-in-out;
+}
+
+@keyframes autoFillSuccess {
+  0% { 
+    background-color: var(--accent-green); 
+    color: var(--bg-primary);
+    transform: scale(1.02);
+  }
+  100% { 
+    background-color: var(--bg-tertiary); 
+    color: var(--text-primary);
+    transform: scale(1);
+  }
+}
+
 .input-unit {
   color: var(--text-secondary);
   font-size: 0.8rem;

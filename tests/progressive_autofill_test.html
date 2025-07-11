@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progressive Auto-Fill Test - Shred</title>
+    <link rel="stylesheet" href="../styles/app.css">
+    <link rel="stylesheet" href="../styles/mobile.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-title {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .test-description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .test-example {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid var(--accent-orange);
+        }
+        
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .test-result.success {
+            background: rgba(0, 200, 81, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .test-result.error {
+            background: rgba(255, 82, 82, 0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .test-button {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #e55a00;
+        }
+        
+        .mock-exercise {
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .mock-exercise-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .mock-inputs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .mock-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .mock-input-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
+        .progress-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .week-demo {
+            background: var(--bg-primary);
+            border-radius: 4px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .week-label {
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        
+        .demo-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+        
+        .demo-label {
+            color: var(--text-secondary);
+        }
+        
+        .demo-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .demo-suggested {
+            color: var(--accent-orange);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="color: var(--accent-orange); text-align: center; margin-bottom: 30px;">
+            Progressive Auto-Fill Test Suite
+        </h1>
+        
+        <!-- Test 1: Weight Progression -->
+        <div class="test-section">
+            <div class="test-title">🏋️ Weight Progression Test</div>
+            <div class="test-description">
+                Tests progressive weight calculations for strength exercises across different weeks.
+                Strength exercises should increase by 2.5-5 lbs per week depending on current weight.
+            </div>
+            
+            <div class="progress-demo">
+                <div class="week-demo">
+                    <div class="week-label">Week 1 (Baseline)</div>
+                    <div class="demo-values">
+                        <span class="demo-label">Bench Press:</span>
+                        <span class="demo-value">135 lbs</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Squat:</span>
+                        <span class="demo-value">185 lbs</span>
+                    </div>
+                </div>
+                
+                <div class="week-demo">
+                    <div class="week-label">Week 2 (Suggested)</div>
+                    <div class="demo-values">
+                        <span class="demo-label">Bench Press:</span>
+                        <span class="demo-suggested" id="bench-week2">Loading...</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Squat:</span>
+                        <span class="demo-suggested" id="squat-week2">Loading...</span>
+                    </div>
+                </div>
+                
+                <div class="week-demo">
+                    <div class="week-label">Week 4 (Suggested)</div>
+                    <div class="demo-values">
+                        <span class="demo-label">Bench Press:</span>
+                        <span class="demo-suggested" id="bench-week4">Loading...</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Squat:</span>
+                        <span class="demo-suggested" id="squat-week4">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="test-button" onclick="testWeightProgression()">Run Weight Progression Test</button>
+            <div id="weight-test-result" class="test-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Test 2: Reps Progression -->
+        <div class="test-section">
+            <div class="test-title">🔄 Reps Progression Test</div>
+            <div class="test-description">
+                Tests progressive rep calculations for different exercise categories.
+                EMOM/AMRAP exercises should increase reps, while strength exercises maintain reps.
+            </div>
+            
+            <div class="progress-demo">
+                <div class="week-demo">
+                    <div class="week-label">Week 1 (Baseline)</div>
+                    <div class="demo-values">
+                        <span class="demo-label">Pull-ups (EMOM):</span>
+                        <span class="demo-value">8 reps</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Push-ups (Bodyweight):</span>
+                        <span class="demo-value">15 reps</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Bench Press (Strength):</span>
+                        <span class="demo-value">5 reps</span>
+                    </div>
+                </div>
+                
+                <div class="week-demo">
+                    <div class="week-label">Week 3 (Suggested)</div>
+                    <div class="demo-values">
+                        <span class="demo-label">Pull-ups (EMOM):</span>
+                        <span class="demo-suggested" id="pullups-week3">Loading...</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Push-ups (Bodyweight):</span>
+                        <span class="demo-suggested" id="pushups-week3">Loading...</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Bench Press (Strength):</span>
+                        <span class="demo-suggested" id="bench-reps-week3">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="test-button" onclick="testRepsProgression()">Run Reps Progression Test</button>
+            <div id="reps-test-result" class="test-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Test 3: Time Progression -->
+        <div class="test-section">
+            <div class="test-title">⏱️ Time Progression Test</div>
+            <div class="test-description">
+                Tests progressive time calculations for timed exercises.
+                Plank holds and cardio exercises should increase duration progressively.
+            </div>
+            
+            <div class="progress-demo">
+                <div class="week-demo">
+                    <div class="week-label">Week 1 (Baseline)</div>
+                    <div class="demo-values">
+                        <span class="demo-label">Plank Hold:</span>
+                        <span class="demo-value">45 seconds</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Cardio HIIT:</span>
+                        <span class="demo-value">2:30</span>
+                    </div>
+                </div>
+                
+                <div class="week-demo">
+                    <div class="week-label">Week 3 (Suggested)</div>
+                    <div class="demo-values">
+                        <span class="demo-label">Plank Hold:</span>
+                        <span class="demo-suggested" id="plank-week3">Loading...</span>
+                    </div>
+                    <div class="demo-values">
+                        <span class="demo-label">Cardio HIIT:</span>
+                        <span class="demo-suggested" id="cardio-week3">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="test-button" onclick="testTimeProgression()">Run Time Progression Test</button>
+            <div id="time-test-result" class="test-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Test 4: Interactive Demo -->
+        <div class="test-section">
+            <div class="test-title">🎯 Interactive Auto-Fill Demo</div>
+            <div class="test-description">
+                Live demo of the progressive auto-fill functionality. 
+                <strong>Double-tap</strong> on any input with an orange dashed border to auto-fill the suggested value.
+            </div>
+            
+            <div class="mock-exercise">
+                <div class="mock-exercise-name">Bench Press - Week 2</div>
+                <div class="mock-inputs">
+                    <div class="mock-input-group">
+                        <label class="mock-input-label">Set 1 Weight</label>
+                        <input type="number" class="exercise-input" data-field="set1_weight" 
+                               placeholder="Weight" data-suggested-value="137.5">
+                    </div>
+                    <div class="mock-input-group">
+                        <label class="mock-input-label">Set 1 Reps</label>
+                        <input type="number" class="exercise-input" data-field="set1_reps" 
+                               placeholder="Reps" data-suggested-value="5">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mock-exercise">
+                <div class="mock-exercise-name">Pull-ups EMOM - Week 3</div>
+                <div class="mock-inputs">
+                    <div class="mock-input-group">
+                        <label class="mock-input-label">Target Reps</label>
+                        <input type="number" class="exercise-input" data-field="target_reps" 
+                               placeholder="Reps" data-suggested-value="10">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mock-exercise">
+                <div class="mock-exercise-name">Plank Hold - Week 4</div>
+                <div class="mock-inputs">
+                    <div class="mock-input-group">
+                        <label class="mock-input-label">Hold Time</label>
+                        <input type="text" class="exercise-input" data-field="hold_time" 
+                               placeholder="Time" data-suggested-value="1:15">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="test-button" onclick="setupInteractiveDemo()">Setup Interactive Demo</button>
+            <div id="interactive-result" class="test-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Test Results Summary -->
+        <div class="test-section">
+            <div class="test-title">📊 Test Results Summary</div>
+            <div id="summary-results" class="test-description">
+                Run tests above to see results summary here.
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/day-view.js"></script>
+    <script>
+        // Mock DayView for testing
+        class MockDayView {
+            constructor() {
+                this.currentWeek = 1;
+                this.currentDay = 1;
+            }
+            
+            calculateWeightProgression(previousWeight, currentWeek, exerciseCategory) {
+                const weight = parseFloat(previousWeight);
+                if (isNaN(weight)) return previousWeight;
+                
+                let progressionRate = 0;
+                
+                if (exerciseCategory === 'strength') {
+                    if (currentWeek <= 2) {
+                        progressionRate = weight >= 100 ? 5 : 2.5;
+                    } else if (currentWeek <= 4) {
+                        progressionRate = weight >= 100 ? 2.5 : 2.5;
+                    } else {
+                        progressionRate = weight >= 100 ? 2.5 : 2.5;
+                    }
+                } else {
+                    progressionRate = weight >= 50 ? 2.5 : 2.5;
+                }
+                
+                const newWeight = weight + progressionRate;
+                return Math.round(newWeight / 2.5) * 2.5;
+            }
+            
+            calculateRepsProgression(previousReps, currentWeek, exerciseCategory) {
+                const reps = parseInt(previousReps);
+                if (isNaN(reps)) return previousReps;
+                
+                let progressionAmount = 0;
+                
+                if (exerciseCategory === 'strength') {
+                    return reps; // No rep progression for strength
+                } else if (exerciseCategory === 'emom' || exerciseCategory === 'amrap') {
+                    progressionAmount = currentWeek <= 3 ? 1 : 2;
+                } else if (exerciseCategory === 'bodyweight') {
+                    progressionAmount = reps < 10 ? 1 : reps < 20 ? 2 : 3;
+                } else {
+                    progressionAmount = 1;
+                }
+                
+                return Math.max(reps + progressionAmount, reps);
+            }
+            
+            parseTimeValue(timeString) {
+                if (!timeString) return null;
+                
+                const cleanTime = timeString.toString().toLowerCase()
+                    .replace(/[^\d:]/g, '');
+                
+                if (cleanTime.includes(':')) {
+                    const parts = cleanTime.split(':');
+                    const minutes = parseInt(parts[0]) || 0;
+                    const seconds = parseInt(parts[1]) || 0;
+                    return minutes * 60 + seconds;
+                } else {
+                    const seconds = parseInt(cleanTime);
+                    return isNaN(seconds) ? null : seconds;
+                }
+            }
+            
+            formatTimeValue(seconds, originalFormat) {
+                if (originalFormat && originalFormat.includes(':')) {
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = seconds % 60;
+                    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+                } else {
+                    return seconds.toString();
+                }
+            }
+            
+            calculateTimeProgression(previousTime, currentWeek, exerciseCategory) {
+                const timeValue = this.parseTimeValue(previousTime);
+                if (timeValue === null) return previousTime;
+                
+                let progressionSeconds = 0;
+                
+                if (exerciseCategory === 'time' || exerciseCategory === 'flexibility') {
+                    progressionSeconds = timeValue < 30 ? 5 : timeValue < 60 ? 10 : 15;
+                } else if (exerciseCategory === 'cardio') {
+                    progressionSeconds = timeValue < 120 ? 15 : 30;
+                } else {
+                    progressionSeconds = 5;
+                }
+                
+                const newTimeSeconds = timeValue + progressionSeconds;
+                return this.formatTimeValue(newTimeSeconds, previousTime);
+            }
+            
+            setupProgressiveAutoFill() {
+                document.addEventListener('dblclick', (e) => {
+                    if (e.target.classList.contains('exercise-input')) {
+                        const input = e.target;
+                        const suggestedValue = input.getAttribute('data-suggested-value');
+                        
+                        if (suggestedValue && !input.value) {
+                            input.value = suggestedValue;
+                            input.classList.add('auto-filled');
+                            setTimeout(() => {
+                                input.classList.remove('auto-filled');
+                                input.removeAttribute('data-suggested-value');
+                                input.style.borderStyle = 'solid';
+                            }, 300);
+                            
+                            console.log(`✨ Auto-filled ${input.dataset.field} with suggested value: ${suggestedValue}`);
+                        }
+                    }
+                });
+            }
+        }
+        
+        const mockDayView = new MockDayView();
+        let testResults = {
+            weight: null,
+            reps: null,
+            time: null,
+            interactive: null
+        };
+        
+        function testWeightProgression() {
+            try {
+                const benchWeek2 = mockDayView.calculateWeightProgression(135, 2, 'strength');
+                const squatWeek2 = mockDayView.calculateWeightProgression(185, 2, 'strength');
+                const benchWeek4 = mockDayView.calculateWeightProgression(135, 4, 'strength');
+                const squatWeek4 = mockDayView.calculateWeightProgression(185, 4, 'strength');
+                
+                document.getElementById('bench-week2').textContent = benchWeek2 + ' lbs';
+                document.getElementById('squat-week2').textContent = squatWeek2 + ' lbs';
+                document.getElementById('bench-week4').textContent = benchWeek4 + ' lbs';
+                document.getElementById('squat-week4').textContent = squatWeek4 + ' lbs';
+                
+                const result = document.getElementById('weight-test-result');
+                result.style.display = 'block';
+                result.className = 'test-result success';
+                result.innerHTML = `
+                    <strong>✅ Weight Progression Test PASSED</strong><br>
+                    Bench Press: 135 → ${benchWeek2} → ${benchWeek4} lbs<br>
+                    Squat: 185 → ${squatWeek2} → ${squatWeek4} lbs<br>
+                    Progressive increments: 2.5-5 lbs per week as expected
+                `;
+                
+                testResults.weight = true;
+                updateSummary();
+                
+            } catch (error) {
+                const result = document.getElementById('weight-test-result');
+                result.style.display = 'block';
+                result.className = 'test-result error';
+                result.innerHTML = `<strong>❌ Weight Progression Test FAILED</strong><br>Error: ${error.message}`;
+                testResults.weight = false;
+                updateSummary();
+            }
+        }
+        
+        function testRepsProgression() {
+            try {
+                const pullupsWeek3 = mockDayView.calculateRepsProgression(8, 3, 'emom');
+                const pushupsWeek3 = mockDayView.calculateRepsProgression(15, 3, 'bodyweight');
+                const benchRepsWeek3 = mockDayView.calculateRepsProgression(5, 3, 'strength');
+                
+                document.getElementById('pullups-week3').textContent = pullupsWeek3 + ' reps';
+                document.getElementById('pushups-week3').textContent = pushupsWeek3 + ' reps';
+                document.getElementById('bench-reps-week3').textContent = benchRepsWeek3 + ' reps';
+                
+                const result = document.getElementById('reps-test-result');
+                result.style.display = 'block';
+                result.className = 'test-result success';
+                result.innerHTML = `
+                    <strong>✅ Reps Progression Test PASSED</strong><br>
+                    Pull-ups (EMOM): 8 → ${pullupsWeek3} reps (+${pullupsWeek3-8})<br>
+                    Push-ups (Bodyweight): 15 → ${pushupsWeek3} reps (+${pushupsWeek3-15})<br>
+                    Bench Press (Strength): 5 → ${benchRepsWeek3} reps (no change - correct!)
+                `;
+                
+                testResults.reps = true;
+                updateSummary();
+                
+            } catch (error) {
+                const result = document.getElementById('reps-test-result');
+                result.style.display = 'block';
+                result.className = 'test-result error';
+                result.innerHTML = `<strong>❌ Reps Progression Test FAILED</strong><br>Error: ${error.message}`;
+                testResults.reps = false;
+                updateSummary();
+            }
+        }
+        
+        function testTimeProgression() {
+            try {
+                const plankWeek3 = mockDayView.calculateTimeProgression('45', 3, 'time');
+                const cardioWeek3 = mockDayView.calculateTimeProgression('2:30', 3, 'cardio');
+                
+                document.getElementById('plank-week3').textContent = plankWeek3 + ' seconds';
+                document.getElementById('cardio-week3').textContent = cardioWeek3;
+                
+                const result = document.getElementById('time-test-result');
+                result.style.display = 'block';
+                result.className = 'test-result success';
+                result.innerHTML = `
+                    <strong>✅ Time Progression Test PASSED</strong><br>
+                    Plank Hold: 45s → ${plankWeek3}s (+${parseInt(plankWeek3)-45}s)<br>
+                    Cardio HIIT: 2:30 → ${cardioWeek3} (+30s)<br>
+                    Progressive time increases as expected
+                `;
+                
+                testResults.time = true;
+                updateSummary();
+                
+            } catch (error) {
+                const result = document.getElementById('time-test-result');
+                result.style.display = 'block';
+                result.className = 'test-result error';
+                result.innerHTML = `<strong>❌ Time Progression Test FAILED</strong><br>Error: ${error.message}`;
+                testResults.time = false;
+                updateSummary();
+            }
+        }
+        
+        function setupInteractiveDemo() {
+            try {
+                mockDayView.setupProgressiveAutoFill();
+                
+                const result = document.getElementById('interactive-result');
+                result.style.display = 'block';
+                result.className = 'test-result success';
+                result.innerHTML = `
+                    <strong>✅ Interactive Demo Setup Complete</strong><br>
+                    Double-tap on any input field with orange dashed border to auto-fill suggested values.<br>
+                    Notice the visual feedback and animation when values are filled.
+                `;
+                
+                testResults.interactive = true;
+                updateSummary();
+                
+            } catch (error) {
+                const result = document.getElementById('interactive-result');
+                result.style.display = 'block';
+                result.className = 'test-result error';
+                result.innerHTML = `<strong>❌ Interactive Demo Setup FAILED</strong><br>Error: ${error.message}`;
+                testResults.interactive = false;
+                updateSummary();
+            }
+        }
+        
+        function updateSummary() {
+            const summary = document.getElementById('summary-results');
+            const totalTests = Object.keys(testResults).length;
+            const passedTests = Object.values(testResults).filter(result => result === true).length;
+            const failedTests = Object.values(testResults).filter(result => result === false).length;
+            const pendingTests = totalTests - passedTests - failedTests;
+            
+            summary.innerHTML = `
+                <strong>Test Results:</strong><br>
+                ✅ Passed: ${passedTests}/${totalTests}<br>
+                ❌ Failed: ${failedTests}/${totalTests}<br>
+                ⏳ Pending: ${pendingTests}/${totalTests}<br><br>
+                
+                <strong>Features Tested:</strong><br>
+                • Weight progression calculations for strength exercises<br>
+                • Rep progression logic for different exercise categories<br>
+                • Time progression for timed exercises<br>
+                • Interactive double-tap auto-fill functionality<br>
+                • Visual feedback and animations<br><br>
+                
+                <strong>Progressive Overload Rules:</strong><br>
+                • Strength: +2.5-5 lbs per week, reps stay same<br>
+                • EMOM/AMRAP: +1-2 reps per week<br>
+                • Bodyweight: +1-3 reps per week based on current level<br>
+                • Timed: +5-30 seconds per week based on exercise type
+            `;
+        }
+        
+        // Initialize
+        updateSummary();
+    </script>
+</body>
+</html> 

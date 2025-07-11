@@ -694,6 +694,7 @@ class DayView {
         this.setupExerciseInputs();
         this.setupExerciseChecks();
         this.setupDayActions();
+        this.setupProgressiveAutoFill();
     }
 
     setupSectionToggles() {
@@ -1244,14 +1245,189 @@ class DayView {
         );
         
         if (previousWeekProgress && previousWeekProgress.data) {
-            // Set as placeholder values
-            Object.keys(previousWeekProgress.data).forEach(field => {
+            // Calculate progressive values and set as placeholders
+            const progressiveValues = this.calculateProgressiveValues(
+                previousWeekProgress.data, 
+                this.currentWeek, 
+                exerciseIndex
+            );
+            
+            Object.keys(progressiveValues).forEach(field => {
                 const input = exerciseItem.querySelector(`[data-field="${field}"]`);
                 if (input && !input.value) {
-                    input.placeholder = `${input.placeholder} (${previousWeekProgress.data[field]})`;
+                    const originalPlaceholder = input.getAttribute('data-original-placeholder') || input.placeholder;
+                    if (!input.getAttribute('data-original-placeholder')) {
+                        input.setAttribute('data-original-placeholder', originalPlaceholder);
+                    }
+                    input.placeholder = `${progressiveValues[field]} (suggested)`;
+                    input.setAttribute('data-suggested-value', progressiveValues[field]);
                 }
             });
         }
+    }
+
+    calculateProgressiveValues(previousData, currentWeek, exerciseIndex) {
+        const progressiveValues = {};
+        const exercise = this.app.dataManager.getExercisesForDay(this.currentWeek, this.currentDay)[exerciseIndex];
+        const exerciseCategory = exercise?.category || 'general';
+        
+        // Progressive overload rules based on exercise type and week progression
+        Object.keys(previousData).forEach(field => {
+            const previousValue = previousData[field];
+            let progressiveValue = previousValue;
+            
+            // Skip non-numeric fields
+            if (field === '_manualComplete' || field === 'notes') {
+                return;
+            }
+            
+            // Calculate progression based on field type
+            if (field.includes('weight')) {
+                progressiveValue = this.calculateWeightProgression(previousValue, currentWeek, exerciseCategory);
+            } else if (field.includes('reps')) {
+                progressiveValue = this.calculateRepsProgression(previousValue, currentWeek, exerciseCategory);
+            } else if (field.includes('time')) {
+                progressiveValue = this.calculateTimeProgression(previousValue, currentWeek, exerciseCategory);
+            }
+            
+            progressiveValues[field] = progressiveValue;
+        });
+        
+        return progressiveValues;
+    }
+
+    calculateWeightProgression(previousWeight, currentWeek, exerciseCategory) {
+        const weight = parseFloat(previousWeight);
+        if (isNaN(weight)) return previousWeight;
+        
+        let progressionRate = 0;
+        
+        // Different progression rates based on exercise category and week
+        if (exerciseCategory === 'strength') {
+            // Strength exercises: 2.5-5 lbs per week, tapering as weeks progress
+            if (currentWeek <= 2) {
+                progressionRate = weight >= 100 ? 5 : 2.5; // Heavier weights progress more
+            } else if (currentWeek <= 4) {
+                progressionRate = weight >= 100 ? 2.5 : 2.5;
+            } else {
+                progressionRate = weight >= 100 ? 2.5 : 2.5; // Maintain progression
+            }
+        } else {
+            // Other categories: smaller progression
+            progressionRate = weight >= 50 ? 2.5 : 2.5;
+        }
+        
+        const newWeight = weight + progressionRate;
+        
+        // Round to nearest 2.5 lbs (standard plate increment)
+        return Math.round(newWeight / 2.5) * 2.5;
+    }
+
+    calculateRepsProgression(previousReps, currentWeek, exerciseCategory) {
+        const reps = parseInt(previousReps);
+        if (isNaN(reps)) return previousReps;
+        
+        let progressionAmount = 0;
+        
+        // Different progression based on exercise category
+        if (exerciseCategory === 'strength') {
+            // Strength exercises: maintain reps, focus on weight
+            return reps; // No rep progression for strength
+        } else if (exerciseCategory === 'emom' || exerciseCategory === 'amrap') {
+            // EMOM/AMRAP: increase reps by 1-2 per week
+            progressionAmount = currentWeek <= 3 ? 1 : 2;
+        } else if (exerciseCategory === 'bodyweight') {
+            // Bodyweight: increase reps by 1-3 per week
+            progressionAmount = reps < 10 ? 1 : reps < 20 ? 2 : 3;
+        } else {
+            // General: small progression
+            progressionAmount = 1;
+        }
+        
+        return Math.max(reps + progressionAmount, reps);
+    }
+
+    calculateTimeProgression(previousTime, currentWeek, exerciseCategory) {
+        // Parse time value (could be "45", "45 seconds", "1:30", etc.)
+        const timeValue = this.parseTimeValue(previousTime);
+        if (timeValue === null) return previousTime;
+        
+        let progressionSeconds = 0;
+        
+        // Different progression based on exercise category
+        if (exerciseCategory === 'time' || exerciseCategory === 'flexibility') {
+            // Timed holds: increase by 5-15 seconds per week
+            progressionSeconds = timeValue < 30 ? 5 : timeValue < 60 ? 10 : 15;
+        } else if (exerciseCategory === 'cardio') {
+            // Cardio: increase by 15-30 seconds per week
+            progressionSeconds = timeValue < 120 ? 15 : 30;
+        } else {
+            // General: small progression
+            progressionSeconds = 5;
+        }
+        
+        const newTimeSeconds = timeValue + progressionSeconds;
+        
+        // Format back to original format
+        return this.formatTimeValue(newTimeSeconds, previousTime);
+    }
+
+    parseTimeValue(timeString) {
+        if (!timeString) return null;
+        
+        // Remove units and convert to seconds
+        const cleanTime = timeString.toString().toLowerCase()
+            .replace(/[^\d:]/g, ''); // Remove non-digit, non-colon characters
+        
+        if (cleanTime.includes(':')) {
+            // Format like "1:30" (minutes:seconds)
+            const parts = cleanTime.split(':');
+            const minutes = parseInt(parts[0]) || 0;
+            const seconds = parseInt(parts[1]) || 0;
+            return minutes * 60 + seconds;
+        } else {
+            // Simple number (assume seconds)
+            const seconds = parseInt(cleanTime);
+            return isNaN(seconds) ? null : seconds;
+        }
+    }
+
+    formatTimeValue(seconds, originalFormat) {
+        if (originalFormat && originalFormat.includes(':')) {
+            // Return in MM:SS format
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        } else {
+            // Return as simple seconds
+            return seconds.toString();
+        }
+    }
+
+    // Enhanced auto-fill functionality - fill suggested values on double-tap
+    setupProgressiveAutoFill() {
+        document.addEventListener('dblclick', (e) => {
+            if (e.target.classList.contains('exercise-input')) {
+                const input = e.target;
+                const suggestedValue = input.getAttribute('data-suggested-value');
+                
+                if (suggestedValue && !input.value) {
+                    input.value = suggestedValue;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    
+                    // Visual feedback with CSS animation
+                    input.classList.add('auto-filled');
+                    setTimeout(() => {
+                        input.classList.remove('auto-filled');
+                        // Remove suggestion styling after use
+                        input.removeAttribute('data-suggested-value');
+                        input.style.borderStyle = 'solid';
+                    }, 300);
+                    
+                    console.log(`✨ Auto-filled ${input.dataset.field} with suggested value: ${suggestedValue}`);
+                }
+            }
+        });
     }
 }
 
