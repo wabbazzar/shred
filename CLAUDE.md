@@ -22,11 +22,11 @@
 A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
 
 ## Current Development Status
-- **Current Phase**: Phase 0.3 - PWA Foundation Setup
-- **Last Completed**: Phase 0.2 - Comprehensive Visual Test Harness Suite (COMPLETE)
-- **Last Known Good Commit**: `7a8b28c` - Complete Phase 0.2: Visual Test Harness Suite
-- **Next Steps**: Implement PWA manifest.json with workout app metadata and service worker setup
-- **Known Issues**: None - test infrastructure complete and ready for PWA foundation
+- **Current Phase**: Phase 5: Settings & Program Management
+- **Last Completed**: Phase 4 - Calendar View Implementation (COMPLETE)
+- **Last Known Good Commit**: `fa5c646` - Update CLAUDE.md: Phase 0.2 complete, ready for Phase 0.3 PWA Foundation
+- **Next Steps**: Implement Settings Screen UI with slide-in modal and program management features
+- **Known Issues**: None - core app functionality complete, ready for settings implementation
 
 ## Project Structure
 ```
@@ -101,13 +101,14 @@ make visual-test
 make pwa-test
 ```
 
-## Success Criteria for Current Phase (0.3 - PWA Foundation Setup)
-- [ ] Create manifest.json with workout app metadata and PWA requirements
-- [ ] Implement basic service worker with offline strategy for critical resources
-- [ ] Set up service worker registration in main app
-- [ ] Test PWA installation on mobile device
-- [ ] Verify offline functionality with test harness (tests/offline_test.html)
-- [ ] Ensure all test files pass validation in browser testing
+## Success Criteria for Current Phase (5.1 - Settings Screen UI)
+- [ ] Create slide-in modal or overlay for settings access
+- [ ] Design with consistent dark theme (#121212 background, #FF6B00 accents)
+- [ ] Organize into logical sections: Program Management, Data Export/Import, App Settings
+- [ ] Add close button/gesture with smooth animations (300ms ease)
+- [ ] Implement smooth slide-in/slide-out animations
+- [ ] Test on various devices and screen sizes (320px minimum)
+- [ ] Ensure 44px minimum touch targets for all interactive elements
 
 ## Common Issues & Solutions
 1. **Touch not working**: Check tests/touch_test.html and verify 44px targets
