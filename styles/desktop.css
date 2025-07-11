@@ -97,38 +97,48 @@
     box-shadow: 0 2px 8px var(--shadow-color);
   }
 
-  /* Desktop Tab Navigation - Side Panel */
+  /* Desktop Tab Navigation - Keep at bottom but centered */
   .tab-navigation {
     position: fixed;
-    top: 50%;
-    left: var(--spacing-md);
-    transform: translateY(-50%);
-    flex-direction: column;
+    bottom: 0;
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    flex-direction: row;
     width: auto;
+    max-width: 600px;
     height: auto;
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-sm);
-    box-shadow: 0 4px 12px var(--shadow-color);
+    border-bottom: none;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    padding: var(--spacing-md);
+    box-shadow: 0 -4px 12px var(--shadow-color);
   }
 
   .tab-btn {
-    width: 60px;
+    width: 80px;
     height: 60px;
     padding: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+    margin: 0 var(--spacing-xs);
     border-radius: var(--border-radius);
     transition: all var(--transition-speed);
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .tab-btn:first-child {
+    margin-left: 0;
   }
 
   .tab-btn:last-child {
-    margin-bottom: 0;
+    margin-right: 0;
   }
 
   .tab-btn:hover {
-    transform: translateX(4px);
-    box-shadow: 2px 0 8px var(--shadow-color);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px var(--shadow-color);
   }
 
   .tab-btn span {

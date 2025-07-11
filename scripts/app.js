@@ -82,7 +82,7 @@ class WorkoutApp {
 
     // Settings button setup (navigation handles tabs)
     setupSettingsButton() {
-        const settingsBtn = document.querySelector('.settings-btn');
+        const settingsBtn = document.getElementById('settings-btn');
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => {
                 this.showSettings();
