@@ -719,10 +719,18 @@ class DayView {
             // Auto-advance for number inputs (like credit card forms)
             if (input.type === 'number') {
                 input.addEventListener('keydown', (e) => {
-                    // Move to next input on Enter or Tab
+                    // Move to next input on Enter
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         this.focusNextInput(input);
+                    }
+                    
+                    // Accept suggestion on Tab if present
+                    if (e.key === 'Tab' && input.dataset.suggestedValue && !input.value) {
+                        e.preventDefault();
+                        this.acceptSuggestion(input);
+                        // Move to next input after accepting
+                        setTimeout(() => this.focusNextInput(input), 100);
                     }
                 });
 

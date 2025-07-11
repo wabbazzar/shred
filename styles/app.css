@@ -1581,7 +1581,7 @@ input:focus {
 
 /* Visual hint for double-tap to auto-fill */
 .exercise-input.has-suggestion:hover::before {
-  content: "Double-tap to auto-fill";
+  content: "Tab or double-tap to auto-fill";
   position: absolute;
   top: -30px;
   left: 50%;
