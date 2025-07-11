@@ -51,16 +51,17 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   padding-bottom: 80px; /* Space for tab navigation */
   padding-top: var(--spacing-md); /* Add some top padding since no header */
+  min-height: calc(100vh - 80px); /* Ensure full height minus nav */
 }
 
 .view {
   flex: 1;
   display: none;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: visible;
   padding: var(--spacing-md);
 }
 
@@ -111,8 +112,8 @@ body {
 /* Week View */
 .week-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-md);
   background-color: var(--bg-secondary);
@@ -120,19 +121,11 @@ body {
   box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-.week-nav-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  flex: 1;
-}
-
-.week-info {
+.week-title-section {
   text-align: center;
-  flex: 1;
 }
 
-.week-info h2 {
+.week-title-section h2 {
   color: var(--text-primary);
   font-size: 1.5rem;
   font-weight: 600;
@@ -141,18 +134,28 @@ body {
 
 .week-subtitle {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  margin-bottom: var(--spacing-xs);
+}
+
+.week-nav-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: nowrap;
 }
 
 .week-indicator {
-  display: flex;
+  display: inline-flex !important;
+  flex-direction: row !important;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-xs);
   color: var(--text-muted);
   font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .current-week {
@@ -174,6 +177,9 @@ body {
   min-width: 50px;
   text-align: center;
   transition: all var(--transition-speed);
+  display: inline-block !important;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .week-completion-badge.partial {
@@ -202,9 +208,10 @@ body {
   transition: all var(--transition-speed);
   min-width: 44px;
   min-height: 44px;
-  display: flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .week-nav:hover {
@@ -238,7 +245,8 @@ body {
   padding: var(--spacing-lg);
   cursor: pointer;
   transition: all var(--transition-speed);
-  min-height: 120px;
+  min-height: 140px;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

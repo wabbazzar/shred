@@ -74,6 +74,7 @@ six_week_shred/
 5. **Touch Optimized**: 44px minimum touch targets
 6. **60 FPS Required**: Smooth animations and transitions
 7. **Data Persistence**: Local storage with CSV export/import
+8. **🎯 CRITICAL: Cross-Platform Consistency**: Mobile browser, desktop browser, and mobile PWA (installed app) MUST look and behave identically. Use `!important` CSS declarations and explicit styling to override PWA inconsistencies. Test on all three platforms before claiming completion.
 
 ## Testing Procedures
 ```bash

@@ -20,32 +20,29 @@ class WeekView {
         
         weekView.innerHTML = `
             <div class="week-header">
-                <div class="week-nav-controls">
+                <div class="week-title-section">
+                    <h2>Week ${week}</h2>
+                    <div class="week-subtitle">${this.getWeekPhaseDescription(week)}</div>
+                </div>
+                
+                <div class="week-nav-row">
                     <button class="week-nav" id="prev-week" ${week <= 1 ? 'disabled' : ''}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
                         </svg>
                     </button>
                     
-                    <div class="week-info">
-                        <h2>Week ${week}</h2>
-                        <div class="week-subtitle">Week ${week} of 6</div>
-                        <div class="week-indicator">
-                            <span class="current-week">${week}</span>
-                            <span class="week-separator">/</span>
-                            <span>6</span>
-                        </div>
+                    <div class="week-indicator">
+                        <span class="current-week">${week}</span>
+                        <span class="week-separator">/</span>
+                        <span>6</span>
                     </div>
                     
                     <button class="week-nav" id="next-week" ${week >= 6 ? 'disabled' : ''}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </button>
-                </div>
-                
-                <div class="week-completion-badge ${this.getCompletionClass(weekCompletion)}">
-                    ${Math.round(weekCompletion)}%
                 </div>
             </div>
             
@@ -249,6 +246,18 @@ class WeekView {
         if (completion >= 100) return 'complete';
         if (completion > 0) return 'partial';
         return '';
+    }
+    
+    getWeekPhaseDescription(week) {
+        const phaseMap = {
+            1: 'Foundation Week - Building Base Strength',
+            2: 'Foundation Week - Building Base Strength', 
+            3: 'Intensification - Increasing Challenge',
+            4: 'Intensification - Increasing Challenge',
+            5: 'Peak Phase - Maximum Performance',
+            6: 'Peak Phase - Maximum Performance'
+        };
+        return phaseMap[week] || `Week ${week} of 6`;
     }
     
     isToday(week, day) {
