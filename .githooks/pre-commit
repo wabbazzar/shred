@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# 6-Week Shred Pre-Commit Hook
+# Validates app functionality before allowing commits
+
+echo "🧪 Running pre-commit validation..."
+
+# Get the absolute path to the project root
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Change to project root directory  
+cd "$PROJECT_ROOT"
+
+# Debug: show current directory
+echo "Running tests from: $(pwd)"
+
+# Run the pre-commit test suite
+node tests/pre_commit_test.js
+
+# Exit with the same code as the test suite
+exit $?

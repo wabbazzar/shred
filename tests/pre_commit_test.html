@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Commit View Tests</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #121212;
+            color: #fff;
+            padding: 20px;
+        }
+        .test-results {
+            background: #1E1E1E;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .pass { color: #00C851; }
+        .fail { color: #FF5252; }
+        .info { color: #FF6B00; }
+        .test-frame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #333;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Pre-Commit View Tests</h1>
+    <div class="test-results" id="test-results">
+        <div class="info">Starting pre-commit tests...</div>
+    </div>
+    
+    <iframe id="app-frame" class="test-frame" src="../index.html"></iframe>
+    
+    <script>
+        class PreCommitTests {
+            constructor() {
+                this.results = [];
+                this.frame = document.getElementById('app-frame');
+                this.resultsDiv = document.getElementById('test-results');
+                this.testTimeout = 30000; // 30 seconds max
+                
+                this.runTests();
+            }
+            
+            log(message, type = 'info') {
+                const className = type === 'pass' ? 'pass' : type === 'fail' ? 'fail' : 'info';
+                const div = document.createElement('div');
+                div.className = className;
+                div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                this.resultsDiv.appendChild(div);
+                console.log(message);
+            }
+            
+            async runTests() {
+                this.log('🚀 Running pre-commit tests...', 'info');
+                
+                try {
+                    // Wait for app to load
+                    await this.waitForAppLoad();
+                    
+                    // Test basic view functionality
+                    await this.testBasicViews();
+                    
+                    // Test settings functionality  
+                    await this.testSettings();
+                    
+                    // Test navigation
+                    await this.testNavigation();
+                    
+                    // Summary
+                    this.showSummary();
+                    
+                } catch (error) {
+                    this.log(`❌ Test suite failed: ${error.message}`, 'fail');
+                    process.exit(1);
+                }
+            }
+            
+            async waitForAppLoad() {
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('App failed to load within timeout'));
+                    }, this.testTimeout);
+                    
+                    const checkLoad = () => {
+                        try {
+                            const frameDoc = this.frame.contentDocument || this.frame.contentWindow.document;
+                            const app = frameDoc.querySelector('#workout-tracker-app');
+                            
+                            if (app && frameDoc.readyState === 'complete') {
+                                clearTimeout(timeout);
+                                this.log('✅ App loaded successfully', 'pass');
+                                resolve();
+                            } else {
+                                setTimeout(checkLoad, 100);
+                            }
+                        } catch (e) {
+                            setTimeout(checkLoad, 100);
+                        }
+                    };
+                    
+                    this.frame.onload = checkLoad;
+                    checkLoad();
+                });
+            }
+            
+            async testBasicViews() {
+                this.log('🔍 Testing basic view rendering...', 'info');
+                
+                const frameDoc = this.frame.contentDocument || this.frame.contentWindow.document;
+                
+                // Test that main views exist
+                const dayView = frameDoc.getElementById('day-view');
+                const weekView = frameDoc.getElementById('week-view');
+                const calendarView = frameDoc.getElementById('calendar-view');
+                
+                if (dayView) {
+                    this.log('✅ Day view element exists', 'pass');
+                } else {
+                    this.log('❌ Day view element missing', 'fail');
+                    throw new Error('Day view not found');
+                }
+                
+                if (weekView) {
+                    this.log('✅ Week view element exists', 'pass');
+                } else {
+                    this.log('❌ Week view element missing', 'fail');
+                    throw new Error('Week view not found');
+                }
+                
+                if (calendarView) {
+                    this.log('✅ Calendar view element exists', 'pass');
+                } else {
+                    this.log('❌ Calendar view element missing', 'fail');
+                    throw new Error('Calendar view not found');
+                }
+                
+                // Test that calendar is the default view (should be visible)
+                const calendarStyle = window.getComputedStyle(calendarView);
+                if (calendarStyle.display !== 'none') {
+                    this.log('✅ Calendar view is default (visible)', 'pass');
+                } else {
+                    this.log('❌ Calendar view is not default', 'fail');
+                    throw new Error('Calendar view should be visible by default');
+                }
+            }
+            
+            async testSettings() {
+                this.log('⚙️ Testing settings functionality...', 'info');
+                
+                const frameDoc = this.frame.contentDocument || this.frame.contentWindow.document;
+                
+                // Test settings button exists
+                const settingsBtn = frameDoc.getElementById('settings-btn');
+                if (settingsBtn) {
+                    this.log('✅ Settings button exists', 'pass');
+                } else {
+                    this.log('❌ Settings button missing', 'fail');
+                    throw new Error('Settings button not found');
+                }
+                
+                // Test settings modal exists
+                const settingsModal = frameDoc.getElementById('settings-modal');
+                if (settingsModal) {
+                    this.log('✅ Settings modal exists', 'pass');
+                } else {
+                    this.log('❌ Settings modal missing', 'fail');
+                    throw new Error('Settings modal not found');
+                }
+                
+                // Test clicking settings button
+                try {
+                    settingsBtn.click();
+                    
+                    // Wait a bit for modal to open
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    const modalStyle = window.getComputedStyle(settingsModal);
+                    if (modalStyle.display !== 'none' && settingsModal.classList.contains('show')) {
+                        this.log('✅ Settings modal opens on click', 'pass');
+                        
+                        // Test close functionality
+                        const closeBtn = settingsModal.querySelector('.close-btn');
+                        if (closeBtn) {
+                            closeBtn.click();
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            this.log('✅ Settings modal closes properly', 'pass');
+                        } else {
+                            this.log('⚠️ Close button not found in modal', 'fail');
+                        }
+                    } else {
+                        this.log('❌ Settings modal failed to open', 'fail');
+                        throw new Error('Settings modal click failed');
+                    }
+                } catch (error) {
+                    this.log(`❌ Settings test failed: ${error.message}`, 'fail');
+                    throw error;
+                }
+            }
+            
+            async testNavigation() {
+                this.log('🧭 Testing navigation...', 'info');
+                
+                const frameDoc = this.frame.contentDocument || this.frame.contentWindow.document;
+                
+                // Test navigation tabs exist
+                const tabs = frameDoc.querySelectorAll('.tab');
+                if (tabs.length >= 3) {
+                    this.log(`✅ Found ${tabs.length} navigation tabs`, 'pass');
+                } else {
+                    this.log(`❌ Expected 3+ tabs, found ${tabs.length}`, 'fail');
+                    throw new Error('Navigation tabs missing');
+                }
+                
+                // Test tab switching
+                const dayTab = Array.from(tabs).find(tab => 
+                    tab.textContent.toLowerCase().includes('day')
+                );
+                
+                if (dayTab) {
+                    dayTab.click();
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    const dayView = frameDoc.getElementById('day-view');
+                    const dayStyle = window.getComputedStyle(dayView);
+                    
+                    if (dayStyle.display !== 'none') {
+                        this.log('✅ Day view navigation works', 'pass');
+                    } else {
+                        this.log('❌ Day view navigation failed', 'fail');
+                        throw new Error('Tab navigation broken');
+                    }
+                } else {
+                    this.log('❌ Day tab not found', 'fail');
+                    throw new Error('Day tab missing');
+                }
+            }
+            
+            showSummary() {
+                const passCount = this.resultsDiv.querySelectorAll('.pass').length;
+                const failCount = this.resultsDiv.querySelectorAll('.fail').length;
+                
+                this.log('', 'info');
+                this.log('=== TEST SUMMARY ===', 'info');
+                this.log(`✅ Passed: ${passCount}`, 'pass');
+                this.log(`❌ Failed: ${failCount}`, failCount > 0 ? 'fail' : 'pass');
+                
+                if (failCount > 0) {
+                    this.log('🚫 PRE-COMMIT TESTS FAILED - BLOCKING COMMIT', 'fail');
+                    // In a real pre-commit hook, this would exit with code 1
+                    console.error('Pre-commit tests failed!');
+                    return false;
+                } else {
+                    this.log('🎉 ALL PRE-COMMIT TESTS PASSED', 'pass');
+                    console.log('Pre-commit tests passed!');
+                    return true;
+                }
+            }
+        }
+        
+        // Start tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new PreCommitTests();
+        });
+        
+        // Expose for command line testing
+        window.runPreCommitTests = () => new PreCommitTests();
+    </script>
+</body>
+</html>

@@ -682,19 +682,6 @@ class WorkoutApp {
             });
         });
         
-        // Data export/import
-        document.getElementById('export-data-btn').addEventListener('click', () => {
-            this.exportWorkoutData();
-        });
-        
-        document.getElementById('import-data-btn').addEventListener('click', () => {
-            document.getElementById('import-file-input').click();
-        });
-        
-        document.getElementById('import-file-input').addEventListener('change', (e) => {
-            this.handleFileImport(e.target.files[0]);
-        });
-        
         // App settings
         document.getElementById('clear-cache-btn').addEventListener('click', () => {
             this.clearAppCache();

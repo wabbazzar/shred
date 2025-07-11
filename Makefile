@@ -12,6 +12,11 @@ force-serve:
 	@echo "Starting server on http://localhost:8000"
 	@python3 -m http.server 8000
 
+# Pre-commit validation tests
+pre-commit:
+	@echo "🧪 Running pre-commit validation tests..."
+	@node tests/pre_commit_test.js
+
 # Main app testing
 app-test:
 	@open http://localhost:8000/index.html || xdg-open http://localhost:8000/index.html
@@ -161,6 +166,7 @@ help:
 	@echo "  make device-test - Show device testing info"
 	@echo ""
 	@echo "Testing:"
+	@echo "  make pre-commit   - Run pre-commit validation tests"
 	@echo "  make mobile-test  - Test mobile interactions"
 	@echo "  make touch-test   - Test touch gestures"
 	@echo "  make offline-test - Test offline functionality"
