@@ -280,8 +280,9 @@ body {
 }
 
 .day-tile.today {
-  border-color: #4CAF50;
+  border-color: #2196F3;
   border-width: 2px;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
 }
 
 .day-tile.navigating {
@@ -378,7 +379,7 @@ body {
 }
 
 .today-indicator {
-  background-color: #4CAF50;
+  background-color: #2196F3;
   color: white;
   padding: 2px var(--spacing-xs);
   border-radius: 10px;
@@ -667,8 +668,9 @@ body {
 }
 
 .calendar-day.today {
-  border-color: #4CAF50;
+  border-color: #2196F3;
   border-width: 2px;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
 }
 
 .day-number {

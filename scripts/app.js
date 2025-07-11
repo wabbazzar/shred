@@ -500,6 +500,11 @@ class WorkoutApp {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🌟 Starting 6-Week Engagement Workout Tracker...');
     window.workoutApp = new WorkoutApp();
+    
+    // Make debugging methods globally accessible
+    window.clearDayData = (dayNum) => window.workoutApp.clearDayData(dayNum);
+    window.debugDay = (dayNum) => window.workoutApp.debugDayConsistency(dayNum);
+    window.refreshViews = () => window.workoutApp.refreshAllViews();
 });
 
 // Export for testing
