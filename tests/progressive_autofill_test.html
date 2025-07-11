@@ -293,6 +293,7 @@
             <div class="test-title">🎯 Interactive Auto-Fill Demo</div>
             <div class="test-description">
                 Live demo of the progressive auto-fill functionality. 
+                Notice the <strong>grayed-out suggested values</strong> in the input fields.
                 <strong>Double-tap</strong> on any input with an orange dashed border to auto-fill the suggested value.
             </div>
             
@@ -301,13 +302,13 @@
                 <div class="mock-inputs">
                     <div class="mock-input-group">
                         <label class="mock-input-label">Set 1 Weight</label>
-                        <input type="number" class="exercise-input" data-field="set1_weight" 
-                               placeholder="Weight" data-suggested-value="137.5">
+                        <input type="number" class="exercise-input has-suggestion" data-field="set1_weight" 
+                               placeholder="137.5" data-original-placeholder="Weight" data-suggested-value="137.5">
                     </div>
                     <div class="mock-input-group">
                         <label class="mock-input-label">Set 1 Reps</label>
-                        <input type="number" class="exercise-input" data-field="set1_reps" 
-                               placeholder="Reps" data-suggested-value="5">
+                        <input type="number" class="exercise-input has-suggestion" data-field="set1_reps" 
+                               placeholder="5" data-original-placeholder="Reps" data-suggested-value="5">
                     </div>
                 </div>
             </div>
@@ -317,8 +318,8 @@
                 <div class="mock-inputs">
                     <div class="mock-input-group">
                         <label class="mock-input-label">Target Reps</label>
-                        <input type="number" class="exercise-input" data-field="target_reps" 
-                               placeholder="Reps" data-suggested-value="10">
+                        <input type="number" class="exercise-input has-suggestion" data-field="target_reps" 
+                               placeholder="10" data-original-placeholder="Reps" data-suggested-value="10">
                     </div>
                 </div>
             </div>
@@ -328,8 +329,8 @@
                 <div class="mock-inputs">
                     <div class="mock-input-group">
                         <label class="mock-input-label">Hold Time</label>
-                        <input type="text" class="exercise-input" data-field="hold_time" 
-                               placeholder="Time" data-suggested-value="1:15">
+                        <input type="text" class="exercise-input has-suggestion" data-field="hold_time" 
+                               placeholder="1:15" data-original-placeholder="Time" data-suggested-value="1:15">
                     </div>
                 </div>
             </div>

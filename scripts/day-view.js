@@ -824,6 +824,17 @@ class DayView {
         // Add visual feedback for active inputs
         input.classList.add('active');
         
+        // Remove suggestion styling when user starts typing
+        if (input.classList.contains('has-suggestion') && input.value.trim()) {
+            input.classList.remove('has-suggestion');
+            input.removeAttribute('data-suggested-value');
+            // Restore original placeholder
+            const originalPlaceholder = input.getAttribute('data-original-placeholder');
+            if (originalPlaceholder) {
+                input.placeholder = originalPlaceholder;
+            }
+        }
+        
         // Auto-save after a short delay
         clearTimeout(input.saveTimeout);
         input.saveTimeout = setTimeout(() => {
@@ -1259,8 +1270,10 @@ class DayView {
                     if (!input.getAttribute('data-original-placeholder')) {
                         input.setAttribute('data-original-placeholder', originalPlaceholder);
                     }
-                    input.placeholder = `${progressiveValues[field]} (suggested)`;
+                    // Set the progressive value as the placeholder (grayed out)
+                    input.placeholder = progressiveValues[field];
                     input.setAttribute('data-suggested-value', progressiveValues[field]);
+                    input.classList.add('has-suggestion');
                 }
             });
         }
@@ -1421,7 +1434,12 @@ class DayView {
                         input.classList.remove('auto-filled');
                         // Remove suggestion styling after use
                         input.removeAttribute('data-suggested-value');
-                        input.style.borderStyle = 'solid';
+                        input.classList.remove('has-suggestion');
+                        // Restore original placeholder
+                        const originalPlaceholder = input.getAttribute('data-original-placeholder');
+                        if (originalPlaceholder) {
+                            input.placeholder = originalPlaceholder;
+                        }
                     }, 300);
                     
                     console.log(`✨ Auto-filled ${input.dataset.field} with suggested value: ${suggestedValue}`);

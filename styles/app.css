@@ -1559,28 +1559,28 @@ input:focus {
 }
 
 /* Progressive Auto-Fill Suggestions */
-.exercise-input[data-suggested-value]::placeholder {
+.exercise-input.has-suggestion::placeholder {
   color: var(--accent-orange);
   font-style: normal;
   font-weight: 500;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
-.exercise-input[data-suggested-value] {
+.exercise-input.has-suggestion {
   border-color: var(--accent-orange);
   border-width: 1px;
   border-style: dashed;
   position: relative;
 }
 
-.exercise-input[data-suggested-value]:focus {
+.exercise-input.has-suggestion:focus {
   border-style: solid;
   border-color: var(--accent-orange);
   box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2);
 }
 
 /* Visual hint for double-tap to auto-fill */
-.exercise-input[data-suggested-value]:hover::before {
+.exercise-input.has-suggestion:hover::before {
   content: "Double-tap to auto-fill";
   position: absolute;
   top: -30px;
