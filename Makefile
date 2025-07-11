@@ -37,6 +37,10 @@ offline-test:
 csv-test:
 	@open http://localhost:8000/tests/csv_test.html || xdg-open http://localhost:8000/tests/csv_test.html
 
+# Settings functionality testing
+settings-test:
+	@open http://localhost:8000/tests/settings_functionality_test.html || xdg-open http://localhost:8000/tests/settings_functionality_test.html
+
 # Visual verification
 visual-test:
 	@open http://localhost:8000/tests/visual_test.html || xdg-open http://localhost:8000/tests/visual_test.html
@@ -149,6 +153,7 @@ test-all: serve
 	@make touch-test
 	@make offline-test
 	@make csv-test
+	@make settings-test
 	@make visual-test
 
 # Build tasks (for future use)
@@ -171,6 +176,7 @@ help:
 	@echo "  make touch-test   - Test touch gestures"
 	@echo "  make offline-test - Test offline functionality"
 	@echo "  make csv-test     - Test CSV import/export"
+	@echo "  make settings-test - Test settings functionality"
 	@echo "  make visual-test  - Visual verification"
 	@echo "  make pwa-test     - Test PWA features"
 	@echo "  make test-all     - Run all tests"
