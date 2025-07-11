@@ -108,14 +108,18 @@ class WorkoutApp {
             targetView.classList.add('active');
         }
         
-        // Update tab buttons
+        // Update tab buttons with force refresh
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
+            // Force reflow to ensure class removal takes effect
+            btn.offsetHeight;
         });
         
         const activeTab = document.querySelector(`[data-view="${viewName}"]`);
         if (activeTab) {
             activeTab.classList.add('active');
+            // Force reflow to ensure class addition takes effect
+            activeTab.offsetHeight;
         }
         
         // Initialize view-specific functionality

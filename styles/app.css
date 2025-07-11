@@ -52,9 +52,9 @@ body {
   display: flex;
   flex-direction: column;
   overflow: visible;
-  padding-bottom: 80px; /* Space for tab navigation */
+  padding-bottom: 100px; /* Space for taller tab navigation */
   padding-top: var(--spacing-md); /* Add some top padding since no header */
-  min-height: calc(100vh - 80px); /* Ensure full height minus nav */
+  min-height: calc(100vh - 100px); /* Ensure full height minus taller nav */
 }
 
 .view {
@@ -699,7 +699,8 @@ body {
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-around;
-  padding: var(--spacing-sm) 0;
+  padding: var(--spacing-md) 0;
+  padding-bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
   box-shadow: 0 -2px 8px var(--shadow-color);
   z-index: 100;
 }

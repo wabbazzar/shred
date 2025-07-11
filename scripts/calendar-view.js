@@ -66,6 +66,7 @@ class CalendarView {
         let daysHTML = '';
         
         for (let day = 1; day <= 7; day++) {
+            // Get completion for this specific week and day
             const dayCompletion = this.app.getDayCompletion(week, day);
             const isToday = this.isToday(week, day);
             const isCurrent = this.app.currentWeek === week && this.app.currentDay === day;

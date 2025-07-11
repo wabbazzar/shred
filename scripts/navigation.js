@@ -26,13 +26,16 @@ class NavigationManager {
         const tabButtons = document.querySelectorAll('.tab-btn');
         
         tabButtons.forEach(button => {
-            // Click/Touch events
+            // Click/Touch events with better handling
             button.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 if (this.isTransitioning) return;
                 
                 const view = button.dataset.view;
-                this.navigateToView(view);
+                if (view) {
+                    this.navigateToView(view);
+                }
             });
 
             // Add ripple effect for better feedback
