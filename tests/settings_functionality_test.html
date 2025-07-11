@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Functionality Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #121212; color: white; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #4CAF50; }
+        .error { background: #f44336; }
+        .info { background: #2196F3; }
+        .warning { background: #FF9800; }
+        pre { background: #333; padding: 10px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>Settings Functionality Test</h1>
+    <div id="test-results"></div>
+    
+    <!-- Hidden modal for testing -->
+    <div id="settings-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Settings content will be dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Load the data managers and app -->
+    <script src="../scripts/data-manager.js"></script>
+    <script src="../scripts/modular-data-manager.js"></script>
+    
+    <script>
+        class SettingsTest {
+            constructor() {
+                this.results = [];
+                this.testContainer = document.getElementById('test-results');
+            }
+
+            log(message, type = 'info') {
+                const div = document.createElement('div');
+                div.className = `test-result ${type}`;
+                div.textContent = message;
+                this.testContainer.appendChild(div);
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+
+            async runTests() {
+                this.log('🧪 Starting Settings Functionality Tests', 'info');
+
+                try {
+                    // Test 1: DataManager instantiation
+                    this.log('Test 1: Creating ModularDataManager...', 'info');
+                    const dataManager = new ModularDataManager();
+                    this.log('✅ ModularDataManager created successfully', 'success');
+
+                    // Test 2: Check required methods exist
+                    this.log('Test 2: Checking required methods...', 'info');
+                    const requiredMethods = ['getProgramList', 'getCurrentProgramInfo', 'saveCurrentProgramAs', 'resetCurrentProgram'];
+                    
+                    for (const method of requiredMethods) {
+                        if (typeof dataManager[method] === 'function') {
+                            this.log(`✅ Method ${method} exists`, 'success');
+                        } else {
+                            this.log(`❌ Method ${method} missing`, 'error');
+                            return;
+                        }
+                    }
+
+                    // Test 3: Initialize data manager
+                    this.log('Test 3: Initializing data manager...', 'info');
+                    try {
+                        await dataManager.init();
+                        this.log('✅ Data manager initialized', 'success');
+                    } catch (error) {
+                        this.log(`⚠️ Data manager init failed (expected): ${error.message}`, 'warning');
+                        // This is expected since we don't have all config files in test
+                    }
+
+                    // Test 4: Test getProgramList
+                    this.log('Test 4: Testing getProgramList...', 'info');
+                    try {
+                        const programList = await dataManager.getProgramList();
+                        if (Array.isArray(programList) && programList.length > 0) {
+                            this.log(`✅ getProgramList returned ${programList.length} programs`, 'success');
+                            this.log(`Program: ${programList[0].name}`, 'info');
+                        } else {
+                            this.log('❌ getProgramList returned invalid data', 'error');
+                        }
+                    } catch (error) {
+                        this.log(`❌ getProgramList failed: ${error.message}`, 'error');
+                    }
+
+                    // Test 5: Test getCurrentProgramInfo
+                    this.log('Test 5: Testing getCurrentProgramInfo...', 'info');
+                    try {
+                        const currentProgram = await dataManager.getCurrentProgramInfo();
+                        if (currentProgram && currentProgram.name) {
+                            this.log(`✅ getCurrentProgramInfo returned: ${currentProgram.name}`, 'success');
+                        } else {
+                            this.log('❌ getCurrentProgramInfo returned invalid data', 'error');
+                        }
+                    } catch (error) {
+                        this.log(`❌ getCurrentProgramInfo failed: ${error.message}`, 'error');
+                    }
+
+                    // Test 6: Simulate settings modal creation
+                    this.log('Test 6: Testing settings modal simulation...', 'info');
+                    try {
+                        const mockApp = {
+                            dataManager: dataManager,
+                            async showSettings() {
+                                const modal = document.getElementById('settings-modal');
+                                const modalBody = modal.querySelector('.modal-body');
+                                
+                                // Get current program list for dropdown
+                                const programList = await this.dataManager.getProgramList();
+                                const currentProgram = await this.dataManager.getCurrentProgramInfo();
+                                
+                                // Create simplified settings content
+                                modalBody.innerHTML = `
+                                    <div class="settings-section">
+                                        <h3>Program Management</h3>
+                                        <div class="settings-item">
+                                            <select id="program-selector">
+                                                ${programList.map(program => `
+                                                    <option value="${program.id}" ${program.isActive ? 'selected' : ''}>
+                                                        ${program.name}
+                                                    </option>
+                                                `).join('')}
+                                            </select>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                return true;
+                            }
+                        };
+
+                        const result = await mockApp.showSettings();
+                        if (result) {
+                            this.log('✅ Settings modal simulation successful', 'success');
+                            
+                            // Check if content was created
+                            const modalBody = document.querySelector('#settings-modal .modal-body');
+                            if (modalBody && modalBody.innerHTML.includes('program-selector')) {
+                                this.log('✅ Settings content populated correctly', 'success');
+                            } else {
+                                this.log('❌ Settings content not populated', 'error');
+                            }
+                        } else {
+                            this.log('❌ Settings modal simulation failed', 'error');
+                        }
+                    } catch (error) {
+                        this.log(`❌ Settings modal test failed: ${error.message}`, 'error');
+                    }
+
+                    this.log('🎉 Settings functionality tests completed!', 'success');
+
+                } catch (error) {
+                    this.log(`❌ Test suite failed: ${error.message}`, 'error');
+                    console.error('Full error:', error);
+                }
+            }
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', async () => {
+            const tester = new SettingsTest();
+            await tester.runTests();
+        });
+    </script>
+</body>
+</html>

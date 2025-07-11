@@ -257,6 +257,33 @@ class PreCommitValidator {
         return true;
     }
 
+    testSettingsBrowserCompat() {
+        this.log('Testing settings browser compatibility...', 'info');
+        
+        // Check if settings test file exists
+        if (this.testFileExists('tests/settings_functionality_test.html')) {
+            this.success('Settings browser test file exists');
+        }
+        
+        // Check if modular data manager has fallback patterns
+        const modularDataManagerJs = this.readFile('scripts/modular-data-manager.js');
+        if (modularDataManagerJs) {
+            if (modularDataManagerJs.includes('fallbackToLegacySystem')) {
+                this.success('Modular data manager has fallback system');
+            } else {
+                this.warning('Modular data manager may not have fallback system');
+            }
+            
+            if (modularDataManagerJs.includes('getProgramList') && modularDataManagerJs.includes('getCurrentProgramInfo')) {
+                this.success('Modular data manager has required settings methods');
+            } else {
+                this.error('Modular data manager missing required settings methods');
+            }
+        }
+        
+        return true;
+    }
+
     run() {
         console.log('🧪 Running pre-commit validation tests...\n');
 
@@ -280,6 +307,7 @@ class PreCommitValidator {
         this.testSettings();
         this.testDefaultView();
         this.testCSVExample();
+        this.testSettingsBrowserCompat();
 
         // Summary
         console.log('\n=== TEST SUMMARY ===');
