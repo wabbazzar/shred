@@ -156,7 +156,8 @@
   }
 
   .section-content.expanded {
-    max-height: 1000px;
+    max-height: 10000px;
+    overflow: visible;
   }
 
   .exercise-list {

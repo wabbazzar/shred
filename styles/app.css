@@ -968,7 +968,8 @@ input:focus {
 }
 
 .section-content.expanded {
-  max-height: 2000px;
+  max-height: 10000px;
+  overflow: visible;
 }
 
 /* Exercise Items */
