@@ -3,668 +3,919 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Touch & Gesture Test Suite - 6-Week Workout Tracker</title>
+    <title>Touch Gesture Test - 6Week Shred</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #121212;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #121212;
             color: #FFFFFF;
-            line-height: 1.6;
             padding: 20px;
-            touch-action: manipulation;
-        }
-
-        .test-container {
-            max-width: 800px;
-            margin: 0 auto;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
 
         .test-header {
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
-            background-color: #1E1E1E;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #FF6B00, #FF8533);
+            border-radius: 12px;
+        }
+
+        .test-header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .test-header p {
+            opacity: 0.9;
+            font-size: 14px;
         }
 
         .test-section {
             margin-bottom: 30px;
             padding: 20px;
-            background-color: #1E1E1E;
-            border-radius: 8px;
+            background: #1E1E1E;
+            border-radius: 12px;
+            border: 1px solid #333;
         }
 
-        .test-title {
+        .section-title {
             color: #FF6B00;
-            font-size: 1.3rem;
+            font-size: 18px;
+            font-weight: 600;
             margin-bottom: 15px;
-            border-bottom: 2px solid #FF6B00;
-            padding-bottom: 5px;
-        }
-
-        .test-description {
-            color: #B3B3B3;
-            margin-bottom: 20px;
-        }
-
-        /* Touch Target Testing */
-        .touch-targets {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .touch-target {
-            background-color: #2D2D2D;
-            border: 2px solid #333333;
-            border-radius: 8px;
-            color: #FFFFFF;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            touch-action: manipulation;
+            gap: 8px;
         }
 
-        .touch-target.small {
-            min-width: 32px;
-            min-height: 32px;
-            font-size: 0.8rem;
-        }
-
-        .touch-target.medium {
-            min-width: 44px;
-            min-height: 44px;
-            font-size: 0.9rem;
-        }
-
-        .touch-target.large {
-            min-width: 60px;
-            min-height: 60px;
-            font-size: 1rem;
-        }
-
-        .touch-target:active {
-            background-color: #FF6B00;
-            color: #121212;
-            transform: scale(0.95);
-            border-color: #FF6B00;
-        }
-
-        .touch-target.success {
-            background-color: #00C851;
-            color: #121212;
-            border-color: #00C851;
+        .section-description {
+            color: #AAA;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.4;
         }
 
         /* Swipe Test Area */
-        .swipe-area {
-            background-color: #2D2D2D;
-            border: 2px dashed #666666;
-            border-radius: 8px;
+        .swipe-test-container {
+            position: relative;
             height: 200px;
+            background: #2A2A2A;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #444;
+            touch-action: pan-x;
+        }
+
+        .swipe-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            touch-action: pan-x;
-            user-select: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
         }
 
-        .swipe-content {
-            transition: transform 0.3s ease;
-            padding: 20px;
+        .swipe-zone.active {
+            background: rgba(255, 107, 0, 0.2);
         }
 
         .swipe-indicator {
             position: absolute;
             top: 10px;
-            right: 10px;
-            background-color: #FF6B00;
-            color: #121212;
-            padding: 5px 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.8rem;
-            opacity: 0;
-            transition: opacity 0.2s ease;
         }
 
-        .swipe-indicator.visible {
-            opacity: 1;
-        }
-
-        /* Drag Test */
-        .drag-container {
-            background-color: #2D2D2D;
-            border: 2px solid #333333;
-            border-radius: 8px;
-            height: 150px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .draggable-item {
-            background-color: #FF6B00;
-            color: #121212;
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            position: absolute;
-            top: 45px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            cursor: grab;
-            transition: transform 0.2s ease;
-            touch-action: none;
-        }
-
-        .draggable-item:active {
-            cursor: grabbing;
-            transform: scale(1.1);
-            z-index: 10;
-        }
-
-        /* Long Press Test */
-        .long-press-target {
-            background-color: #2D2D2D;
-            border: 2px solid #333333;
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-
-        .long-press-target:active {
-            background-color: #FF6B00;
-            color: #121212;
-        }
-
-        .long-press-progress {
+        .swipe-progress {
             position: absolute;
             bottom: 0;
             left: 0;
             height: 4px;
-            background-color: #00C851;
+            background: #FF6B00;
+            transition: width 0.1s ease;
+            width: 0%;
+        }
+
+        /* Tap Test Area */
+        .tap-test-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .tap-target {
+            aspect-ratio: 1;
+            background: #2A2A2A;
+            border: 2px solid #444;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 80px;
+            position: relative;
+        }
+
+        .tap-target:active {
+            transform: scale(0.95);
+        }
+
+        .tap-target.tap-success {
+            border-color: #00C851;
+            background: rgba(0, 200, 81, 0.2);
+        }
+
+        .tap-target.long-press {
+            border-color: #FF6B00;
+            background: rgba(255, 107, 0, 0.2);
+        }
+
+        .tap-target.multi-touch {
+            border-color: #FF4444;
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        .tap-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tap-status {
+            font-size: 10px;
+            color: #AAA;
+        }
+
+        /* Long Press Test */
+        .longpress-container {
+            position: relative;
+            height: 120px;
+            background: #2A2A2A;
+            border: 2px solid #444;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .longpress-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B00, #FF8533);
             width: 0%;
             transition: width 0.1s ease;
         }
 
-        .long-press-target.activated {
-            background-color: #00C851;
-            color: #121212;
-            border-color: #00C851;
+        .longpress-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            font-weight: 600;
         }
 
-        /* Pinch/Zoom Test */
-        .pinch-area {
-            background-color: #2D2D2D;
-            border: 2px solid #333333;
+        .longpress-timer {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .longpress-label {
+            font-size: 14px;
+            color: #AAA;
+        }
+
+        /* Multi-touch Prevention */
+        .multitouch-zone {
+            height: 150px;
+            background: #2A2A2A;
+            border: 2px solid #444;
             border-radius: 8px;
-            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
-            touch-action: pinch-zoom;
         }
 
-        .pinch-content {
-            background-color: #FF6B00;
-            color: #121212;
-            padding: 20px;
+        .multitouch-zone.single-touch {
+            border-color: #00C851;
+            background: rgba(0, 200, 81, 0.1);
+        }
+
+        .multitouch-zone.multi-touch {
+            border-color: #FF4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .touch-point {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 0, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+        }
+
+        /* Performance Monitor */
+        .perf-display {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
             border-radius: 8px;
-            transform-origin: center;
-            transition: transform 0.1s ease;
+            font-size: 11px;
+            font-family: monospace;
+            z-index: 1000;
+            min-width: 120px;
         }
 
-        /* Results Display */
-        .test-results {
-            background-color: #121212;
-            border: 1px solid #333333;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .result-item {
+        .perf-metric {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #333333;
+            margin-bottom: 4px;
         }
 
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .result-status {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .result-status.pass {
-            background-color: #00C851;
-            color: #121212;
-        }
-
-        .result-status.fail {
-            background-color: #FF5252;
-            color: #FFFFFF;
-        }
-
-        .result-status.pending {
-            background-color: #666666;
-            color: #FFFFFF;
-        }
-
-        .back-link {
+        .perf-value {
             color: #FF6B00;
-            text-decoration: none;
-            font-size: 1.1rem;
-            margin-top: 20px;
-            display: inline-block;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .device-info {
-            background-color: #2D2D2D;
-            padding: 15px;
+        /* Test Results */
+        .test-results {
+            background: #0D1117;
             border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
-        .device-info strong {
-            color: #FF6B00;
+        .result-pass { color: #00C851; }
+        .result-fail { color: #FF4444; }
+        .result-info { color: #FF6B00; }
+
+        /* Haptic Feedback Test */
+        .haptic-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .haptic-btn {
+            padding: 10px 16px;
+            background: #FF6B00;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s ease;
+            min-height: 44px;
+        }
+
+        .haptic-btn:hover {
+            background: #FF8533;
+        }
+
+        .haptic-btn:active {
+            background: #E55A00;
+        }
+
+        /* Gesture Sensitivity Slider */
+        .sensitivity-control {
+            margin: 20px 0;
+        }
+
+        .sensitivity-slider {
+            width: 100%;
+            height: 6px;
+            background: #444;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .sensitivity-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #FF6B00;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .sensitivity-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #FF6B00;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .sensitivity-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #AAA;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
-    <div class="test-container">
-        <div class="test-header">
-            <h1>👆 Touch & Gesture Test Suite</h1>
-            <p>Verify touch interactions and gesture recognition</p>
+    <div class="perf-display">
+        <div class="perf-metric">
+            <span>Touch Events:</span>
+            <span class="perf-value" id="touchCount">0</span>
         </div>
-
-        <div class="device-info">
-            <strong>Device:</strong> <span id="device-info"></span><br>
-            <strong>Touch Support:</strong> <span id="touch-support"></span><br>
-            <strong>Viewport:</strong> <span id="viewport-size"></span>
+        <div class="perf-metric">
+            <span>Avg Latency:</span>
+            <span class="perf-value" id="avgLatency">--ms</span>
         </div>
+        <div class="perf-metric">
+            <span>Active Touches:</span>
+            <span class="perf-value" id="activeTouches">0</span>
+        </div>
+        <div class="perf-metric">
+            <span>Gesture State:</span>
+            <span class="perf-value" id="gestureState">Idle</span>
+        </div>
+    </div>
 
-        <div class="test-section">
-            <h2 class="test-title">Touch Target Size Test</h2>
-            <p class="test-description">Tap each button to test minimum touch target sizes. Apple/Google recommend 44px minimum.</p>
-            
-            <div class="touch-targets">
-                <button class="touch-target small" data-size="32px">32px</button>
-                <button class="touch-target medium" data-size="44px">44px</button>
-                <button class="touch-target large" data-size="60px">60px</button>
+    <div class="test-header">
+        <h1>👆 Touch Gesture Test Suite</h1>
+        <p>Comprehensive gesture recognition and touch interaction validation</p>
+    </div>
+
+    <div class="test-section">
+        <div class="section-title">
+            🔄 Swipe Detection Test
+        </div>
+        <div class="section-description">
+            Test swipe gesture detection with configurable thresholds. Default minimum: 30px.
+        </div>
+        
+        <div class="swipe-test-container" id="swipeContainer">
+            <div class="swipe-zone" id="swipeZone">
+                Swipe left or right
             </div>
+            <div class="swipe-indicator" id="swipeIndicator">Threshold: 30px</div>
+            <div class="swipe-progress" id="swipeProgress"></div>
         </div>
-
-        <div class="test-section">
-            <h2 class="test-title">Swipe Gesture Test</h2>
-            <p class="test-description">Swipe left or right in the area below to test horizontal navigation.</p>
-            
-            <div class="swipe-area" id="swipe-area">
-                <div class="swipe-content" id="swipe-content">
-                    <div>Swipe left or right</div>
-                    <div style="font-size: 0.9rem; color: #B3B3B3; margin-top: 10px;">
-                        Current: Day 1 of 7
-                    </div>
-                </div>
-                <div class="swipe-indicator" id="swipe-indicator">Swiped!</div>
-            </div>
-        </div>
-
-        <div class="test-section">
-            <h2 class="test-title">Drag Test</h2>
-            <p class="test-description">Drag the orange square around the container.</p>
-            
-            <div class="drag-container" id="drag-container">
-                <div class="draggable-item" id="draggable-item">Drag</div>
-            </div>
-        </div>
-
-        <div class="test-section">
-            <h2 class="test-title">Long Press Test</h2>
-            <p class="test-description">Press and hold for 1 second to activate.</p>
-            
-            <div class="long-press-target" id="long-press-target">
-                <div>Press and hold</div>
-                <div class="long-press-progress" id="long-press-progress"></div>
+        
+        <div class="sensitivity-control">
+            <input type="range" class="sensitivity-slider" id="swipeThreshold" 
+                   min="10" max="100" value="30" step="5">
+            <div class="sensitivity-label">
+                <span>10px (Very Sensitive)</span>
+                <span>100px (Less Sensitive)</span>
             </div>
         </div>
+    </div>
 
-        <div class="test-section">
-            <h2 class="test-title">Pinch/Zoom Test</h2>
-            <p class="test-description">Use two fingers to pinch or zoom the content.</p>
-            
-            <div class="pinch-area" id="pinch-area">
-                <div class="pinch-content" id="pinch-content">
-                    Pinch to zoom
-                </div>
+    <div class="test-section">
+        <div class="section-title">
+            🎯 Tap vs Long Press Detection
+        </div>
+        <div class="section-description">
+            Test tap detection vs long press (500ms threshold). Each target should respond differently.
+        </div>
+        
+        <div class="tap-test-grid">
+            <div class="tap-target" data-target="1">
+                <div class="tap-label">Quick Tap</div>
+                <div class="tap-status">Ready</div>
+            </div>
+            <div class="tap-target" data-target="2">
+                <div class="tap-label">Long Press</div>
+                <div class="tap-status">Hold 500ms</div>
+            </div>
+            <div class="tap-target" data-target="3">
+                <div class="tap-label">Either</div>
+                <div class="tap-status">Tap or Hold</div>
             </div>
         </div>
+    </div>
 
-        <div class="test-results">
-            <h3 style="color: #FF6B00; margin-bottom: 15px;">Test Results</h3>
-            <div class="result-item">
-                <span>Touch Target 44px+</span>
-                <span class="result-status pending" id="touch-target-result">Pending</span>
-            </div>
-            <div class="result-item">
-                <span>Swipe Detection</span>
-                <span class="result-status pending" id="swipe-result">Pending</span>
-            </div>
-            <div class="result-item">
-                <span>Drag Functionality</span>
-                <span class="result-status pending" id="drag-result">Pending</span>
-            </div>
-            <div class="result-item">
-                <span>Long Press</span>
-                <span class="result-status pending" id="long-press-result">Pending</span>
-            </div>
-            <div class="result-item">
-                <span>Pinch/Zoom</span>
-                <span class="result-status pending" id="pinch-result">Pending</span>
+    <div class="test-section">
+        <div class="section-title">
+            ⏱️ Long Press Progress Test
+        </div>
+        <div class="section-description">
+            Visual long press with progress indicator. Hold for 2 seconds to trigger.
+        </div>
+        
+        <div class="longpress-container" id="longpressContainer">
+            <div class="longpress-progress" id="longpressProgress"></div>
+            <div class="longpress-content">
+                <div class="longpress-timer" id="longpressTimer">0.0s</div>
+                <div class="longpress-label">Hold to activate</div>
             </div>
         </div>
+    </div>
 
-        <a href="../index.html" class="back-link">← Back to Workout Tracker</a>
+    <div class="test-section">
+        <div class="section-title">
+            🚫 Multi-touch Prevention Test
+        </div>
+        <div class="section-description">
+            Test that only single touch is processed. Multiple touches should be ignored/blocked.
+        </div>
+        
+        <div class="multitouch-zone" id="multitouchZone">
+            <div style="text-align: center;">
+                <div style="font-size: 18px; margin-bottom: 8px;">Touch Test Area</div>
+                <div style="font-size: 12px; color: #AAA;">Try touching with multiple fingers</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <div class="section-title">
+            📳 Haptic Feedback Test
+        </div>
+        <div class="section-description">
+            Test different haptic feedback patterns (if supported by device).
+        </div>
+        
+        <div class="haptic-buttons">
+            <button class="haptic-btn" onclick="testHaptic('light')">Light</button>
+            <button class="haptic-btn" onclick="testHaptic('medium')">Medium</button>
+            <button class="haptic-btn" onclick="testHaptic('heavy')">Heavy</button>
+            <button class="haptic-btn" onclick="testHaptic('selection')">Selection</button>
+            <button class="haptic-btn" onclick="testHaptic('impact')">Impact</button>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <div class="section-title">
+            📊 Test Results
+        </div>
+        <div class="test-results" id="testResults">
+            <div class="result-info">🚀 Touch gesture test suite initialized</div>
+            <div class="result-info">📱 Device: <span id="deviceInfo">Loading...</span></div>
+        </div>
     </div>
 
     <script>
-        // Device detection and info
-        function updateDeviceInfo() {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            
-            document.getElementById('device-info').textContent = isMobile ? 'Mobile Device' : 'Desktop/Tablet';
-            document.getElementById('touch-support').textContent = hasTouch ? 'Supported' : 'Not Detected';
-            
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            document.getElementById('viewport-size').textContent = `${width}x${height}`;
-        }
-
-        // Touch Target Size Test
-        function setupTouchTargetTest() {
-            const touchTargets = document.querySelectorAll('.touch-target');
-            let touchCount = 0;
-            
-            touchTargets.forEach(target => {
-                target.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    this.classList.add('success');
-                    touchCount++;
-                    
-                    setTimeout(() => {
-                        this.classList.remove('success');
-                    }, 200);
-                    
-                    if (touchCount >= 3) {
-                        updateResult('touch-target-result', 'pass');
-                    }
-                });
+        class TouchGestureTest {
+            constructor() {
+                this.touchCount = 0;
+                this.latencyHistory = [];
+                this.activeTouches = 0;
+                this.gestureState = 'Idle';
+                this.swipeThreshold = 30;
+                this.longPressTimeout = 500;
+                this.longPressTimer = null;
+                this.longPressStartTime = 0;
+                this.touchPoints = new Map();
                 
-                target.addEventListener('click', function(e) {
-                    if (!('ontouchstart' in window)) {
-                        this.classList.add('success');
-                        touchCount++;
+                this.initializeTests();
+                this.startPerformanceMonitoring();
+                this.detectDeviceCapabilities();
+            }
+
+            initializeTests() {
+                this.setupSwipeTest();
+                this.setupTapTests();
+                this.setupLongPressTest();
+                this.setupMultiTouchTest();
+                this.setupSensitivityControls();
+                
+                this.log('Touch gesture test suite ready', 'info');
+            }
+
+            setupSwipeTest() {
+                const container = document.getElementById('swipeContainer');
+                const zone = document.getElementById('swipeZone');
+                const progress = document.getElementById('swipeProgress');
+                
+                let startX = 0;
+                let startY = 0;
+                let currentX = 0;
+                let startTime = 0;
+                let isDragging = false;
+
+                container.addEventListener('touchstart', (e) => {
+                    if (e.touches.length > 1) return; // Ignore multi-touch
+                    
+                    e.preventDefault();
+                    startTime = performance.now();
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    isDragging = true;
+                    
+                    zone.classList.add('active');
+                    this.updateGestureState('Swipe Start');
+                    this.log('Swipe started', 'info');
+                }, { passive: false });
+
+                container.addEventListener('touchmove', (e) => {
+                    if (!isDragging || e.touches.length > 1) return;
+                    
+                    e.preventDefault();
+                    currentX = e.touches[0].clientX;
+                    const deltaX = Math.abs(currentX - startX);
+                    const deltaY = Math.abs(e.touches[0].clientY - startY);
+                    
+                    // Update progress indicator
+                    const progressPercent = Math.min((deltaX / this.swipeThreshold) * 100, 100);
+                    progress.style.width = progressPercent + '%';
+                    
+                    // Check if it's more horizontal than vertical
+                    if (deltaX > deltaY) {
+                        this.updateGestureState('Swiping');
+                    }
+                }, { passive: false });
+
+                container.addEventListener('touchend', (e) => {
+                    if (!isDragging) return;
+                    
+                    e.preventDefault();
+                    const endTime = performance.now();
+                    const latency = endTime - startTime;
+                    this.recordLatency(latency);
+                    
+                    const deltaX = currentX - startX;
+                    const absX = Math.abs(deltaX);
+                    
+                    zone.classList.remove('active');
+                    progress.style.width = '0%';
+                    
+                    if (absX >= this.swipeThreshold) {
+                        const direction = deltaX > 0 ? 'right' : 'left';
+                        const speed = (absX / latency * 1000).toFixed(1); // px/s
+                        
+                        this.log(`✅ Swipe ${direction}: ${absX}px in ${latency}ms (${speed}px/s)`, 'pass');
+                        
+                        // Visual feedback
+                        zone.style.background = deltaX > 0 ? 
+                            'linear-gradient(90deg, transparent, rgba(0, 200, 81, 0.3))' :
+                            'linear-gradient(90deg, rgba(0, 200, 81, 0.3), transparent)';
                         
                         setTimeout(() => {
-                            this.classList.remove('success');
-                        }, 200);
+                            zone.style.background = '';
+                        }, 300);
+                    } else {
+                        this.log(`❌ Swipe too short: ${absX}px < ${this.swipeThreshold}px threshold`, 'fail');
+                    }
+                    
+                    isDragging = false;
+                    this.updateGestureState('Idle');
+                }, { passive: false });
+            }
+
+            setupTapTests() {
+                const targets = document.querySelectorAll('.tap-target');
+                
+                targets.forEach((target, index) => {
+                    let touchStartTime = 0;
+                    let longPressTimer = null;
+                    let isLongPress = false;
+                    
+                    target.addEventListener('touchstart', (e) => {
+                        if (e.touches.length > 1) return;
                         
-                        if (touchCount >= 3) {
-                            updateResult('touch-target-result', 'pass');
+                        e.preventDefault();
+                        touchStartTime = performance.now();
+                        isLongPress = false;
+                        
+                        target.classList.remove('tap-success', 'long-press', 'multi-touch');
+                        
+                        // Start long press timer
+                        longPressTimer = setTimeout(() => {
+                            isLongPress = true;
+                            target.classList.add('long-press');
+                            
+                            if ('vibrate' in navigator) {
+                                navigator.vibrate(50);
+                            }
+                            
+                            this.log(`Long press detected on target ${index + 1}`, 'pass');
+                            this.updateTargetStatus(target, 'Long Press!');
+                        }, this.longPressTimeout);
+                        
+                    }, { passive: false });
+                    
+                    target.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        clearTimeout(longPressTimer);
+                        
+                        const endTime = performance.now();
+                        const duration = endTime - touchStartTime;
+                        this.recordLatency(duration);
+                        
+                        if (!isLongPress) {
+                            target.classList.add('tap-success');
+                            this.log(`Quick tap on target ${index + 1}: ${duration}ms`, 'pass');
+                            this.updateTargetStatus(target, 'Tapped!');
                         }
-                    }
+                        
+                        // Reset after animation
+                        setTimeout(() => {
+                            target.classList.remove('tap-success', 'long-press');
+                            this.updateTargetStatus(target, index === 1 ? 'Hold 500ms' : 'Ready');
+                        }, 1000);
+                        
+                    }, { passive: false });
+                    
+                    target.addEventListener('touchcancel', (e) => {
+                        clearTimeout(longPressTimer);
+                        target.classList.remove('tap-success', 'long-press');
+                    });
                 });
-            });
-        }
+            }
 
-        // Swipe Test
-        function setupSwipeTest() {
-            const swipeArea = document.getElementById('swipe-area');
-            const swipeContent = document.getElementById('swipe-content');
-            const swipeIndicator = document.getElementById('swipe-indicator');
-            
-            let startX = 0;
-            let startY = 0;
-            let currentDay = 1;
-            
-            swipeArea.addEventListener('touchstart', function(e) {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            });
-            
-            swipeArea.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            });
-            
-            swipeArea.addEventListener('touchend', function(e) {
-                const endX = e.changedTouches[0].clientX;
-                const endY = e.changedTouches[0].clientY;
+            setupLongPressTest() {
+                const container = document.getElementById('longpressContainer');
+                const progress = document.getElementById('longpressProgress');
+                const timer = document.getElementById('longpressTimer');
                 
-                const deltaX = endX - startX;
-                const deltaY = endY - startY;
+                let startTime = 0;
+                let animationFrame = null;
                 
-                // Check if horizontal swipe
-                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-                    if (deltaX > 0) {
-                        // Swipe right - previous day
-                        currentDay = Math.max(1, currentDay - 1);
-                        swipeIndicator.textContent = 'Previous Day!';
+                const updateProgress = () => {
+                    const elapsed = performance.now() - startTime;
+                    const progressPercent = Math.min((elapsed / 2000) * 100, 100);
+                    
+                    progress.style.width = progressPercent + '%';
+                    timer.textContent = (elapsed / 1000).toFixed(1) + 's';
+                    
+                    if (elapsed < 2000) {
+                        animationFrame = requestAnimationFrame(updateProgress);
                     } else {
-                        // Swipe left - next day
-                        currentDay = Math.min(7, currentDay + 1);
-                        swipeIndicator.textContent = 'Next Day!';
+                        this.log('✅ Long press completed: 2.0s', 'pass');
+                        
+                        if ('vibrate' in navigator) {
+                            navigator.vibrate([100, 50, 100]);
+                        }
+                        
+                        // Success animation
+                        progress.style.background = 'linear-gradient(90deg, #00C851, #00A644)';
+                        setTimeout(() => {
+                            progress.style.background = 'linear-gradient(90deg, #FF6B00, #FF8533)';
+                        }, 1000);
+                    }
+                };
+                
+                container.addEventListener('touchstart', (e) => {
+                    if (e.touches.length > 1) return;
+                    
+                    e.preventDefault();
+                    startTime = performance.now();
+                    progress.style.width = '0%';
+                    timer.textContent = '0.0s';
+                    
+                    animationFrame = requestAnimationFrame(updateProgress);
+                    this.updateGestureState('Long Press');
+                }, { passive: false });
+                
+                container.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (animationFrame) {
+                        cancelAnimationFrame(animationFrame);
                     }
                     
-                    swipeContent.innerHTML = `
-                        <div>Swipe detected!</div>
-                        <div style="font-size: 0.9rem; color: #B3B3B3; margin-top: 10px;">
-                            Current: Day ${currentDay} of 7
-                        </div>
-                    `;
+                    const elapsed = performance.now() - startTime;
+                    if (elapsed < 2000) {
+                        this.log(`Long press cancelled: ${(elapsed/1000).toFixed(1)}s`, 'info');
+                        progress.style.width = '0%';
+                        timer.textContent = '0.0s';
+                    }
                     
-                    swipeIndicator.classList.add('visible');
-                    updateResult('swipe-result', 'pass');
-                    
-                    setTimeout(() => {
-                        swipeIndicator.classList.remove('visible');
-                    }, 1000);
-                }
-            });
-        }
+                    this.updateGestureState('Idle');
+                }, { passive: false });
+            }
 
-        // Drag Test
-        function setupDragTest() {
-            const draggableItem = document.getElementById('draggable-item');
-            const dragContainer = document.getElementById('drag-container');
-            
-            let isDragging = false;
-            let startX, startY, initialX, initialY;
-            
-            draggableItem.addEventListener('touchstart', function(e) {
-                isDragging = true;
+            setupMultiTouchTest() {
+                const zone = document.getElementById('multitouchZone');
+                let activePoints = new Map();
                 
-                if (e.type === 'touchstart') {
-                    initialX = e.touches[0].clientX - draggableItem.offsetLeft;
-                    initialY = e.touches[0].clientY - draggableItem.offsetTop;
-                } else {
-                    initialX = e.clientX - draggableItem.offsetLeft;
-                    initialY = e.clientY - draggableItem.offsetTop;
-                }
-            });
-            
-            draggableItem.addEventListener('touchmove', function(e) {
-                if (isDragging) {
+                const createTouchPoint = (touch, id) => {
+                    const point = document.createElement('div');
+                    point.className = 'touch-point';
+                    point.style.left = touch.clientX + 'px';
+                    point.style.top = touch.clientY + 'px';
+                    zone.appendChild(point);
+                    return point;
+                };
+                
+                zone.addEventListener('touchstart', (e) => {
                     e.preventDefault();
                     
-                    if (e.type === 'touchmove') {
-                        startX = e.touches[0].clientX - initialX;
-                        startY = e.touches[0].clientY - initialY;
+                    Array.from(e.changedTouches).forEach(touch => {
+                        const point = createTouchPoint(touch, touch.identifier);
+                        activePoints.set(touch.identifier, point);
+                    });
+                    
+                    const totalTouches = activePoints.size;
+                    this.updateActiveTouches(totalTouches);
+                    
+                    if (totalTouches === 1) {
+                        zone.classList.remove('multi-touch');
+                        zone.classList.add('single-touch');
+                        this.log('✅ Single touch detected', 'pass');
                     } else {
-                        startX = e.clientX - initialX;
-                        startY = e.clientY - initialY;
+                        zone.classList.remove('single-touch');
+                        zone.classList.add('multi-touch');
+                        this.log(`⚠️ Multi-touch detected: ${totalTouches} fingers`, 'fail');
                     }
-                    
-                    // Keep within container bounds
-                    const containerRect = dragContainer.getBoundingClientRect();
-                    const itemRect = draggableItem.getBoundingClientRect();
-                    
-                    startX = Math.max(0, Math.min(startX, containerRect.width - itemRect.width));
-                    startY = Math.max(0, Math.min(startY, containerRect.height - itemRect.height));
-                    
-                    draggableItem.style.left = startX + 'px';
-                    draggableItem.style.top = startY + 'px';
-                    
-                    updateResult('drag-result', 'pass');
-                }
-            });
-            
-            draggableItem.addEventListener('touchend', function(e) {
-                isDragging = false;
-            });
-        }
-
-        // Long Press Test
-        function setupLongPressTest() {
-            const longPressTarget = document.getElementById('long-press-target');
-            const progressBar = document.getElementById('long-press-progress');
-            
-            let pressTimer;
-            let progressTimer;
-            let progress = 0;
-            
-            function startLongPress() {
-                progress = 0;
-                progressBar.style.width = '0%';
+                }, { passive: false });
                 
-                progressTimer = setInterval(() => {
-                    progress += 10;
-                    progressBar.style.width = progress + '%';
+                zone.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
                     
-                    if (progress >= 100) {
-                        clearInterval(progressTimer);
-                        longPressTarget.classList.add('activated');
-                        updateResult('long-press-result', 'pass');
-                        
-                        setTimeout(() => {
-                            longPressTarget.classList.remove('activated');
-                            progressBar.style.width = '0%';
-                        }, 1000);
+                    Array.from(e.changedTouches).forEach(touch => {
+                        const point = activePoints.get(touch.identifier);
+                        if (point) {
+                            const rect = zone.getBoundingClientRect();
+                            point.style.left = (touch.clientX - rect.left) + 'px';
+                            point.style.top = (touch.clientY - rect.top) + 'px';
+                        }
+                    });
+                }, { passive: false });
+                
+                zone.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    
+                    Array.from(e.changedTouches).forEach(touch => {
+                        const point = activePoints.get(touch.identifier);
+                        if (point) {
+                            point.remove();
+                            activePoints.delete(touch.identifier);
+                        }
+                    });
+                    
+                    const totalTouches = activePoints.size;
+                    this.updateActiveTouches(totalTouches);
+                    
+                    if (totalTouches === 0) {
+                        zone.classList.remove('single-touch', 'multi-touch');
+                        this.log('Touch ended - zone reset', 'info');
+                    }
+                }, { passive: false });
+            }
+
+            setupSensitivityControls() {
+                const slider = document.getElementById('swipeThreshold');
+                const indicator = document.getElementById('swipeIndicator');
+                
+                slider.addEventListener('input', (e) => {
+                    this.swipeThreshold = parseInt(e.target.value);
+                    indicator.textContent = `Threshold: ${this.swipeThreshold}px`;
+                    this.log(`Swipe threshold updated: ${this.swipeThreshold}px`, 'info');
+                });
+            }
+
+            detectDeviceCapabilities() {
+                const info = document.getElementById('deviceInfo');
+                const features = [];
+                
+                if ('ontouchstart' in window) features.push('Touch Events');
+                if ('vibrate' in navigator) features.push('Haptic');
+                if ('orientation' in screen) features.push('Orientation');
+                if ('DeviceMotionEvent' in window) features.push('Motion');
+                
+                const userAgent = navigator.userAgent;
+                let device = 'Unknown';
+                if (/iPhone/.test(userAgent)) device = 'iPhone';
+                else if (/iPad/.test(userAgent)) device = 'iPad';
+                else if (/Android/.test(userAgent)) device = 'Android';
+                else if (/Windows/.test(userAgent)) device = 'Windows';
+                else if (/Mac/.test(userAgent)) device = 'Mac';
+                
+                info.textContent = `${device} | ${features.join(', ')}`;
+                this.log(`Device capabilities: ${features.join(', ')}`, 'info');
+            }
+
+            startPerformanceMonitoring() {
+                // Update performance display every 100ms
+                setInterval(() => {
+                    document.getElementById('touchCount').textContent = this.touchCount;
+                    document.getElementById('activeTouches').textContent = this.activeTouches;
+                    document.getElementById('gestureState').textContent = this.gestureState;
+                    
+                    if (this.latencyHistory.length > 0) {
+                        const avg = this.latencyHistory.reduce((a, b) => a + b, 0) / this.latencyHistory.length;
+                        document.getElementById('avgLatency').textContent = Math.round(avg) + 'ms';
                     }
                 }, 100);
             }
-            
-            function cancelLongPress() {
-                clearInterval(progressTimer);
-                progress = 0;
-                progressBar.style.width = '0%';
+
+            recordLatency(latency) {
+                this.touchCount++;
+                this.latencyHistory.push(latency);
+                
+                // Keep only last 10 measurements
+                if (this.latencyHistory.length > 10) {
+                    this.latencyHistory.shift();
+                }
+            }
+
+            updateActiveTouches(count) {
+                this.activeTouches = count;
+            }
+
+            updateGestureState(state) {
+                this.gestureState = state;
+            }
+
+            updateTargetStatus(target, status) {
+                const statusElement = target.querySelector('.tap-status');
+                if (statusElement) {
+                    statusElement.textContent = status;
+                }
+            }
+
+            log(message, type = 'info') {
+                const results = document.getElementById('testResults');
+                const className = type === 'pass' ? 'result-pass' : 
+                                type === 'fail' ? 'result-fail' : 'result-info';
+                
+                const div = document.createElement('div');
+                div.className = className;
+                div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                results.appendChild(div);
+                results.scrollTop = results.scrollHeight;
+            }
+        }
+
+        // Haptic feedback test function
+        function testHaptic(type) {
+            if (!('vibrate' in navigator)) {
+                document.getElementById('testResults').innerHTML += 
+                    '<div class="result-fail">❌ Haptic feedback not supported on this device</div>';
+                return;
             }
             
-            longPressTarget.addEventListener('touchstart', startLongPress);
-            longPressTarget.addEventListener('touchend', cancelLongPress);
-            longPressTarget.addEventListener('touchcancel', cancelLongPress);
-            longPressTarget.addEventListener('mousedown', startLongPress);
-            longPressTarget.addEventListener('mouseup', cancelLongPress);
-            longPressTarget.addEventListener('mouseleave', cancelLongPress);
-        }
-
-        // Pinch/Zoom Test
-        function setupPinchTest() {
-            const pinchArea = document.getElementById('pinch-area');
-            const pinchContent = document.getElementById('pinch-content');
+            const patterns = {
+                light: 10,
+                medium: 50,
+                heavy: 100,
+                selection: [10, 10, 10],
+                impact: [100, 50, 100, 50, 200]
+            };
             
-            let initialDistance = 0;
-            let currentScale = 1;
+            navigator.vibrate(patterns[type] || 50);
             
-            pinchArea.addEventListener('touchstart', function(e) {
-                if (e.touches.length === 2) {
-                    const touch1 = e.touches[0];
-                    const touch2 = e.touches[1];
-                    
-                    initialDistance = Math.hypot(
-                        touch1.clientX - touch2.clientX,
-                        touch1.clientY - touch2.clientY
-                    );
-                }
-            });
-            
-            pinchArea.addEventListener('touchmove', function(e) {
-                if (e.touches.length === 2) {
-                    e.preventDefault();
-                    
-                    const touch1 = e.touches[0];
-                    const touch2 = e.touches[1];
-                    
-                    const currentDistance = Math.hypot(
-                        touch1.clientX - touch2.clientX,
-                        touch1.clientY - touch2.clientY
-                    );
-                    
-                    const scale = currentDistance / initialDistance;
-                    currentScale = Math.max(0.5, Math.min(3, scale));
-                    
-                    pinchContent.style.transform = `scale(${currentScale})`;
-                    updateResult('pinch-result', 'pass');
-                }
-            });
+            const results = document.getElementById('testResults');
+            const div = document.createElement('div');
+            div.className = 'result-info';
+            div.textContent = `🔮 Haptic ${type} feedback triggered`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
         }
 
-        // Update test result
-        function updateResult(elementId, status) {
-            const element = document.getElementById(elementId);
-            element.className = `result-status ${status}`;
-            element.textContent = status === 'pass' ? 'Pass' : status === 'fail' ? 'Fail' : 'Pending';
-        }
+        // Initialize test suite
+        document.addEventListener('DOMContentLoaded', () => {
+            new TouchGestureTest();
+        });
 
-        // Initialize all tests
-        function initializeTests() {
-            updateDeviceInfo();
-            setupTouchTargetTest();
-            setupSwipeTest();
-            setupDragTest();
-            setupLongPressTest();
-            setupPinchTest();
-        }
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
 
-        // Update viewport info on resize
-        window.addEventListener('resize', updateDeviceInfo);
-
-        // Start tests when page loads
-        document.addEventListener('DOMContentLoaded', initializeTests);
+        // Prevent context menu on long press
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+        }, false);
     </script>
 </body>
 </html>
