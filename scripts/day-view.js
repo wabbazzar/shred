@@ -874,6 +874,11 @@ class DayView {
         this.updateSectionCompletion();
         this.updateDayCompletion();
         
+        // Refresh week view to sync completion percentages
+        if (this.app.weekView) {
+            this.app.weekView.refreshWeekData();
+        }
+        
         input.classList.remove('active');
         console.log(`💾 Exercise ${exerciseIndex} input saved: ${field} = ${value}`);
     }
@@ -928,6 +933,11 @@ class DayView {
         
         this.updateSectionCompletion();
         this.updateDayCompletion();
+        
+        // Refresh week view to sync completion percentages
+        if (this.app.weekView) {
+            this.app.weekView.refreshWeekData();
+        }
     }
 
     // Navigation Methods
