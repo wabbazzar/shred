@@ -22,11 +22,11 @@
 A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
 
 ## Current Development Status
-- **Current Phase**: Phase 5: Settings & Program Management
-- **Last Completed**: Phase 4 - Calendar View Implementation (COMPLETE)
-- **Last Known Good Commit**: `fa5c646` - Update CLAUDE.md: Phase 0.2 complete, ready for Phase 0.3 PWA Foundation
-- **Next Steps**: Implement Settings Screen UI with slide-in modal and program management features
-- **Known Issues**: None - core app functionality complete, ready for settings implementation
+- **Current Phase**: Phase 5.2: Program Management Features
+- **Last Completed**: Phase 5.1 - Settings Screen UI (COMPLETE)
+- **Last Known Good Commit**: `0a9aa86` - Phase 5.1 COMPLETE: Settings Screen UI Implementation
+- **Next Steps**: Implement program dropdown selector, save/switch program logic, and program deletion features
+- **Known Issues**: None - settings UI complete with proper sections and animations
 
 ## Project Structure
 ```
@@ -101,14 +101,14 @@ make visual-test
 make pwa-test
 ```
 
-## Success Criteria for Current Phase (5.1 - Settings Screen UI)
-- [ ] Create slide-in modal or overlay for settings access
-- [ ] Design with consistent dark theme (#121212 background, #FF6B00 accents)
-- [ ] Organize into logical sections: Program Management, Data Export/Import, App Settings
-- [ ] Add close button/gesture with smooth animations (300ms ease)
-- [ ] Implement smooth slide-in/slide-out animations
-- [ ] Test on various devices and screen sizes (320px minimum)
-- [ ] Ensure 44px minimum touch targets for all interactive elements
+## Success Criteria for Current Phase (5.2 - Program Management Features)
+- [ ] Create program dropdown selector showing all saved programs
+- [ ] Implement "Save Current Program As..." with text input validation
+- [ ] Add program switching logic with "Start over or continue?" prompt
+- [ ] Handle position preservation when switching between programs
+- [ ] Implement program deletion with confirmation dialog
+- [ ] Prevent deletion of default "6-Week Engagement Program"
+- [ ] Test all program operations with multiple saved programs
 
 ## Common Issues & Solutions
 1. **Touch not working**: Check tests/touch_test.html and verify 44px targets
