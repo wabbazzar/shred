@@ -21,6 +21,9 @@ class WorkoutApp {
             // Wait for data manager to initialize
             await this.dataManager.init();
             
+            // Initialize view controllers
+            this.dayView = new DayView(this);
+            
             // Initialize navigation system
             this.navigationManager = new NavigationManager(this);
             
@@ -202,7 +205,10 @@ class WorkoutApp {
     }
 
     initializeDayView() {
-        // Day view specific initialization
+        // Render day view with current week/day
+        if (this.dayView) {
+            this.dayView.render(this.currentWeek, this.currentDay);
+        }
         console.log('📅 Day view initialized');
     }
 
