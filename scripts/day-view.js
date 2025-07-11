@@ -47,6 +47,10 @@ class DayView {
         const dayName = this.getDayName(this.currentDay);
         const dayType = dayData.type || 'workout';
         const completionClass = completion >= 80 ? 'complete' : completion > 0 ? 'partial' : '';
+        
+        // Check if this is today
+        const isToday = this.isToday(this.currentWeek, this.currentDay);
+        const todayIndicator = isToday ? '<div class="today-indicator">Today</div>' : '';
 
         return `
             <div class="day-header">
@@ -61,6 +65,7 @@ class DayView {
                         <h2>Week ${this.currentWeek} - ${dayName}</h2>
                         <div class="day-subtitle">${dayData.focus || 'Workout Day'}</div>
                         ${dayData.duration ? `<div class="day-duration">${dayData.duration}</div>` : ''}
+                        ${todayIndicator}
                     </div>
                     
                     <button class="day-nav-btn" id="next-day" aria-label="Next day">
@@ -730,6 +735,26 @@ class DayView {
     getDayName(day) {
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         return days[day - 1] || `Day ${day}`;
+    }
+
+    isToday(week, day) {
+        // Use the same logic as other views for consistency
+        const today = new Date();
+        
+        // Get the program start date from app settings or use a default
+        const programStartDate = new Date(this.app.settings?.startDate || '2024-01-01');
+        
+        // Calculate the specific date for this week and day
+        const daysSinceStart = (week - 1) * 7 + (day - 1);
+        const workoutDate = new Date(programStartDate);
+        workoutDate.setDate(programStartDate.getDate() + daysSinceStart);
+        
+        // Check if the workout date is today
+        return (
+            workoutDate.getFullYear() === today.getFullYear() &&
+            workoutDate.getMonth() === today.getMonth() &&
+            workoutDate.getDate() === today.getDate()
+        );
     }
 
     formatCategoryName(category) {

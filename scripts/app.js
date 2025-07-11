@@ -140,6 +140,10 @@ class WorkoutApp {
                 this.initializeCalendarView();
                 break;
         }
+        
+        // Debug: Log completion for current day to check consistency
+        const currentCompletion = this.getDayCompletion(this.currentWeek, this.currentDay);
+        console.log(`🔍 View: ${this.currentView}, Week ${this.currentWeek}, Day ${this.currentDay}: ${currentCompletion}% complete`);
     }
 
     initializeViews() {
@@ -280,23 +284,37 @@ class WorkoutApp {
         alert(message); // Temporary error display
     }
 
-    // Debug method to check Friday completion issue
-    debugFridayCompletion() {
-        console.log('🐛 Debugging Friday completion...');
+    // Debug method to check day consistency across views
+    debugDayConsistency(dayNum = 2) { // Default to Tuesday
+        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const dayName = dayNames[dayNum - 1];
         
-        // First, show all stored progress data
+        console.log(`🐛 Debugging ${dayName} (Day ${dayNum}) consistency across views...`);
+        
+        // Show all stored progress data
         console.log('📊 All stored progress data:', this.userProgress);
         
         for (let week = 1; week <= 6; week++) {
-            const completion = this.getDayCompletion(week, 5); // Day 5 = Friday
-            const exercises = this.dataManager.getExercisesForDay(week, 5);
-            console.log(`Week ${week}, Friday: ${completion}% complete, ${exercises.length} exercises`);
+            const completion = this.getDayCompletion(week, dayNum);
+            const exercises = this.dataManager.getExercisesForDay(week, dayNum);
+            const dayData = this.dataManager.getDayInfo(week, dayNum);
+            
+            // Check if today
+            const isToday = this.weekView?.isToday(week, dayNum) || this.calendarView?.isToday(week, dayNum);
+            const isCurrent = this.currentWeek === week && this.currentDay === dayNum;
+            
+            console.log(`Week ${week}, ${dayName}:`);
+            console.log(`  - Completion: ${completion}%`);
+            console.log(`  - Exercises: ${exercises.length}`);
+            console.log(`  - Is Today: ${isToday}`);
+            console.log(`  - Is Current: ${isCurrent}`);
+            console.log(`  - Day Data:`, dayData);
             
             // Check individual exercise progress
             exercises.forEach((exercise, index) => {
-                const progress = this.getExerciseProgress(week, 5, index);
+                const progress = this.getExerciseProgress(week, dayNum, index);
                 if (progress && progress.completed) {
-                    console.log(`  - Exercise ${index} (${exercise.name}): COMPLETED`, progress);
+                    console.log(`    - Exercise ${index} (${exercise.name}): COMPLETED`, progress);
                 }
             });
         }
@@ -328,6 +346,32 @@ class WorkoutApp {
         if (this.currentView === 'calendar') {
             this.initializeCalendarView();
         }
+    }
+
+    // Method to force refresh all views and ensure consistency
+    refreshAllViews() {
+        console.log('🔄 Refreshing all views for consistency...');
+        
+        // Save current state
+        const currentView = this.currentView;
+        const currentWeek = this.currentWeek;
+        const currentDay = this.currentDay;
+        
+        // Force re-render all views
+        if (this.dayView) {
+            this.dayView.render(currentWeek, currentDay);
+        }
+        if (this.weekView) {
+            this.weekView.render(currentWeek);
+        }
+        if (this.calendarView) {
+            this.calendarView.render();
+        }
+        
+        // Re-initialize current view
+        this.showView(currentView);
+        
+        console.log('✅ All views refreshed');
     }
 
     showSettings() {
