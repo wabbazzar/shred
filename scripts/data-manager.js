@@ -272,46 +272,23 @@ class DataManager {
 
     // Default Data Generators
     async getDefaultWorkoutProgram() {
-        try {
-            // Load from CSV file
-            const exercises = await this.loadWorkoutDataFromCSV('assets/workouts/default.csv');
-            
-            return {
-                id: 'six-week-shred',
-                name: '6-Week Shred Program',
-                description: 'Complete workout program for engagement photo preparation',
-                version: '1.0.0',
-                created: new Date().toISOString(),
-                weeks: 6,
-                daysPerWeek: 7,
-                metadata: {
-                    targetAudience: 'Engagement preparation',
-                    difficulty: 'Intermediate',
-                    equipment: ['Gym access', 'Dumbbells'],
-                    estimatedDuration: '45-60 minutes per session'
-                },
-                exercises: exercises
-            };
-        } catch (error) {
-            console.error('❌ Failed to load default CSV, falling back to generated data:', error);
-            // Fallback to generated data if CSV fails
-            return {
-                id: 'six-week-shred',
-                name: '6-Week Shred Program',
-                description: 'Complete workout program for engagement photo preparation',
-                version: '1.0.0',
-                created: new Date().toISOString(),
-                weeks: 6,
-                daysPerWeek: 7,
-                metadata: {
-                    targetAudience: 'Engagement preparation',
-                    difficulty: 'Intermediate',
-                    equipment: ['Gym access', 'Dumbbells'],
-                    estimatedDuration: '45-60 minutes per session'
-                },
-                exercises: this.generateFullProgram()
-            };
-        }
+        // Use generated data primarily - it has proper section structure
+        return {
+            id: 'six-week-shred',
+            name: '6-Week Shred Program',
+            description: 'Complete workout program for engagement photo preparation',
+            version: '1.0.0',
+            created: new Date().toISOString(),
+            weeks: 6,
+            daysPerWeek: 7,
+            metadata: {
+                targetAudience: 'Engagement preparation',
+                difficulty: 'Intermediate',
+                equipment: ['Gym access', 'Dumbbells'],
+                estimatedDuration: '45-60 minutes per session'
+            },
+            exercises: this.generateFullProgram()
+        };
     }
 
     generateFullProgram() {
