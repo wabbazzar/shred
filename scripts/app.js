@@ -23,6 +23,7 @@ class WorkoutApp {
             
             // Initialize view controllers
             this.dayView = new DayView(this);
+            this.weekView = new WeekView(this);
             
             // Initialize navigation system
             this.navigationManager = new NavigationManager(this);
@@ -213,36 +214,10 @@ class WorkoutApp {
     }
 
     initializeWeekView() {
-        // Week navigation
-        const prevBtn = document.getElementById('prev-week');
-        const nextBtn = document.getElementById('next-week');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                if (this.currentWeek > 1) {
-                    this.currentWeek--;
-                    this.updateWeekView();
-                }
-            });
+        // Render week view with current week
+        if (this.weekView) {
+            this.weekView.render(this.currentWeek);
         }
-        
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                if (this.currentWeek < 6) {
-                    this.currentWeek++;
-                    this.updateWeekView();
-                }
-            });
-        }
-
-        // Day tile clicks
-        document.querySelectorAll('.day-tile').forEach(tile => {
-            tile.addEventListener('click', () => {
-                this.currentDay = parseInt(tile.dataset.day);
-                this.showView('day');
-            });
-        });
-        
         console.log('📋 Week view initialized');
     }
 
