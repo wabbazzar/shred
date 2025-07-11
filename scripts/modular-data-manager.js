@@ -725,6 +725,144 @@ class ModularDataManager {
         
         return totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
     }
+
+    // Program Management methods (required for settings)
+    async getProgramList() {
+        // Return a simplified program list for the settings UI
+        const metadata = this.programMetadata;
+        if (!metadata) {
+            return [{
+                id: 'six-week-engagement',
+                name: '6-Week Engagement Program',
+                description: 'Default program',
+                created: new Date().toISOString(),
+                lastAccessed: new Date().toISOString(),
+                isDefault: true,
+                isActive: true,
+                hasProgress: Object.keys(this.userProgress).length > 0
+            }];
+        }
+
+        return [{
+            id: metadata.id,
+            name: metadata.name,
+            description: metadata.description,
+            created: metadata.created || new Date().toISOString(),
+            lastAccessed: new Date().toISOString(),
+            isDefault: true,
+            isActive: true,
+            hasProgress: Object.keys(this.userProgress).length > 0
+        }];
+    }
+
+    async getCurrentProgramInfo() {
+        const metadata = this.programMetadata;
+        if (!metadata) {
+            return {
+                id: 'six-week-engagement',
+                name: '6-Week Engagement Program',
+                description: 'Default program',
+                isDefault: true,
+                created: new Date().toISOString(),
+                hasProgress: Object.keys(this.userProgress).length > 0
+            };
+        }
+
+        return {
+            id: metadata.id,
+            name: metadata.name,
+            description: metadata.description,
+            isDefault: true,
+            created: metadata.created || new Date().toISOString(),
+            hasProgress: Object.keys(this.userProgress).length > 0
+        };
+    }
+
+    async saveCurrentProgramAs(programName) {
+        console.log(`💾 Program "${programName}" would be saved (modular system doesn't support multiple programs yet)`);
+        throw new Error('Multiple program support not yet implemented in modular system');
+    }
+
+    async switchToProgram(programId, continueProgress = false) {
+        console.log(`🔄 Program switching not yet implemented in modular system: ${programId}`);
+        throw new Error('Program switching not yet implemented in modular system');
+    }
+
+    async deleteProgram(programId) {
+        console.log(`🗑️ Program deletion not yet implemented in modular system: ${programId}`);
+        throw new Error('Program deletion not yet implemented in modular system');
+    }
+
+    async resetCurrentProgram() {
+        try {
+            // Clear all user progress but keep the program structure
+            this.userProgress = {};
+            
+            // Reset settings to defaults but keep program reference
+            const currentProgramId = this.workoutData ? this.workoutData.id : null;
+            this.settings = {
+                ...this.getDefaultSettings(),
+                currentProgram: currentProgramId
+            };
+
+            // Save reset state
+            await this.saveUserProgress();
+            await this.saveSettings();
+
+            console.log('🔄 Current program reset successfully');
+            return true;
+
+        } catch (error) {
+            console.error('❌ Failed to reset program:', error);
+            throw error;
+        }
+    }
+
+    // CSV Export/Import (simplified for now)
+    async exportToCSV() {
+        try {
+            const csvData = this.convertWorkoutProgramToCSV();
+            return { success: true, data: csvData };
+            
+        } catch (error) {
+            console.error('❌ CSV export failed:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    convertWorkoutProgramToCSV() {
+        const csvRows = [];
+        csvRows.push(['week', 'day', 'exercise_name', 'category', 'sets', 'reps', 'time', 'notes']);
+        
+        if (!this.workoutData?.exercises) {
+            return csvRows.map(row => row.join(',')).join('\n');
+        }
+
+        for (let week = 1; week <= (this.workoutData.weeks || 6); week++) {
+            for (let day = 1; day <= 7; day++) {
+                const exercises = this.getExercisesForDay(week, day);
+                exercises.forEach(exercise => {
+                    csvRows.push([
+                        week,
+                        day,
+                        exercise.name || '',
+                        exercise.category || '',
+                        exercise.sets || '',
+                        exercise.reps || '',
+                        exercise.time || '',
+                        exercise.notes || ''
+                    ]);
+                });
+            }
+        }
+        
+        return csvRows.map(row => row.join(',')).join('\n');
+    }
+
+    async importFromCSV(csvData) {
+        console.log('📥 CSV import not yet fully implemented in modular system');
+        return { success: false, error: 'CSV import not yet implemented in modular system' };
+    }
 }
 
 // Export for module use

@@ -159,6 +159,53 @@ class PreCommitValidator {
             this.error('Settings event listener setup function missing');
         }
 
+        // Check for settings methods that might fail
+        if (appJs.includes('this.dataManager.getProgramList')) {
+            this.log('Checking if getProgramList method exists in data manager...', 'info');
+            
+            const dataManagerJs = this.readFile('scripts/data-manager.js');
+            const modularDataManagerJs = this.readFile('scripts/modular-data-manager.js');
+            
+            let hasGetProgramList = false;
+            
+            if (dataManagerJs && dataManagerJs.includes('getProgramList')) {
+                hasGetProgramList = true;
+            }
+            
+            if (modularDataManagerJs && modularDataManagerJs.includes('getProgramList')) {
+                hasGetProgramList = true;
+            }
+            
+            if (hasGetProgramList) {
+                this.success('getProgramList method found in data manager');
+            } else {
+                this.error('getProgramList method missing from data manager - settings will fail');
+            }
+        }
+
+        if (appJs.includes('this.dataManager.getCurrentProgramInfo')) {
+            this.log('Checking if getCurrentProgramInfo method exists in data manager...', 'info');
+            
+            const dataManagerJs = this.readFile('scripts/data-manager.js');
+            const modularDataManagerJs = this.readFile('scripts/modular-data-manager.js');
+            
+            let hasGetCurrentProgramInfo = false;
+            
+            if (dataManagerJs && dataManagerJs.includes('getCurrentProgramInfo')) {
+                hasGetCurrentProgramInfo = true;
+            }
+            
+            if (modularDataManagerJs && modularDataManagerJs.includes('getCurrentProgramInfo')) {
+                hasGetCurrentProgramInfo = true;
+            }
+            
+            if (hasGetCurrentProgramInfo) {
+                this.success('getCurrentProgramInfo method found in data manager');
+            } else {
+                this.error('getCurrentProgramInfo method missing from data manager - settings will fail');
+            }
+        }
+
         return true;
     }
 

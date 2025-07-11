@@ -1,6 +1,6 @@
 {
   "name": "6-Week Engagement Workout Tracker",
-  "short_name": "6Week Shred",
+  "short_name": "Shred",
   "description": "Track your 6-week engagement photo prep workout program with offline support",
   "start_url": "/shred/",
   "display": "standalone",
