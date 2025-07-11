@@ -278,7 +278,7 @@ class DataManager {
             
             return {
                 id: 'six-week-shred',
-                name: '6-Week Engagement Program',
+                name: '6-Week Shred Program',
                 description: 'Complete workout program for engagement photo preparation',
                 version: '1.0.0',
                 created: new Date().toISOString(),
@@ -297,7 +297,7 @@ class DataManager {
             // Fallback to generated data if CSV fails
             return {
                 id: 'six-week-shred',
-                name: '6-Week Engagement Program',
+                name: '6-Week Shred Program',
                 description: 'Complete workout program for engagement photo preparation',
                 version: '1.0.0',
                 created: new Date().toISOString(),
