@@ -247,15 +247,28 @@ class WorkoutApp {
 
     // Date Management
     setCurrentDate() {
+        const startDateStr = this.settings?.startDate;
+        
+        // If no start date is set, show Week 1 Day 1 but no "today" indicators
+        if (!startDateStr) {
+            this.currentWeek = 1;
+            this.currentDay = 1;
+            this.programStarted = false;
+            console.log(`📅 Program not started yet. Set start date in settings. Showing Week 1, Day 1`);
+            return;
+        }
+        
         const today = new Date();
         
-        // Get start date from settings, fallback to default
-        const startDateStr = this.settings?.startDate || new Date().toISOString().split('T')[0];
-        const programStart = new Date(startDateStr);
+        // Create date object using local timezone to avoid timezone issues
+        const [year, month, day] = startDateStr.split('-').map(Number);
+        const programStart = new Date(year, month - 1, day); // month is 0-indexed
         
         const daysDiff = Math.floor((today - programStart) / (1000 * 60 * 60 * 24));
         
         console.log(`📅 Program started: ${programStart.toDateString()}, Days since start: ${daysDiff}`);
+        
+        this.programStarted = true;
         
         if (daysDiff >= 0 && daysDiff < 42) { // 6 weeks = 42 days
             this.currentWeek = Math.floor(daysDiff / 7) + 1;

@@ -467,7 +467,7 @@ class DataManager {
     getDefaultSettings() {
         return {
             currentProgram: 'six-week-engagement',
-            startDate: new Date().toISOString().split('T')[0],
+            startDate: this.getTodayString(), // Default to today, user can change
             units: 'imperial', // or 'metric'
             darkMode: true,
             notifications: {
@@ -697,6 +697,15 @@ class DataManager {
     // Utility Methods
     generateSessionId() {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    getTodayString() {
+        // Get today's date in local timezone as YYYY-MM-DD
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     // Data Validation

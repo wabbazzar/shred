@@ -135,11 +135,21 @@ class CalendarView {
     }
     
     isToday(week, day) {
+        // If program hasn't started, no day should be "today"
+        if (!this.app.programStarted) {
+            return false;
+        }
+        
         // Proper date logic - check if this specific week/day is actually today
         const today = new Date();
         
-        // Get the program start date from app settings or use a default
-        const programStartDate = new Date(this.app.settings?.startDate || '2024-01-01');
+        // Get the program start date from app settings
+        const startDateStr = this.app.settings?.startDate;
+        if (!startDateStr) return false;
+        
+        // Create date object using local timezone to avoid timezone issues
+        const [year, month, dayNum] = startDateStr.split('-').map(Number);
+        const programStartDate = new Date(year, month - 1, dayNum);
         
         // Calculate the specific date for this week and day
         const daysSinceStart = (week - 1) * 7 + (day - 1);
