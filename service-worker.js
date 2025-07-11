@@ -1,4 +1,4 @@
-const CACHE_NAME = 'workout-tracker-v2';
+const CACHE_NAME = 'workout-tracker-v3';
 const WORKOUT_ASSETS = [
   '/',
   '/index.html',
@@ -14,6 +14,7 @@ const WORKOUT_ASSETS = [
   '/scripts/data-manager.js',
   '/scripts/csv-handler.js',
   '/scripts/service-worker-register.js',
+  '/assets/icons/app_icon.png',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
   '/assets/data/workout_program.json'
@@ -150,8 +151,8 @@ self.addEventListener('push', (event) => {
     const data = event.data.json();
     const options = {
       body: data.body || 'Time for your workout!',
-      icon: '/assets/icons/icon-192.png',
-      badge: '/assets/icons/icon-192.png',
+      icon: '/assets/icons/app_icon.png',
+      badge: '/assets/icons/app_icon.png',
       vibrate: [200, 100, 200],
       data: {
         url: data.url || '/'
@@ -266,8 +267,8 @@ async function checkWorkoutReminders() {
       if (!todayComplete && now.getHours() === 18) { // 6 PM reminder
         self.registration.showNotification('Workout Reminder', {
           body: 'Don\'t forget to complete today\'s workout!',
-          icon: '/assets/icons/icon-192.png',
-          badge: '/assets/icons/icon-192.png',
+          icon: '/assets/icons/app_icon.png',
+          badge: '/assets/icons/app_icon.png',
           data: { url: '/' }
         });
       }

@@ -604,6 +604,16 @@ class WorkoutApp {
                     
                     <div class="settings-item">
                         <div>
+                            <div class="settings-label">Share App</div>
+                            <div class="settings-description">Share Shred with friends and family</div>
+                        </div>
+                        <div class="settings-control">
+                            <button class="settings-btn secondary" id="share-app-btn">Share</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
                             <div class="settings-label">About</div>
                             <div class="settings-description">Mobile-first PWA for engagement workout tracking</div>
                         </div>
@@ -685,6 +695,10 @@ class WorkoutApp {
         // App settings
         document.getElementById('clear-cache-btn').addEventListener('click', () => {
             this.clearAppCache();
+        });
+        
+        document.getElementById('share-app-btn').addEventListener('click', () => {
+            this.shareApp();
         });
         
         document.getElementById('about-btn').addEventListener('click', () => {
@@ -900,6 +914,68 @@ class WorkoutApp {
         }, 1500);
     }
     
+    async shareApp() {
+        const shareData = {
+            title: 'Shred - Workout Tracker',
+            text: 'Track your workout progress with this awesome PWA! Complete gym and home workouts designed for your special day.',
+            url: 'https://wabbazzar.github.io/shred/'
+        };
+
+        try {
+            // Check if Web Share API is supported
+            if (navigator.share) {
+                await navigator.share(shareData);
+                console.log('📤 App shared successfully');
+            } else {
+                // Fallback for browsers without Web Share API
+                this.fallbackShare(shareData);
+            }
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('📤 Share cancelled by user');
+            } else {
+                console.error('❌ Share failed:', error);
+                this.fallbackShare(shareData);
+            }
+        }
+    }
+
+    fallbackShare(shareData) {
+        // Copy URL to clipboard as fallback
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareData.url).then(() => {
+                this.showSettingsMessage('App URL copied to clipboard!', 'success');
+            }).catch(() => {
+                this.showShareFallbackDialog(shareData);
+            });
+        } else {
+            this.showShareFallbackDialog(shareData);
+        }
+    }
+
+    showShareFallbackDialog(shareData) {
+        const message = `Share Shred with others!\n\n${shareData.text}\n\nURL: ${shareData.url}`;
+        
+        // Create a temporary text area to select the URL
+        const textArea = document.createElement('textarea');
+        textArea.value = shareData.url;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert(`${message}\n\nURL has been copied to your clipboard!`);
+        } catch (err) {
+            document.body.removeChild(textArea);
+            alert(message);
+        }
+    }
+
     showAboutDialog() {
         alert(`Shred v1.0
         
