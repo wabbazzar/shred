@@ -887,6 +887,11 @@ class DayView {
             this.app.weekView.refreshWeekData();
         }
         
+        // Refresh calendar view if it exists
+        if (this.app.calendarView && this.app.calendarView.refreshCalendarData) {
+            this.app.calendarView.refreshCalendarData();
+        }
+        
         input.classList.remove('active');
         console.log(`💾 Exercise ${exerciseIndex} input saved: ${field} = ${value}`);
     }
@@ -945,6 +950,11 @@ class DayView {
         // Refresh week view to sync completion percentages
         if (this.app.weekView) {
             this.app.weekView.refreshWeekData();
+        }
+        
+        // Refresh calendar view if it exists
+        if (this.app.calendarView && this.app.calendarView.refreshCalendarData) {
+            this.app.calendarView.refreshCalendarData();
         }
     }
 
@@ -1141,11 +1151,33 @@ class DayView {
     }
 
     updateSectionCompletion() {
+        // Get day data to properly calculate section completions
+        const dayData = this.app.dataManager.getDayInfo(this.currentWeek, this.currentDay);
+        if (!dayData || !dayData.sections) return;
+        
+        let exerciseIndex = 0;
+        
         // Update all section completion indicators
-        document.querySelectorAll('.workout-section').forEach(section => {
-            const exercises = section.querySelectorAll('.exercise-item');
-            const completed = section.querySelectorAll('.exercise-item.complete').length;
-            const completion = exercises.length > 0 ? Math.round((completed / exercises.length) * 100) : 0;
+        document.querySelectorAll('.workout-section').forEach((section, sectionIdx) => {
+            const sectionData = dayData.sections[sectionIdx];
+            if (!sectionData) return;
+            
+            const exerciseCount = sectionData.exercises.length;
+            let completedCount = 0;
+            
+            // Check each exercise in this section
+            for (let i = 0; i < exerciseCount; i++) {
+                const progress = this.app.getExerciseProgress(
+                    this.currentWeek, 
+                    this.currentDay, 
+                    exerciseIndex + i
+                );
+                if (progress && progress.completed) {
+                    completedCount++;
+                }
+            }
+            
+            const completion = exerciseCount > 0 ? Math.round((completedCount / exerciseCount) * 100) : 0;
             
             const completionFill = section.querySelector('.completion-fill');
             const sectionStats = section.querySelector('.section-stats');
@@ -1155,7 +1187,6 @@ class DayView {
             }
             
             if (sectionStats) {
-                const exerciseCount = exercises.length;
                 sectionStats.textContent = `${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''} • ${completion}% complete`;
             }
             
@@ -1164,6 +1195,8 @@ class DayView {
             if (completionDiv) {
                 completionDiv.className = `section-completion ${completion >= 100 ? 'complete' : completion > 0 ? 'partial' : ''}`;
             }
+            
+            exerciseIndex += exerciseCount;
         });
     }
 

@@ -163,6 +163,29 @@ class CalendarView {
             workoutDate.getDate() === today.getDate()
         );
     }
+    
+    // Refresh calendar data without full re-render
+    refreshCalendarData() {
+        // Update week tiles with completion data
+        document.querySelectorAll('.week-tile').forEach(tile => {
+            const week = parseInt(tile.dataset.week);
+            if (week) {
+                const weekCompletion = this.app.getWeekCompletion(week);
+                const progressBar = tile.querySelector('.week-progress-bar');
+                const progressText = tile.querySelector('.week-progress-text');
+                
+                if (progressBar) {
+                    progressBar.style.width = `${weekCompletion}%`;
+                }
+                if (progressText) {
+                    progressText.textContent = `${weekCompletion}% Complete`;
+                }
+                
+                // Update tile class
+                tile.className = `week-tile ${weekCompletion >= 80 ? 'complete' : weekCompletion > 0 ? 'partial' : ''}`;
+            }
+        });
+    }
 }
 
 // Export for module use

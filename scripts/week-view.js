@@ -334,6 +334,30 @@ class WeekView {
         }
         return total;
     }
+    
+    // Refresh week data without full re-render
+    refreshWeekData() {
+        // Update completion percentage in header
+        const weekCompletion = this.app.getWeekCompletion(this.currentWeek);
+        const completionBadge = document.querySelector('#week-view .completion-badge');
+        if (completionBadge) {
+            completionBadge.textContent = `${weekCompletion}%`;
+            completionBadge.className = `completion-badge ${weekCompletion >= 80 ? 'complete' : weekCompletion > 0 ? 'partial' : ''}`;
+        }
+        
+        // Update day tiles
+        document.querySelectorAll('.day-tile').forEach(tile => {
+            const day = parseInt(tile.dataset.day);
+            if (day) {
+                const dayCompletion = this.app.getDayCompletion(this.currentWeek, day);
+                const completionEl = tile.querySelector('.day-completion');
+                if (completionEl) {
+                    completionEl.textContent = `${dayCompletion}%`;
+                    tile.className = `day-tile ${dayCompletion >= 80 ? 'complete' : dayCompletion > 0 ? 'partial' : ''}`;
+                }
+            }
+        });
+    }
 }
 
 // Export for module use
