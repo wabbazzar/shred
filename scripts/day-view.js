@@ -1204,9 +1204,14 @@ class DayView {
         const completion = this.app.getDayCompletion(this.currentWeek, this.currentDay);
         const badge = document.querySelector('.completion-badge');
         
+        console.log(`🔍 Day completion for W${this.currentWeek}-D${this.currentDay}: ${completion}%`);
+        
         if (badge) {
             badge.textContent = `${completion}%`;
             badge.className = `completion-badge ${completion >= 80 ? 'complete' : completion > 0 ? 'partial' : ''}`;
+            console.log(`🎯 Updated badge to: ${completion}%`);
+        } else {
+            console.warn('⚠️ Completion badge element not found');
         }
     }
 

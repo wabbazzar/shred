@@ -707,17 +707,23 @@ class DataManager {
     // Day/Week Completion Calculations
     calculateDayCompletion(week, day) {
         const exercises = this.getExercisesForDay(week, day);
-        if (!exercises || exercises.length === 0) return 0;
+        if (!exercises || exercises.length === 0) {
+            console.log(`⚠️ No exercises found for W${week}-D${day}`);
+            return 0;
+        }
         
         let completedCount = 0;
         exercises.forEach((_, index) => {
             const progress = this.getExerciseProgress(week, day, index);
+            console.log(`📊 Exercise ${index} progress:`, progress);
             if (progress && progress.completed) {
                 completedCount++;
             }
         });
         
-        return Math.round((completedCount / exercises.length) * 100);
+        const completion = Math.round((completedCount / exercises.length) * 100);
+        console.log(`📋 Day W${week}-D${day}: ${completedCount}/${exercises.length} exercises complete = ${completion}%`);
+        return completion;
     }
 
     calculateWeekCompletion(week) {
