@@ -924,10 +924,12 @@ class WorkoutApp {
     exportWorkoutData() {
         try {
             // TODO: Implement CSV export
-            this.showSettingsMessage('Data exported successfully!', 'success');
+            const exportBtn = document.getElementById('export-data-btn');
+            this.showSettingsMessage('Data exported successfully!', 'success', exportBtn);
             console.log('📤 Data export initiated');
         } catch (error) {
-            this.showSettingsMessage('Export failed: ' + error.message, 'error');
+            const exportBtn = document.getElementById('export-data-btn');
+            this.showSettingsMessage('Export failed: ' + error.message, 'error', exportBtn);
             console.error('❌ Export error:', error);
         }
     }
@@ -999,17 +1001,31 @@ Features:
         }
     }
     
-    showSettingsMessage(message, type = 'info') {
+    showSettingsMessage(message, type = 'info', contextElement = null) {
         // Find or create message container
         let messageContainer = document.querySelector('.settings-message');
         if (!messageContainer) {
             messageContainer = document.createElement('div');
             messageContainer.className = 'settings-message';
             
-            // Insert at top of first section
-            const firstSection = document.querySelector('.section-content-settings');
-            if (firstSection) {
-                firstSection.insertBefore(messageContainer, firstSection.firstChild);
+            // If context element provided, place message near it
+            if (contextElement) {
+                const settingsItem = contextElement.closest('.settings-item');
+                if (settingsItem) {
+                    settingsItem.appendChild(messageContainer);
+                } else {
+                    // Fallback to modal body
+                    const modalBody = document.querySelector('.modal-body');
+                    if (modalBody) {
+                        modalBody.insertBefore(messageContainer, modalBody.firstChild);
+                    }
+                }
+            } else {
+                // Default to top of modal
+                const modalBody = document.querySelector('.modal-body');
+                if (modalBody) {
+                    modalBody.insertBefore(messageContainer, modalBody.firstChild);
+                }
             }
         }
         
@@ -1018,6 +1034,9 @@ Features:
             <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
             <span>${message}</span>
         `;
+        
+        // Scroll message into view if needed
+        messageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         
         // Auto-hide after 3 seconds
         setTimeout(() => {

@@ -140,6 +140,31 @@ class DayView {
     }
 
     generateWorkoutContent(dayData) {
+        // Handle new section-based structure
+        if (dayData.sections && dayData.sections.length > 0) {
+            let sectionsHTML = '';
+            let exerciseIndex = 0; // Global exercise index across all sections
+            
+            dayData.sections.forEach((section, sectionIdx) => {
+                const sectionId = `section-${sectionIdx}`;
+                const isExpanded = this.expandedSections.has(sectionId);
+                const sectionCompletion = this.calculateSectionCompletionFromExercises(section.exercises, exerciseIndex);
+                
+                sectionsHTML += this.generateWorkoutSectionFromData(
+                    section, 
+                    sectionId, 
+                    isExpanded, 
+                    sectionCompletion,
+                    exerciseIndex
+                );
+                
+                exerciseIndex += section.exercises.length;
+            });
+
+            return `<div class="workout-sections">${sectionsHTML}</div>`;
+        }
+        
+        // Fallback for legacy structure
         if (!dayData.exercises || dayData.exercises.length === 0) {
             return '<div class="no-exercises">No exercises for this day</div>';
         }
@@ -202,6 +227,79 @@ class DayView {
         `;
     }
 
+    generateWorkoutSectionFromData(section, sectionId, isExpanded, completion, startExerciseIndex) {
+        const completionClass = completion >= 100 ? 'complete' : completion > 0 ? 'partial' : '';
+        const expandedClass = isExpanded ? 'expanded' : '';
+        
+        return `
+            <div class="workout-section ${expandedClass}" data-section="${sectionId}">
+                <div class="section-header" data-section="${sectionId}">
+                    <div class="section-info">
+                        <h3 class="section-title">${section.name}</h3>
+                        <div class="section-stats">
+                            ${section.exercises.length} exercise${section.exercises.length !== 1 ? 's' : ''} • ${completion}% complete
+                        </div>
+                    </div>
+                    
+                    <div class="section-controls">
+                        <div class="section-completion ${completionClass}">
+                            <div class="completion-bar">
+                                <div class="completion-fill" style="width: ${completion}%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="section-toggle" aria-label="Toggle section">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="chevron">
+                                <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="section-content ${expandedClass}">
+                    <div class="exercise-list">
+                        ${this.generateExerciseListWithIndex(section.exercises, startExerciseIndex)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    calculateSectionCompletionFromExercises(exercises, startIndex) {
+        if (!exercises || exercises.length === 0) return 0;
+        
+        let completedCount = 0;
+        exercises.forEach((_, localIndex) => {
+            const globalIndex = startIndex + localIndex;
+            const progress = this.app.getExerciseProgress(
+                this.currentWeek, 
+                this.currentDay, 
+                globalIndex
+            );
+            if (progress && progress.completed) {
+                completedCount++;
+            }
+        });
+        
+        return Math.round((completedCount / exercises.length) * 100);
+    }
+
+    generateExerciseListWithIndex(exercises, startIndex) {
+        return exercises.map((exercise, localIndex) => {
+            const globalIndex = startIndex + localIndex;
+            const exerciseProgress = this.app.getExerciseProgress(
+                this.currentWeek, 
+                this.currentDay, 
+                globalIndex
+            );
+            
+            const isComplete = exerciseProgress && exerciseProgress.completed;
+            const exerciseData = exerciseProgress ? exerciseProgress.data : {};
+            
+            return this.generateExerciseItem(exercise, globalIndex, isComplete, exerciseData);
+        }).join('');
+    }
+
     generateExerciseList(exercises) {
         return exercises.map((exercise, index) => {
             const exerciseProgress = this.app.getExerciseProgress(
@@ -262,8 +360,18 @@ class DayView {
                 return this.generateBodyweightInputs(exercise, savedData);
             case 'flexibility':
                 return this.generateFlexibilityInputs(exercise, savedData);
+            case 'mobility':
+                return this.generateFlexibilityInputs(exercise, savedData);
             case 'rest':
                 return this.generateRestInputs(exercise, savedData);
+            case 'emom':
+                return this.generateEMOMInputs(exercise, savedData);
+            case 'amrap':
+                return this.generateAMRAPInputs(exercise, savedData);
+            case 'circuit':
+                return this.generateCircuitInputs(exercise, savedData);
+            case 'lifestyle':
+                return this.generateLifestyleInputs(exercise, savedData);
             default:
                 return this.generateGenericInputs(exercise, savedData);
         }
@@ -479,6 +587,28 @@ class DayView {
             input.addEventListener('blur', (e) => {
                 this.saveExerciseInput(e.target);
             });
+
+            // Auto-advance for number inputs (like credit card forms)
+            if (input.type === 'number') {
+                input.addEventListener('keydown', (e) => {
+                    // Move to next input on Enter or Tab
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.focusNextInput(input);
+                    }
+                });
+
+                input.addEventListener('input', (e) => {
+                    // Auto-advance when field is "reasonably filled"
+                    const value = e.target.value;
+                    const fieldName = e.target.dataset.field;
+                    
+                    // Auto-advance logic for different field types
+                    if (this.shouldAutoAdvance(fieldName, value)) {
+                        setTimeout(() => this.focusNextInput(e.target), 100);
+                    }
+                });
+            }
         });
     }
 
@@ -916,12 +1046,85 @@ class DayView {
                     // Update completion state
                     this.updateExerciseCompletion(index);
                 }
+            } else {
+                // Load suggestions from previous week if no saved data
+                this.loadPreviousWeekSuggestions(index);
             }
         });
         
         // Update section and day completion
         this.updateSectionCompletion();
         this.updateDayCompletion();
+    }
+
+    // Auto-advance input navigation helpers
+    shouldAutoAdvance(fieldName, value) {
+        if (!value) return false;
+        
+        // Weight inputs: advance after 2-3 digits
+        if (fieldName.includes('weight')) {
+            return value.length >= 2 && parseFloat(value) >= 10;
+        }
+        
+        // Rep inputs: advance after 1-2 digits  
+        if (fieldName.includes('reps')) {
+            return value.length >= 1 && parseInt(value) >= 1;
+        }
+        
+        // Time/duration: advance after reasonable input
+        if (fieldName.includes('time') || fieldName.includes('duration')) {
+            return value.length >= 1 && parseInt(value) >= 1;
+        }
+        
+        return false;
+    }
+
+    focusNextInput(currentInput) {
+        const exerciseItem = currentInput.closest('.exercise-item');
+        if (!exerciseItem) return;
+        
+        const allInputs = Array.from(exerciseItem.querySelectorAll('.exercise-input[type="number"]'));
+        const currentIndex = allInputs.indexOf(currentInput);
+        
+        if (currentIndex >= 0 && currentIndex < allInputs.length - 1) {
+            const nextInput = allInputs[currentIndex + 1];
+            nextInput.focus();
+            nextInput.select(); // Select existing content for easy replacement
+        } else {
+            // If last input in exercise, move to next exercise's first input
+            const nextExercise = exerciseItem.nextElementSibling;
+            if (nextExercise && nextExercise.classList.contains('exercise-item')) {
+                const firstInput = nextExercise.querySelector('.exercise-input[type="number"]');
+                if (firstInput) {
+                    firstInput.focus();
+                    firstInput.select();
+                }
+            }
+        }
+    }
+
+    loadPreviousWeekSuggestions(exerciseIndex) {
+        if (this.currentWeek <= 1) return; // No previous week for week 1
+        
+        const exerciseItem = document.querySelector(`[data-exercise="${exerciseIndex}"]`);
+        if (!exerciseItem) return;
+        
+        // Get previous week's data for same day/exercise
+        const previousWeekProgress = this.app.getExerciseProgress(
+            this.currentWeek - 1, 
+            this.currentDay, 
+            exerciseIndex
+        );
+        
+        if (previousWeekProgress && previousWeekProgress.data) {
+            // Set as placeholder values
+            Object.keys(previousWeekProgress.data).forEach(field => {
+                const input = exerciseItem.querySelector(`[data-field="${field}"]`);
+                if (input && !input.value) {
+                    input.placeholder = `${input.placeholder} (${previousWeekProgress.data[field]})`;
+                }
+            });
+        }
     }
 }
 

@@ -22,11 +22,11 @@
 A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
 
 ## Current Development Status
-- **Current Phase**: Phase 5.2: Program Management Features
-- **Last Completed**: Phase 5.1 - Settings Screen UI (COMPLETE)
-- **Last Known Good Commit**: `0a9aa86` - Phase 5.1 COMPLETE: Settings Screen UI Implementation
-- **Next Steps**: Implement program dropdown selector, save/switch program logic, and program deletion features
-- **Known Issues**: None - settings UI complete with proper sections and animations
+- **Current Phase**: Phase 5.3: CSV Export System
+- **Last Completed**: Phase 5.2 - Program Management Features (COMPLETE)
+- **Last Known Good Commit**: `b1a557a` - Phase 5.2 COMPLETE: Program Management Features
+- **Next Steps**: Implement CSV export functionality with complete workout data and proper file download
+- **Known Issues**: None - program management system complete with saving, switching, and deletion
 
 ## Project Structure
 ```
@@ -101,14 +101,15 @@ make visual-test
 make pwa-test
 ```
 
-## Success Criteria for Current Phase (5.2 - Program Management Features)
-- [ ] Create program dropdown selector showing all saved programs
-- [ ] Implement "Save Current Program As..." with text input validation
-- [ ] Add program switching logic with "Start over or continue?" prompt
-- [ ] Handle position preservation when switching between programs
-- [ ] Implement program deletion with confirmation dialog
-- [ ] Prevent deletion of default "6-Week Engagement Program"
-- [ ] Test all program operations with multiple saved programs
+## Success Criteria for Current Phase (5.3 - CSV Export System)
+- [ ] Create CSV generation from current workout data
+- [ ] Include all prescribed values (sets, reps, weights, times)
+- [ ] Include all user-entered actual values from progress
+- [ ] Add proper CSV column headers with standard schema
+- [ ] Implement file download with proper filename and MIME type
+- [ ] Filename format: [program_name]_workout_data_[date].csv
+- [ ] Test CSV format validity and data completeness
+- [ ] Verify cross-browser compatibility for file downloads
 
 ## Common Issues & Solutions
 1. **Touch not working**: Check tests/touch_test.html and verify 44px targets

@@ -165,299 +165,339 @@ class DataManager {
     }
 
     generateWeekProgram(week) {
-        const baseIntensity = 1 + (week - 1) * 0.1; // Progressive intensity
+        // Progressive rep scheme for strength exercises based on the actual plan
+        const strengthReps = week <= 2 ? '5' : week <= 4 ? '4' : '3';
         
         return {
-            1: { // Monday - Upper Body Strength (Gym)
+            1: { // Monday - Upper Body Strength + Volume (Gym)
                 type: 'gym',
-                focus: 'Upper Body Strength',
+                focus: 'Upper Body Strength + Volume',
                 duration: '45-60 minutes',
-                exercises: [
+                sections: [
                     {
-                        name: 'Bench Press',
-                        category: 'strength',
-                        sets: 4,
-                        reps: week <= 2 ? '8-10' : week <= 4 ? '6-8' : '5-6',
-                        notes: 'Progressive overload each week'
+                        name: 'Strength Block',
+                        exercises: [
+                            {
+                                name: 'Bench Press',
+                                category: 'strength',
+                                sets: 4,
+                                reps: strengthReps,
+                                notes: `Weeks 1-2: 5 reps, Weeks 3-4: 4 reps, Weeks 5-6: 3 reps`
+                            },
+                            {
+                                name: 'Bent-Over Row',
+                                category: 'strength',
+                                sets: 4,
+                                reps: strengthReps,
+                                notes: 'Pull to lower chest, squeeze shoulder blades'
+                            },
+                            {
+                                name: 'Overhead Press',
+                                category: 'strength',
+                                sets: 3,
+                                reps: strengthReps,
+                                notes: 'Keep core tight, controlled movement'
+                            }
+                        ]
                     },
                     {
-                        name: 'Pull-ups/Lat Pulldown',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '8-12',
-                        notes: 'Use assistance if needed for pull-ups'
-                    },
-                    {
-                        name: 'Overhead Press',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '8-10',
-                        notes: 'Keep core tight, controlled movement'
-                    },
-                    {
-                        name: 'Barbell Rows',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '8-10',
-                        notes: 'Pull to lower chest, squeeze shoulder blades'
-                    },
-                    {
-                        name: 'Tricep Dips',
-                        category: 'bodyweight',
-                        sets: 3,
-                        reps: '10-15',
-                        notes: 'Use assistance or add weight as needed'
+                        name: 'Volume Block (EMOM/AMRAP)',
+                        exercises: [
+                            {
+                                name: 'EMOM 12 minutes: Pull-ups / Push-ups',
+                                category: 'emom',
+                                time: '12 minutes',
+                                notes: 'Minute 1: Pull-ups x 8-12, Minute 2: Push-ups x 15-20. Alternate each minute.'
+                            },
+                            {
+                                name: 'AMRAP 8 minutes',
+                                category: 'amrap',
+                                time: '8 minutes',
+                                notes: 'Dumbbell rows x 12 each arm, Incline dumbbell press x 15, Lateral raises x 20'
+                            },
+                            {
+                                name: 'Plank Hold',
+                                category: 'time',
+                                sets: 3,
+                                time: '45-60 seconds',
+                                notes: 'Maintain straight line from head to toe'
+                            }
+                        ]
                     }
                 ]
             },
-            2: { // Tuesday - Lower Body & Core (Home)
+            2: { // Tuesday - Dumbbell HIIT + Cardio (Home)
                 type: 'home',
-                focus: 'Lower Body & Core',
+                focus: 'Dumbbell HIIT + Cardio',
                 duration: '30-45 minutes',
-                exercises: [
+                sections: [
                     {
-                        name: 'Goblet Squats',
-                        category: 'strength',
-                        sets: 4,
-                        reps: '12-15',
-                        notes: 'Hold dumbbell at chest level'
+                        name: 'Warm-up',
+                        exercises: [
+                            {
+                                name: 'Dynamic Movement',
+                                category: 'mobility',
+                                time: '5 minutes',
+                                notes: 'Prepare body for workout'
+                            }
+                        ]
                     },
                     {
-                        name: 'Romanian Deadlifts',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '10-12',
-                        notes: 'Focus on hip hinge movement'
+                        name: 'EMOM 20 minutes',
+                        exercises: [
+                            {
+                                name: 'EMOM 20 minutes: 4 exercises',
+                                category: 'emom',
+                                time: '20 minutes',
+                                notes: 'Min 1: Dumbbell thrusters x 12-15, Min 2: Renegade rows x 8-10 each arm, Min 3: Single-arm overhead carry + reverse lunge x 6 each side, Min 4: Dumbbell burpees x 8-12'
+                            }
+                        ]
                     },
                     {
-                        name: 'Walking Lunges',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '10 each leg',
-                        notes: 'Alternate legs, step forward'
-                    },
-                    {
-                        name: 'Single-Leg Glute Bridges',
-                        category: 'bodyweight',
-                        sets: 3,
-                        reps: '12 each leg',
-                        notes: 'Squeeze glutes at top'
-                    },
-                    {
-                        name: 'Plank Hold',
-                        category: 'time',
-                        sets: 3,
-                        time: week <= 2 ? '30-45 seconds' : week <= 4 ? '45-60 seconds' : '60-90 seconds',
-                        notes: 'Maintain straight line from head to toe'
-                    },
-                    {
-                        name: 'Russian Twists',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '20 total',
-                        notes: 'Hold dumbbell, twist side to side'
+                        name: 'Finisher',
+                        exercises: [
+                            {
+                                name: 'AMRAP 5 minutes',
+                                category: 'amrap',
+                                time: '5 minutes',
+                                notes: 'Dumbbell swings x 15, Push-ups x 10, Squat jumps x 10'
+                            }
+                        ]
                     }
                 ]
             },
-            3: { // Wednesday - Lower Body Strength (Gym)
+            3: { // Wednesday - Lower Body Strength + Volume (Gym)
                 type: 'gym',
-                focus: 'Lower Body Strength',
+                focus: 'Lower Body Strength + Volume',
                 duration: '45-60 minutes',
-                exercises: [
+                sections: [
                     {
-                        name: 'Back Squats',
-                        category: 'strength',
-                        sets: 4,
-                        reps: week <= 2 ? '8-10' : week <= 4 ? '6-8' : '5-6',
-                        notes: 'Squat below parallel, controlled descent'
+                        name: 'Strength Block',
+                        exercises: [
+                            {
+                                name: 'Back Squat',
+                                category: 'strength',
+                                sets: 4,
+                                reps: strengthReps,
+                                notes: 'Same rep scheme as Monday'
+                            },
+                            {
+                                name: 'Romanian Deadlift',
+                                category: 'strength',
+                                sets: 4,
+                                reps: strengthReps,
+                                notes: 'Hip hinge movement, keep bar close to body'
+                            },
+                            {
+                                name: 'Bulgarian Split Squats',
+                                category: 'strength',
+                                sets: 3,
+                                reps: '8 each leg',
+                                notes: 'Rear foot elevated on bench'
+                            }
+                        ]
                     },
                     {
-                        name: 'Deadlifts',
-                        category: 'strength',
-                        sets: 3,
-                        reps: week <= 2 ? '8' : week <= 4 ? '6' : '5',
-                        notes: 'Hip hinge movement, keep bar close to body'
-                    },
-                    {
-                        name: 'Bulgarian Split Squats',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '8-10 each leg',
-                        notes: 'Rear foot elevated on bench'
-                    },
-                    {
-                        name: 'Leg Press',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '12-15',
-                        notes: 'Full range of motion, controlled'
-                    },
-                    {
-                        name: 'Calf Raises',
-                        category: 'strength',
-                        sets: 4,
-                        reps: '15-20',
-                        notes: 'Pause at top, full stretch at bottom'
+                        name: 'Volume Block',
+                        exercises: [
+                            {
+                                name: 'EMOM 15 minutes',
+                                category: 'emom',
+                                time: '15 minutes',
+                                notes: 'Minutes 1-5: Goblet squats x 15, Minutes 6-10: Single-leg RDL x 8 each leg, Minutes 11-15: Jump squats x 12'
+                            },
+                            {
+                                name: 'AMRAP 6 minutes',
+                                category: 'amrap',
+                                time: '6 minutes',
+                                notes: 'Walking lunges x 20 (10 each leg), Calf raises x 25, Wall sit x 30 seconds'
+                            }
+                        ]
                     }
                 ]
             },
-            4: { // Thursday - Upper Body & Arms (Home)
+            4: { // Thursday - Dumbbell Metabolic + Cardio (Home)
                 type: 'home',
-                focus: 'Upper Body & Arms',
+                focus: 'Dumbbell Metabolic + Cardio',
                 duration: '30-45 minutes',
-                exercises: [
+                sections: [
                     {
-                        name: 'Dumbbell Chest Press',
-                        category: 'strength',
-                        sets: 4,
-                        reps: '10-12',
-                        notes: 'Can be floor press or on bench'
+                        name: 'Circuit 1',
+                        exercises: [
+                            {
+                                name: 'Circuit 1 (4 rounds)',
+                                category: 'circuit',
+                                sets: 4,
+                                time: '45 sec work / 15 sec rest',
+                                notes: '1. Dumbbell squat to press, 2. Single-arm row (alternate), 3. Reverse lunges with bicep curls, 4. Renegade rows, 5. Dumbbell deadlift to upright row, 6. Mountain climbers'
+                            }
+                        ]
                     },
                     {
-                        name: 'Single-Arm Dumbbell Rows',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '10-12 each arm',
-                        notes: 'Support with opposite hand'
+                        name: 'Rest',
+                        exercises: [
+                            {
+                                name: 'Rest Period',
+                                category: 'rest',
+                                time: '2 minutes',
+                                notes: 'Recover between circuits'
+                            }
+                        ]
                     },
                     {
-                        name: 'Shoulder Press',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '10-12',
-                        notes: 'Standing or seated'
+                        name: 'Circuit 2',
+                        exercises: [
+                            {
+                                name: 'Circuit 2 (3 rounds)',
+                                category: 'circuit',
+                                sets: 3,
+                                time: '40 sec work / 20 sec rest',
+                                notes: '1. Dumbbell Romanian deadlifts, 2. Push-up to T-rotation, 3. Goblet squats with pulse, 4. Single-arm overhead press (switch arms), 5. Dumbbell step-ups, 6. Plank with dumbbell pull-throughs'
+                            }
+                        ]
                     },
                     {
-                        name: 'Bicep Curls',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '12-15',
-                        notes: 'Controlled movement, squeeze at top'
-                    },
-                    {
-                        name: 'Tricep Extensions',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '12-15',
-                        notes: 'Overhead or lying position'
-                    },
-                    {
-                        name: 'Push-ups',
-                        category: 'bodyweight',
-                        sets: 3,
-                        reps: week <= 2 ? '8-12' : week <= 4 ? '10-15' : '12-20',
-                        notes: 'Modify as needed (knees, incline)'
+                        name: 'Finisher',
+                        exercises: [
+                            {
+                                name: 'Farmer\'s Walk',
+                                category: 'strength',
+                                sets: 3,
+                                time: '30 seconds',
+                                notes: 'Use 50lb dumbbells or adjust weight as needed'
+                            }
+                        ]
                     }
                 ]
             },
-            5: { // Friday - Full Body Power (Gym)
+            5: { // Friday - Full Body Power + AMRAP (Gym)
                 type: 'gym',
-                focus: 'Full Body Power',
+                focus: 'Full Body Power + AMRAP',
                 duration: '45-60 minutes',
-                exercises: [
+                sections: [
                     {
-                        name: 'Incline Bench Press',
-                        category: 'strength',
-                        sets: 4,
-                        reps: '8-10',
-                        notes: '30-45 degree incline'
+                        name: 'Power Block',
+                        exercises: [
+                            {
+                                name: 'Deadlift',
+                                category: 'strength',
+                                sets: 5,
+                                reps: '3',
+                                notes: 'Focus on speed and power'
+                            },
+                            {
+                                name: 'Push Press',
+                                category: 'strength',
+                                sets: 4,
+                                reps: '5',
+                                notes: 'Explosive overhead movement'
+                            },
+                            {
+                                name: 'Box Jumps or Jump Squats',
+                                category: 'bodyweight',
+                                sets: 4,
+                                reps: '8',
+                                notes: 'Explosive lower body power'
+                            }
+                        ]
                     },
                     {
-                        name: 'Bent-Over Rows',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '8-10',
-                        notes: 'Barbell or dumbbell'
-                    },
-                    {
-                        name: 'Step-ups',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '10 each leg',
-                        notes: 'Use bench or box, add weight'
-                    },
-                    {
-                        name: 'Cable Flyes',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '12-15',
-                        notes: 'Squeeze chest at peak contraction'
-                    },
-                    {
-                        name: 'Face Pulls',
-                        category: 'strength',
-                        sets: 3,
-                        reps: '15-20',
-                        notes: 'High rep, focus on rear delts'
-                    },
-                    {
-                        name: 'Hanging Knee Raises',
-                        category: 'bodyweight',
-                        sets: 3,
-                        reps: '8-12',
-                        notes: 'Control the movement, no swinging'
+                        name: 'AMRAP Finisher (20 minutes)',
+                        exercises: [
+                            {
+                                name: 'AMRAP Round 1 (5 min)',
+                                category: 'amrap',
+                                time: '5 minutes',
+                                notes: 'Burpees x 5, Kettlebell swings x 10, Mountain climbers x 20'
+                            },
+                            {
+                                name: 'AMRAP Round 2 (5 min)',
+                                category: 'amrap',
+                                time: '5 minutes',
+                                notes: 'Thrusters x 8, Pull-ups x 6, Push-ups x 12'
+                            },
+                            {
+                                name: 'AMRAP Round 3 (5 min)',
+                                category: 'amrap',
+                                time: '5 minutes',
+                                notes: 'Squat to calf raise x 15, Pike push-ups x 8, Plank to downward dog x 10'
+                            },
+                            {
+                                name: 'AMRAP Round 4 (5 min)',
+                                category: 'amrap',
+                                time: '5 minutes',
+                                notes: 'Repeat Round 1: Burpees x 5, Kettlebell swings x 10, Mountain climbers x 20'
+                            }
+                        ]
                     }
                 ]
             },
-            6: { // Saturday - Active Recovery
+            6: { // Saturday - Yoga/Mobility (45-60 min)
                 type: 'recovery',
-                focus: 'Mobility & Active Recovery',
-                duration: '30-45 minutes',
-                exercises: [
+                focus: 'Yoga/Mobility',
+                duration: '45-60 minutes',
+                sections: [
                     {
-                        name: 'Dynamic Warm-up',
-                        category: 'mobility',
-                        sets: 1,
-                        time: '10 minutes',
-                        notes: 'Leg swings, arm circles, hip circles'
+                        name: 'Flow 1 - Dynamic Warm-up',
+                        exercises: [
+                            {
+                                name: 'Dynamic Warm-up',
+                                category: 'mobility',
+                                time: '10 minutes',
+                                notes: 'Cat-cow stretches, World\'s greatest stretch, Hip circles and leg swings, Arm circles and shoulder rolls'
+                            }
+                        ]
                     },
                     {
-                        name: 'Yoga Flow',
-                        category: 'flexibility',
-                        sets: 1,
-                        time: '15-20 minutes',
-                        notes: 'Focus on problem areas from week'
+                        name: 'Flow 2 - Strength-Flexibility',
+                        exercises: [
+                            {
+                                name: 'Strength-Flexibility Flow',
+                                category: 'flexibility',
+                                time: '25 minutes',
+                                notes: 'Sun salutation A (5 rounds), Warrior sequence (30 sec holds), Triangle pose series, Twisted chair pose, Eagle pose balance, Low lunge with side stretch'
+                            }
+                        ]
                     },
                     {
-                        name: 'Walking or Light Cardio',
-                        category: 'cardio',
-                        sets: 1,
-                        time: '20-30 minutes',
-                        notes: 'Easy pace, enjoy the outdoors'
-                    },
-                    {
-                        name: 'Foam Rolling',
-                        category: 'recovery',
-                        sets: 1,
-                        time: '10-15 minutes',
-                        notes: 'Focus on tight areas'
+                        name: 'Flow 3 - Recovery/Restoration',
+                        exercises: [
+                            {
+                                name: 'Recovery/Restoration',
+                                category: 'flexibility',
+                                time: '15 minutes',
+                                notes: 'Pigeon pose (2 min each side), Seated spinal twist, Happy baby pose, Legs up the wall, Savasana'
+                            }
+                        ]
                     }
                 ]
             },
-            7: { // Sunday - Complete Rest
-                type: 'rest',
-                focus: 'Complete Rest & Recovery',
-                duration: 'All day',
-                exercises: [
+            7: { // Sunday - Active Recovery + Optional Cardio
+                type: 'recovery',
+                focus: 'Active Recovery + Optional Cardio',
+                duration: 'Flexible',
+                sections: [
                     {
-                        name: 'Complete Rest',
-                        category: 'rest',
-                        sets: 1,
-                        notes: 'Focus on sleep, hydration, and meal prep for the week'
-                    },
-                    {
-                        name: 'Meal Prep',
-                        category: 'lifestyle',
-                        sets: 1,
-                        time: '1-2 hours',
-                        notes: 'Prepare healthy meals for the upcoming week'
-                    },
-                    {
-                        name: 'Reflection & Planning',
-                        category: 'mental',
-                        sets: 1,
-                        time: '15-30 minutes',
-                        notes: 'Review week progress, plan for next week'
+                        name: 'Active Recovery',
+                        exercises: [
+                            {
+                                name: 'Complete Rest',
+                                category: 'rest',
+                                notes: 'Focus on sleep, hydration, and meal prep for the week'
+                            },
+                            {
+                                name: 'Optional Cardio',
+                                category: 'cardio',
+                                time: '20-30 minutes',
+                                notes: 'Light cardio if desired: walking, easy cycling, or swimming'
+                            },
+                            {
+                                name: 'Meal Prep',
+                                category: 'lifestyle',
+                                time: '1-2 hours',
+                                notes: 'Prepare healthy meals for the upcoming week'
+                            }
+                        ]
                     }
                 ]
             }
@@ -562,7 +602,22 @@ class DataManager {
 
     // Data Retrieval Methods
     getExercisesForDay(week, day) {
-        return this.workoutData?.exercises?.[week]?.[day]?.exercises || [];
+        const dayData = this.workoutData?.exercises?.[week]?.[day];
+        if (!dayData) return [];
+        
+        // Handle new section-based structure
+        if (dayData.sections) {
+            let allExercises = [];
+            dayData.sections.forEach(section => {
+                if (section.exercises) {
+                    allExercises = allExercises.concat(section.exercises);
+                }
+            });
+            return allExercises;
+        }
+        
+        // Fallback for legacy structure
+        return dayData.exercises || [];
     }
 
     getDayInfo(week, day) {
