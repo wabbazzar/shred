@@ -71,10 +71,6 @@ class CalendarView {
             const isToday = this.isToday(week, day);
             const isCurrent = this.app.currentWeek === week && this.app.currentDay === day;
             
-            // Debug logging for Friday completion issue
-            if (day === 5) { // Friday
-                console.log(`🐛 Week ${week}, Day ${day} (Friday) completion: ${dayCompletion}%`);
-            }
             
             const completionClass = this.getCompletionClass(dayCompletion);
             const extraClasses = [];
@@ -133,13 +129,23 @@ class CalendarView {
     }
     
     isToday(week, day) {
-        // Simple check - can be enhanced with actual date logic
+        // Proper date logic - check if this specific week/day is actually today
         const today = new Date();
-        const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-        const mondayBasedDay = dayOfWeek === 0 ? 7 : dayOfWeek; // Convert to Monday = 1 system
         
-        // For now, just highlight based on current day of week
-        return day === mondayBasedDay;
+        // Get the program start date from app settings or use a default
+        const programStartDate = new Date(this.app.settings?.startDate || '2024-01-01');
+        
+        // Calculate the specific date for this week and day
+        const daysSinceStart = (week - 1) * 7 + (day - 1);
+        const workoutDate = new Date(programStartDate);
+        workoutDate.setDate(programStartDate.getDate() + daysSinceStart);
+        
+        // Check if the workout date is today
+        return (
+            workoutDate.getFullYear() === today.getFullYear() &&
+            workoutDate.getMonth() === today.getMonth() &&
+            workoutDate.getDate() === today.getDate()
+        );
     }
 }
 

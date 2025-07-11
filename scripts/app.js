@@ -283,6 +283,10 @@ class WorkoutApp {
     // Debug method to check Friday completion issue
     debugFridayCompletion() {
         console.log('🐛 Debugging Friday completion...');
+        
+        // First, show all stored progress data
+        console.log('📊 All stored progress data:', this.userProgress);
+        
         for (let week = 1; week <= 6; week++) {
             const completion = this.getDayCompletion(week, 5); // Day 5 = Friday
             const exercises = this.dataManager.getExercisesForDay(week, 5);
@@ -292,9 +296,37 @@ class WorkoutApp {
             exercises.forEach((exercise, index) => {
                 const progress = this.getExerciseProgress(week, 5, index);
                 if (progress && progress.completed) {
-                    console.log(`  - Exercise ${index} (${exercise.name}): COMPLETED`);
+                    console.log(`  - Exercise ${index} (${exercise.name}): COMPLETED`, progress);
                 }
             });
+        }
+    }
+
+    // Method to clear all Friday completion data
+    clearFridayData() {
+        console.log('🧹 Clearing all Friday completion data...');
+        
+        // Find and remove all Friday progress entries
+        const keysToRemove = [];
+        for (const key in this.userProgress) {
+            if (key.includes('-d5-')) { // Day 5 = Friday
+                keysToRemove.push(key);
+            }
+        }
+        
+        keysToRemove.forEach(key => {
+            delete this.userProgress[key];
+            console.log(`Removed: ${key}`);
+        });
+        
+        // Save the cleaned data
+        this.dataManager.saveUserProgress();
+        
+        console.log(`✅ Cleared ${keysToRemove.length} Friday entries`);
+        
+        // Re-render calendar view
+        if (this.currentView === 'calendar') {
+            this.initializeCalendarView();
         }
     }
 
