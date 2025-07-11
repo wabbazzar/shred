@@ -547,6 +547,133 @@ class DayView {
         `;
     }
 
+    generateEMOMInputs(exercise, savedData) {
+        return `
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <input type="number" 
+                           class="exercise-input rounds-input" 
+                           placeholder="Rounds Completed"
+                           data-field="rounds"
+                           value="${savedData.rounds || ''}"
+                           min="0"
+                           inputmode="numeric">
+                    <span class="input-unit">rounds</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <input type="text" 
+                           class="exercise-input notes-input" 
+                           placeholder="Notes (optional)"
+                           data-field="notes"
+                           value="${savedData.notes || ''}">
+                </div>
+            </div>
+        `;
+    }
+
+    generateAMRAPInputs(exercise, savedData) {
+        return `
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <input type="number" 
+                           class="exercise-input rounds-input" 
+                           placeholder="Total Rounds"
+                           data-field="rounds"
+                           value="${savedData.rounds || ''}"
+                           min="0"
+                           inputmode="numeric">
+                    <span class="input-unit">rounds</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <input type="number" 
+                           class="exercise-input partial-input" 
+                           placeholder="Extra Reps (if any)"
+                           data-field="partial_reps"
+                           value="${savedData.partial_reps || ''}"
+                           min="0"
+                           inputmode="numeric">
+                    <span class="input-unit">reps</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <input type="text" 
+                           class="exercise-input notes-input" 
+                           placeholder="Notes (optional)"
+                           data-field="notes"
+                           value="${savedData.notes || ''}">
+                </div>
+            </div>
+        `;
+    }
+
+    generateCircuitInputs(exercise, savedData) {
+        return `
+            <div class="input-row">
+                <div class="input-group">
+                    <input type="number" 
+                           class="exercise-input rounds-input" 
+                           placeholder="Rounds"
+                           data-field="rounds"
+                           value="${savedData.rounds || ''}"
+                           min="0"
+                           inputmode="numeric">
+                    <span class="input-unit">rounds</span>
+                </div>
+                <div class="input-group">
+                    <input type="text" 
+                           class="exercise-input time-input" 
+                           placeholder="Total Time"
+                           data-field="total_time"
+                           value="${savedData.total_time || ''}"
+                           inputmode="numeric">
+                    <span class="input-unit">time</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <input type="text" 
+                           class="exercise-input notes-input" 
+                           placeholder="Notes (optional)"
+                           data-field="notes"
+                           value="${savedData.notes || ''}">
+                </div>
+            </div>
+        `;
+    }
+
+    generateLifestyleInputs(exercise, savedData) {
+        return `
+            <div class="input-row">
+                <div class="lifestyle-content">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" 
+                                   class="exercise-input checkbox-input" 
+                                   data-field="completed"
+                                   ${savedData.completed ? 'checked' : ''}>
+                            <span class="checkmark"></span>
+                            Completed
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <input type="text" 
+                           class="exercise-input notes-input" 
+                           placeholder="Notes (optional)"
+                           data-field="notes"
+                           value="${savedData.notes || ''}">
+                </div>
+            </div>
+        `;
+    }
+
     generateGenericInputs(exercise, savedData) {
         return `
             <div class="input-row">
