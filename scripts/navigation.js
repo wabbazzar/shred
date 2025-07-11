@@ -104,13 +104,30 @@ class NavigationManager {
                 }
             }
 
-            // Number key navigation (1-3 for tabs)
-            if (e.key >= '1' && e.key <= '3' && !e.ctrlKey && !e.metaKey) {
-                const views = ['day', 'week', 'calendar'];
-                const viewIndex = parseInt(e.key) - 1;
-                if (views[viewIndex]) {
-                    e.preventDefault();
-                    this.navigateToView(views[viewIndex]);
+            // Number key navigation (1-4 for tabs/settings) - but not when typing in inputs
+            if (e.key >= '1' && e.key <= '4' && !e.ctrlKey && !e.metaKey) {
+                // Check if user is typing in an input field
+                const activeElement = document.activeElement;
+                const isInputFocused = activeElement && (
+                    activeElement.tagName === 'INPUT' || 
+                    activeElement.tagName === 'TEXTAREA' || 
+                    activeElement.tagName === 'SELECT' ||
+                    activeElement.contentEditable === 'true'
+                );
+                
+                // Only navigate if NOT typing in an input
+                if (!isInputFocused) {
+                    const views = ['day', 'week', 'calendar', 'settings'];
+                    const viewIndex = parseInt(e.key) - 1;
+                    if (views[viewIndex]) {
+                        e.preventDefault();
+                        if (views[viewIndex] === 'settings') {
+                            // Open settings modal
+                            this.app.showSettings();
+                        } else {
+                            this.navigateToView(views[viewIndex]);
+                        }
+                    }
                 }
             }
 

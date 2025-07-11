@@ -9,6 +9,7 @@
 3. **Update CLAUDE.md**: Update "Current Development Status" section in commit
 4. **Never Skip**: Every phase gets its own commit - this is our fallback safety net
 5. **Break Large Phases**: If a phase takes >30 minutes, break it into sub-phases with commits
+6. **Clean Commit Messages**: DO NOT include "🤖 Generated with [Claude Code]" or "Co-Authored-By: Claude" in commit messages
 
 ### Recovery Protocol:
 - If anything breaks, immediately: `git reset --hard <last-working-commit>`

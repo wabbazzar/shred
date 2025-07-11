@@ -281,15 +281,18 @@ class DayView {
                                placeholder="Weight"
                                data-field="set${set}_weight"
                                value="${weightValue}"
-                               min="0" step="2.5">
+                               min="0" step="2.5"
+                               inputmode="numeric">
                         <span class="input-unit">lbs</span>
                     </div>
                     <div class="input-group">
-                        <input type="text" 
+                        <input type="number" 
                                class="exercise-input reps-input" 
                                placeholder="${exercise.reps || 'Reps'}"
                                data-field="set${set}_reps"
-                               value="${repsValue}">
+                               value="${repsValue}"
+                               min="0"
+                               inputmode="numeric">
                         <span class="input-unit">reps</span>
                     </div>
                 </div>
@@ -308,7 +311,8 @@ class DayView {
                            placeholder="Duration"
                            data-field="duration"
                            value="${savedData.duration || ''}"
-                           min="0" step="1">
+                           min="0" step="1"
+                           inputmode="numeric">
                     <span class="input-unit">minutes</span>
                 </div>
             </div>
@@ -327,7 +331,8 @@ class DayView {
                            class="exercise-input pace-input" 
                            placeholder="Pace"
                            data-field="pace"
-                           value="${savedData.pace || ''}">
+                           value="${savedData.pace || ''}"
+                           inputmode="numeric">
                     <span class="input-unit">min/mi</span>
                 </div>
             </div>
@@ -349,7 +354,8 @@ class DayView {
                                class="exercise-input time-input" 
                                placeholder="${exercise.time || 'mm:ss'}"
                                data-field="set${set}_time"
-                               value="${timeValue}">
+                               value="${timeValue}"
+                               inputmode="numeric">
                         <span class="input-unit">time</span>
                     </div>
                 </div>
@@ -370,11 +376,13 @@ class DayView {
                 <div class="input-row">
                     <label class="set-label">Set ${set}</label>
                     <div class="input-group full-width">
-                        <input type="text" 
+                        <input type="number" 
                                class="exercise-input reps-input" 
                                placeholder="${exercise.reps || 'Reps'}"
                                data-field="set${set}_reps"
-                               value="${repsValue}">
+                               value="${repsValue}"
+                               min="0"
+                               inputmode="numeric">
                         <span class="input-unit">reps</span>
                     </div>
                 </div>
@@ -393,7 +401,8 @@ class DayView {
                            placeholder="Duration"
                            data-field="duration"
                            value="${savedData.duration || ''}"
-                           min="0" step="1">
+                           min="0" step="1"
+                           inputmode="numeric">
                     <span class="input-unit">minutes</span>
                 </div>
             </div>

@@ -24,6 +24,7 @@ class WorkoutApp {
             // Initialize view controllers
             this.dayView = new DayView(this);
             this.weekView = new WeekView(this);
+            this.calendarView = new CalendarView(this);
             
             // Initialize navigation system
             this.navigationManager = new NavigationManager(this);
@@ -222,7 +223,10 @@ class WorkoutApp {
     }
 
     initializeCalendarView() {
-        // Calendar specific initialization
+        // Render calendar view with current data
+        if (this.calendarView) {
+            this.calendarView.render();
+        }
         console.log('🗓️ Calendar view initialized');
     }
 
