@@ -1084,19 +1084,6 @@ Features:
         return Object.values(exerciseData).some(value => value && value.trim && value.trim() !== '');
     }
 
-    getDayCompletion(week, day) {
-        const dayExercises = this.workoutData.exercises[week]?.[day]?.exercises || [];
-        if (dayExercises.length === 0) return 0;
-        
-        let completed = 0;
-        dayExercises.forEach((_, index) => {
-            if (this.getExerciseCompletion(week, day, index).completed) {
-                completed++;
-            }
-        });
-        
-        return Math.round((completed / dayExercises.length) * 100);
-    }
 
     updateCompletionIndicators() {
         // Update UI completion indicators
