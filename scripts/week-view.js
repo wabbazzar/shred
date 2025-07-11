@@ -96,7 +96,7 @@ class WeekView {
         
         for (let day = 1; day <= 7; day++) {
             const dayCompletion = this.app.getDayCompletion(week, day);
-            const workoutData = this.app.workoutData?.exercises?.[week]?.[day];
+            const workoutData = this.app.dataManager.getDayInfo(week, day);
             const isToday = this.isToday(week, day);
             const isCurrent = this.app.currentWeek === week && this.app.currentDay === day;
             
@@ -139,8 +139,26 @@ class WeekView {
     }
     
     generateDayPreview(workoutData) {
-        if (!workoutData || !workoutData.exercises || workoutData.exercises.length === 0) {
-            if (workoutData?.type === 'rest') {
+        if (!workoutData) {
+            return `
+                <div class="preview-empty">
+                    <div>No workout</div>
+                </div>
+            `;
+        }
+        
+        // Get total exercise count from all sections
+        let totalExercises = 0;
+        if (workoutData.sections) {
+            workoutData.sections.forEach(section => {
+                if (section.exercises) {
+                    totalExercises += section.exercises.length;
+                }
+            });
+        }
+        
+        if (totalExercises === 0) {
+            if (workoutData?.type === 'rest' || workoutData?.type === 'recovery') {
                 return `
                     <div class="preview-empty">
                         <div class="rest-icon">😴</div>
@@ -167,7 +185,7 @@ class WeekView {
                 <div class="workout-type">${typeIcons[workoutData.type] || '💪'}</div>
                 <div class="workout-info">
                     <div class="workout-focus">${workoutData.focus || 'Workout'}</div>
-                    <div class="exercise-count">${workoutData.exercises.length} exercises</div>
+                    <div class="exercise-count">${totalExercises} exercises</div>
                     <div class="workout-duration">${workoutData.duration || ''}</div>
                 </div>
             </div>
@@ -309,9 +327,9 @@ class WeekView {
     getTotalExercises(week) {
         let total = 0;
         for (let day = 1; day <= 7; day++) {
-            const dayData = this.app.workoutData?.exercises?.[week]?.[day];
-            if (dayData?.exercises) {
-                total += dayData.exercises.length;
+            const exercises = this.app.dataManager.getExercisesForDay(week, day);
+            if (exercises) {
+                total += exercises.length;
             }
         }
         return total;
