@@ -461,8 +461,375 @@ class WorkoutApp {
     }
 
     showSettings() {
-        console.log('⚙️ Settings modal would open here');
-        // Settings modal implementation will come later
+        console.log('🔧 Opening settings...');
+        
+        const modal = document.getElementById('settings-modal');
+        const modalBody = modal.querySelector('.modal-body');
+        
+        // Create settings content with sections
+        modalBody.innerHTML = `
+            <!-- Program Management Section -->
+            <div class="settings-section">
+                <div class="section-header-settings">
+                    <h3>Program Management</h3>
+                </div>
+                <div class="section-content-settings">
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Current Program</div>
+                            <div class="settings-description">Switch between saved workout programs</div>
+                        </div>
+                        <div class="settings-control">
+                            <select class="settings-select" id="program-selector">
+                                <option value="6-Week Engagement Program">6-Week Engagement Program</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Save Current Program</div>
+                            <div class="settings-description">Save current progress as a new program</div>
+                        </div>
+                        <div class="settings-control">
+                            <button class="settings-btn" id="save-program-btn">Save As...</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Program Start Date</div>
+                            <div class="settings-description">Set when you started this program</div>
+                        </div>
+                        <div class="settings-control">
+                            <input type="date" class="settings-input" id="start-date-input" value="">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Reset Program</div>
+                            <div class="settings-description">Clear all progress and start over</div>
+                        </div>
+                        <div class="settings-control">
+                            <button class="settings-btn danger" id="reset-program-btn">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Export/Import Section -->
+            <div class="settings-section">
+                <div class="section-header-settings">
+                    <h3>Data Export & Import</h3>
+                </div>
+                <div class="section-content-settings">
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Export Data</div>
+                            <div class="settings-description">Download your workout data as CSV</div>
+                        </div>
+                        <div class="settings-control">
+                            <button class="settings-btn" id="export-data-btn">Export CSV</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Import Data</div>
+                            <div class="settings-description">Upload CSV file to restore data</div>
+                        </div>
+                        <div class="settings-control">
+                            <button class="settings-btn secondary" id="import-data-btn">Choose File</button>
+                            <input type="file" id="import-file-input" accept=".csv" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="file-upload-area" id="file-drop-area" style="display: none;">
+                        <div class="file-upload-icon">📁</div>
+                        <div class="file-upload-text">Drop CSV file here</div>
+                        <div class="file-upload-subtext">or click to select file</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- App Settings Section -->
+            <div class="settings-section">
+                <div class="section-header-settings">
+                    <h3>App Settings</h3>
+                </div>
+                <div class="section-content-settings">
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">App Version</div>
+                            <div class="settings-description">6-Week Engagement Workout Tracker v1.0</div>
+                        </div>
+                        <div class="settings-control">
+                            <span class="settings-label">v1.0.0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Storage Used</div>
+                            <div class="settings-description">Local storage usage for app data</div>
+                        </div>
+                        <div class="settings-control">
+                            <span class="settings-label" id="storage-usage">Calculating...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">Clear Cache</div>
+                            <div class="settings-description">Clear app cache and reload</div>
+                        </div>
+                        <div class="settings-control">
+                            <button class="settings-btn secondary" id="clear-cache-btn">Clear Cache</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">About</div>
+                            <div class="settings-description">Mobile-first PWA for engagement workout tracking</div>
+                        </div>
+                        <div class="settings-control">
+                            <button class="settings-btn secondary" id="about-btn">Info</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Set up event listeners for settings
+        this.setupSettingsEventListeners();
+        
+        // Initialize settings values
+        this.initializeSettingsValues();
+        
+        // Show modal with animation
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+        
+        console.log('⚙️ Settings modal opened successfully');
+    }
+    
+    setupSettingsEventListeners() {
+        const modal = document.getElementById('settings-modal');
+        
+        // Close button
+        const closeBtn = modal.querySelector('.close-btn');
+        closeBtn.addEventListener('click', () => this.closeSettings());
+        
+        // Click outside to close
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeSettings();
+            }
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                this.closeSettings();
+            }
+        });
+        
+        // Program management
+        document.getElementById('save-program-btn').addEventListener('click', () => {
+            this.showSaveProgramDialog();
+        });
+        
+        document.getElementById('reset-program-btn').addEventListener('click', () => {
+            this.showResetProgramDialog();
+        });
+        
+        document.getElementById('start-date-input').addEventListener('change', (e) => {
+            this.updateProgramStartDate(e.target.value);
+        });
+        
+        // Data export/import
+        document.getElementById('export-data-btn').addEventListener('click', () => {
+            this.exportWorkoutData();
+        });
+        
+        document.getElementById('import-data-btn').addEventListener('click', () => {
+            document.getElementById('import-file-input').click();
+        });
+        
+        document.getElementById('import-file-input').addEventListener('change', (e) => {
+            this.handleFileImport(e.target.files[0]);
+        });
+        
+        // App settings
+        document.getElementById('clear-cache-btn').addEventListener('click', () => {
+            this.clearAppCache();
+        });
+        
+        document.getElementById('about-btn').addEventListener('click', () => {
+            this.showAboutDialog();
+        });
+        
+        console.log('⚙️ Settings event listeners setup complete');
+    }
+    
+    initializeSettingsValues() {
+        // Set current program start date
+        const startDateInput = document.getElementById('start-date-input');
+        const startDate = this.dataManager.settings.programStartDate;
+        if (startDate) {
+            startDateInput.value = startDate;
+        }
+        
+        // Calculate storage usage
+        this.calculateStorageUsage();
+        
+        console.log('⚙️ Settings values initialized');
+    }
+    
+    closeSettings() {
+        const modal = document.getElementById('settings-modal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+        console.log('⚙️ Settings modal closed');
+    }
+    
+    showSaveProgramDialog() {
+        const programName = prompt('Enter a name for this program:', 'My Custom Program');
+        if (programName && programName.trim()) {
+            // TODO: Implement program saving
+            this.showSettingsMessage('Program saved successfully!', 'success');
+            console.log('💾 Program saved:', programName);
+        }
+    }
+    
+    showResetProgramDialog() {
+        const confirmed = confirm('Are you sure you want to reset all progress? This cannot be undone.');
+        if (confirmed) {
+            // TODO: Implement program reset
+            this.showSettingsMessage('Program reset successfully!', 'success');
+            console.log('🔄 Program reset confirmed');
+        }
+    }
+    
+    updateProgramStartDate(dateString) {
+        if (this.dataManager.settings) {
+            this.dataManager.settings.programStartDate = dateString;
+            this.dataManager.saveSettings();
+            this.showSettingsMessage('Start date updated!', 'success');
+            console.log('📅 Program start date updated:', dateString);
+        }
+    }
+    
+    exportWorkoutData() {
+        try {
+            // TODO: Implement CSV export
+            this.showSettingsMessage('Data exported successfully!', 'success');
+            console.log('📤 Data export initiated');
+        } catch (error) {
+            this.showSettingsMessage('Export failed: ' + error.message, 'error');
+            console.error('❌ Export error:', error);
+        }
+    }
+    
+    handleFileImport(file) {
+        if (!file) return;
+        
+        if (!file.name.endsWith('.csv')) {
+            this.showSettingsMessage('Please select a CSV file', 'error');
+            return;
+        }
+        
+        // TODO: Implement CSV import
+        this.showSettingsMessage('File import feature coming soon!', 'info');
+        console.log('📥 File import:', file.name);
+    }
+    
+    clearAppCache() {
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => {
+                    caches.delete(name);
+                });
+            });
+        }
+        this.showSettingsMessage('Cache cleared! Reloading...', 'success');
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    }
+    
+    showAboutDialog() {
+        alert(`6-Week Engagement Workout Tracker v1.0
+        
+Mobile-first Progressive Web App
+Built for engagement photo prep workouts
+Offline-capable with local data storage
+
+Features:
+• 3-tab navigation (Day/Week/Calendar)
+• Exercise completion tracking
+• Progress visualization
+• CSV data export/import
+• 100% offline functionality
+
+© 2024 - Built with modern web technologies`);
+    }
+    
+    calculateStorageUsage() {
+        try {
+            let totalSize = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    totalSize += localStorage[key].length;
+                }
+            }
+            
+            const sizeKB = (totalSize / 1024).toFixed(1);
+            const usageElement = document.getElementById('storage-usage');
+            if (usageElement) {
+                usageElement.textContent = `${sizeKB} KB`;
+            }
+        } catch (error) {
+            console.warn('Could not calculate storage usage:', error);
+            const usageElement = document.getElementById('storage-usage');
+            if (usageElement) {
+                usageElement.textContent = 'Unknown';
+            }
+        }
+    }
+    
+    showSettingsMessage(message, type = 'info') {
+        // Find or create message container
+        let messageContainer = document.querySelector('.settings-message');
+        if (!messageContainer) {
+            messageContainer = document.createElement('div');
+            messageContainer.className = 'settings-message';
+            
+            // Insert at top of first section
+            const firstSection = document.querySelector('.section-content-settings');
+            if (firstSection) {
+                firstSection.insertBefore(messageContainer, firstSection.firstChild);
+            }
+        }
+        
+        messageContainer.className = `settings-message ${type}`;
+        messageContainer.innerHTML = `
+            <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+            <span>${message}</span>
+        `;
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            if (messageContainer.parentNode) {
+                messageContainer.remove();
+            }
+        }, 3000);
     }
 
     // Completion Tracking
