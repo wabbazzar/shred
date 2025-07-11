@@ -8,7 +8,7 @@ class WorkoutApp {
         this.currentDay = 1;
         
         // Initialize core modules
-        this.dataManager = new DataManager();
+        this.dataManager = new ModularDataManager();
         this.navigationManager = null; // Will be initialized after DOM setup
         
         this.init();

@@ -4,25 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FF6B00">
-    <meta name="description" content="Track your 6-week engagement photo prep workout program">
+    <meta name="description" content="Track your 6-week engagement photo prep workout program with offline support. Complete gym and home workouts designed for your special day.">
     
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="6Week Shred">
+    <meta name="application-name" content="6Week Shred">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#121212">
+    <meta name="msapplication-TileImage" content="assets/icons/app_icon.png">
+    <meta name="msapplication-config" content="browserconfig.xml">
     
     <title>6-Week Engagement Workout Tracker</title>
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn, etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="6-Week Engagement Workout Tracker">
+    <meta property="og:description" content="Track your 6-week engagement photo prep workout program with offline support. Complete gym and home workouts designed for your special day.">
+    <meta property="og:image" content="assets/icons/app_icon.png">
+    <meta property="og:image:alt" content="6-Week Engagement Workout Tracker App Icon">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="6Week Shred">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="6-Week Engagement Workout Tracker">
+    <meta name="twitter:description" content="Track your 6-week engagement photo prep workout program with offline support. Complete gym and home workouts designed for your special day.">
+    <meta name="twitter:image" content="assets/icons/app_icon.png">
+    <meta name="twitter:image:alt" content="6-Week Engagement Workout Tracker App Icon">
+    
+    <!-- Apple Meta Tags -->
+    <meta name="apple-mobile-web-app-title" content="6Week Shred">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="format-detection" content="telephone=no">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Icons -->
+    <!-- Icons - Progressive Enhancement -->
     <link rel="icon" type="image/png" href="assets/icons/app_icon.png">
+    <link rel="shortcut icon" href="assets/icons/app_icon.png" type="image/png">
+    
+    <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/app_icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/app_icon.png">
+    
+    <!-- Standard Icons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/app_icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/app_icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/app_icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/app_icon.png">
     <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/app_icon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/app_icon.png">
-    <link rel="shortcut icon" href="assets/icons/app_icon.png" type="image/png">
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles/app.css">
@@ -112,6 +157,7 @@
 
     <!-- Scripts - Load in dependency order -->
     <script src="scripts/data-manager.js"></script>
+    <script src="scripts/modular-data-manager.js"></script>
     <script src="scripts/navigation.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/day-view.js"></script>

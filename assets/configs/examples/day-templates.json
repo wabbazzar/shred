@@ -1,0 +1,235 @@
+{
+  "templates": [
+    {
+      "id": "upper-strength-gym",
+      "name": "Upper Body Strength (Gym)",
+      "description": "Upper body strength training with volume work",
+      "type": "strength",
+      "location": "gym",
+      "duration": {
+        "min": 45,
+        "max": 75,
+        "typical": 60,
+        "unit": "minutes"
+      },
+      "equipment": {
+        "required": ["barbell", "dumbbells", "bench", "pull-up-bar"],
+        "optional": ["cables", "machines"]
+      },
+      "structure": {
+        "warmup": {
+          "duration": "10 minutes",
+          "sections": ["dynamic-warmup"]
+        },
+        "main": {
+          "sections": ["strength-block", "volume-block"],
+          "estimatedTime": "40-50 minutes"
+        },
+        "cooldown": {
+          "duration": "5-10 minutes",
+          "sections": ["static-stretch", "mobility"]
+        }
+      },
+      "intensity": {
+        "overall": "high",
+        "rpe": {
+          "target": 8,
+          "range": {"min": 7, "max": 9}
+        }
+      },
+      "recovery": {
+        "difficulty": 8,
+        "recommendedRecovery": "24-48 hours",
+        "nextDayRecommendation": "light"
+      },
+      "dayOfWeek": {
+        "preferred": ["monday", "wednesday", "friday"],
+        "avoid": ["sunday"]
+      }
+    },
+    {
+      "id": "dumbbell-hiit-home",
+      "name": "Dumbbell HIIT (Home)",
+      "description": "High-intensity interval training with dumbbells",
+      "type": "hiit",
+      "location": "home",
+      "duration": {
+        "min": 30,
+        "max": 45,
+        "typical": 35,
+        "unit": "minutes"
+      },
+      "equipment": {
+        "required": ["dumbbells"],
+        "optional": ["mat", "timer"]
+      },
+      "structure": {
+        "warmup": {
+          "duration": "5 minutes",
+          "sections": ["dynamic-movement"]
+        },
+        "main": {
+          "sections": ["emom-block", "amrap-block"],
+          "estimatedTime": "25-30 minutes"
+        },
+        "cooldown": {
+          "duration": "5 minutes",
+          "sections": ["cool-down-stretch"]
+        }
+      },
+      "intensity": {
+        "overall": "very-high",
+        "rpe": {
+          "target": 9,
+          "range": {"min": 8, "max": 10}
+        },
+        "heartRate": {
+          "zone": 4,
+          "percentage": {"min": 80, "max": 90}
+        }
+      },
+      "recovery": {
+        "difficulty": 9,
+        "recommendedRecovery": "24-36 hours",
+        "nextDayRecommendation": "moderate"
+      },
+      "dayOfWeek": {
+        "preferred": ["tuesday", "thursday"],
+        "avoid": ["monday", "friday"]
+      }
+    },
+    {
+      "id": "lower-strength-gym",
+      "name": "Lower Body Strength (Gym)",
+      "description": "Lower body strength with volume work",
+      "type": "strength",
+      "location": "gym",
+      "duration": {
+        "min": 45,
+        "max": 75,
+        "typical": 60,
+        "unit": "minutes"
+      },
+      "equipment": {
+        "required": ["barbell", "dumbbells", "squat-rack"],
+        "optional": ["leg-press", "machines"]
+      },
+      "structure": {
+        "warmup": {
+          "duration": "10 minutes",
+          "sections": ["leg-warmup"]
+        },
+        "main": {
+          "sections": ["strength-block", "volume-block"],
+          "estimatedTime": "40-50 minutes"
+        },
+        "cooldown": {
+          "duration": "10 minutes",
+          "sections": ["leg-stretch", "mobility"]
+        }
+      },
+      "intensity": {
+        "overall": "high",
+        "rpe": {
+          "target": 8,
+          "range": {"min": 7, "max": 9}
+        }
+      },
+      "recovery": {
+        "difficulty": 9,
+        "recommendedRecovery": "48-72 hours",
+        "nextDayRecommendation": "light"
+      },
+      "dayOfWeek": {
+        "preferred": ["wednesday", "saturday"],
+        "avoid": ["tuesday", "thursday"]
+      }
+    },
+    {
+      "id": "yoga-mobility",
+      "name": "Yoga & Mobility",
+      "description": "Active recovery with yoga and mobility work",
+      "type": "mobility",
+      "location": "anywhere",
+      "duration": {
+        "min": 45,
+        "max": 60,
+        "typical": 50,
+        "unit": "minutes"
+      },
+      "equipment": {
+        "required": ["mat"],
+        "optional": ["blocks", "strap", "bolster"]
+      },
+      "structure": {
+        "warmup": {
+          "duration": "10 minutes",
+          "sections": ["dynamic-warmup"]
+        },
+        "main": {
+          "sections": ["flow-sequence", "restorative"],
+          "estimatedTime": "35-40 minutes"
+        },
+        "cooldown": {
+          "duration": "10 minutes",
+          "sections": ["savasana"]
+        }
+      },
+      "intensity": {
+        "overall": "low",
+        "rpe": {
+          "target": 4,
+          "range": {"min": 2, "max": 6}
+        }
+      },
+      "recovery": {
+        "difficulty": 3,
+        "recommendedRecovery": "12-24 hours",
+        "nextDayRecommendation": "any"
+      },
+      "dayOfWeek": {
+        "preferred": ["saturday", "sunday"],
+        "avoid": []
+      }
+    },
+    {
+      "id": "complete-rest",
+      "name": "Complete Rest Day",
+      "description": "Full recovery and preparation day",
+      "type": "rest",
+      "location": "anywhere",
+      "duration": {
+        "min": 0,
+        "max": 60,
+        "typical": 30,
+        "unit": "minutes"
+      },
+      "equipment": {
+        "required": [],
+        "optional": ["foam-roller", "massage-tools"]
+      },
+      "structure": {
+        "main": {
+          "sections": ["lifestyle-activities"],
+          "estimatedTime": "flexible"
+        }
+      },
+      "intensity": {
+        "overall": "very-low",
+        "rpe": {
+          "target": 1,
+          "range": {"min": 1, "max": 3}
+        }
+      },
+      "recovery": {
+        "difficulty": 1,
+        "recommendedRecovery": "0 hours",
+        "nextDayRecommendation": "any"
+      },
+      "dayOfWeek": {
+        "preferred": ["sunday"],
+        "avoid": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Phase Definitions",
+  "description": "Training phases with progression rules and periodization",
+  "type": "object",
+  "required": ["phases"],
+  "properties": {
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "weeks", "focus"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique phase identifier",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "name": {
+            "type": "string",
+            "description": "Phase display name",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed phase description"
+          },
+          "weeks": {
+            "type": "object",
+            "required": ["start", "end"],
+            "properties": {
+              "start": {"type": "integer", "minimum": 1},
+              "end": {"type": "integer", "minimum": 1}
+            },
+            "description": "Week range for this phase"
+          },
+          "focus": {
+            "type": "string",
+            "enum": ["strength", "power", "endurance", "hypertrophy", "recovery", "technique", "conditioning", "mixed"],
+            "description": "Primary training focus"
+          },
+          "progression": {
+            "type": "object",
+            "properties": {
+              "strengthReps": {
+                "type": "object",
+                "properties": {
+                  "sets": {"type": "integer", "minimum": 1},
+                  "reps": {"type": ["integer", "string"]},
+                  "repRange": {
+                    "type": "object",
+                    "properties": {
+                      "min": {"type": "integer"},
+                      "max": {"type": "integer"}
+                    }
+                  }
+                }
+              },
+              "intensityPercent": {
+                "type": "object",
+                "properties": {
+                  "week1": {"type": "number", "minimum": 0, "maximum": 100},
+                  "week2": {"type": "number", "minimum": 0, "maximum": 100},
+                  "progression": {"type": "string", "enum": ["linear", "undulating", "block"]}
+                }
+              },
+              "volumeModifier": {
+                "type": "number",
+                "minimum": 0.5,
+                "maximum": 2.0,
+                "description": "Multiplier for base volume"
+              }
+            }
+          },
+          "characteristics": {
+            "type": "object",
+            "properties": {
+              "restPeriods": {
+                "type": "object",
+                "properties": {
+                  "strength": {"type": "string", "example": "3-5 minutes"},
+                  "accessory": {"type": "string", "example": "60-90 seconds"},
+                  "conditioning": {"type": "string", "example": "30-60 seconds"}
+                }
+              },
+              "tempo": {
+                "type": "string",
+                "description": "Movement tempo prescription",
+                "example": "3-1-2-0"
+              },
+              "rpe": {
+                "type": "object",
+                "properties": {
+                  "target": {"type": "number", "minimum": 1, "maximum": 10},
+                  "range": {
+                    "type": "object",
+                    "properties": {
+                      "min": {"type": "number"},
+                      "max": {"type": "number"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "adaptations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "trigger": {"type": "string", "enum": ["week", "performance", "completion"]},
+                "condition": {"type": "string"},
+                "action": {"type": "string", "enum": ["increase-weight", "increase-reps", "increase-sets", "change-exercise"]},
+                "value": {"type": ["number", "string"]}
+              }
+            }
+          }
+        }
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fromPhase": {"type": "string"},
+          "toPhase": {"type": "string"},
+          "deloadWeek": {"type": "boolean", "default": false},
+          "testingWeek": {"type": "boolean", "default": false},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}
