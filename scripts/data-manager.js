@@ -133,24 +133,185 @@ class DataManager {
         }
     }
 
+    // CSV Loading Methods
+    async loadWorkoutDataFromCSV(csvPath) {
+        try {
+            const response = await fetch(csvPath);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch CSV: ${response.status} ${response.statusText}`);
+            }
+            
+            const csvText = await response.text();
+            return this.parseCSVToWorkoutStructure(csvText);
+        } catch (error) {
+            console.error(`❌ Error loading CSV from ${csvPath}:`, error);
+            throw error;
+        }
+    }
+    
+    parseCSVToWorkoutStructure(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        
+        // Validate CSV format
+        const expectedHeaders = ['week', 'day', 'exercise_name', 'category', 'sets', 'reps', 'time', 'notes'];
+        const hasValidHeaders = expectedHeaders.every(header => headers.includes(header));
+        
+        if (!hasValidHeaders) {
+            throw new Error('Invalid CSV format - missing required headers');
+        }
+        
+        const exercises = {};
+        
+        // Parse each data row
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            
+            const values = this.parseCSVLine(line);
+            if (values.length !== headers.length) {
+                console.warn(`⚠️ Skipping malformed CSV line ${i + 1}: ${line}`);
+                continue;
+            }
+            
+            const exercise = {};
+            headers.forEach((header, index) => {
+                exercise[header] = values[index].trim();
+            });
+            
+            // Convert string numbers to actual numbers where appropriate
+            const week = parseInt(exercise.week);
+            const day = parseInt(exercise.day);
+            
+            if (isNaN(week) || isNaN(day)) {
+                console.warn(`⚠️ Skipping invalid week/day on line ${i + 1}: week=${exercise.week}, day=${exercise.day}`);
+                continue;
+            }
+            
+            // Initialize nested structure
+            if (!exercises[week]) exercises[week] = {};
+            if (!exercises[week][day]) {
+                exercises[week][day] = {
+                    type: this.getDayType(day),
+                    focus: this.getDayFocus(day),
+                    duration: '45-60 minutes',
+                    sections: [{
+                        name: 'Workout',
+                        exercises: []
+                    }]
+                };
+            }
+            
+            // Create exercise object
+            const exerciseObj = {
+                name: exercise.exercise_name,
+                category: exercise.category,
+                notes: exercise.notes || ''
+            };
+            
+            // Add sets, reps, time as appropriate
+            if (exercise.sets && exercise.sets !== '') {
+                exerciseObj.sets = parseInt(exercise.sets) || exercise.sets;
+            }
+            if (exercise.reps && exercise.reps !== '') {
+                exerciseObj.reps = exercise.reps;
+            }
+            if (exercise.time && exercise.time !== '') {
+                exerciseObj.time = exercise.time;
+            }
+            
+            exercises[week][day].sections[0].exercises.push(exerciseObj);
+        }
+        
+        console.log('📋 Successfully parsed CSV workout data');
+        return exercises;
+    }
+    
+    parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        result.push(current);
+        return result;
+    }
+    
+    getDayType(day) {
+        const dayTypes = {
+            1: 'gym', 2: 'home', 3: 'gym', 4: 'home', 
+            5: 'gym', 6: 'recovery', 7: 'rest'
+        };
+        return dayTypes[day] || 'gym';
+    }
+    
+    getDayFocus(day) {
+        const dayFocus = {
+            1: 'Upper Body Strength + Volume',
+            2: 'Dumbbell HIIT + Cardio', 
+            3: 'Lower Body Strength + Volume',
+            4: 'Dumbbell Metabolic + Cardio',
+            5: 'Full Body Power + AMRAP',
+            6: 'Yoga/Mobility',
+            7: 'Active Recovery + Optional Cardio'
+        };
+        return dayFocus[day] || 'Workout';
+    }
+
     // Default Data Generators
     async getDefaultWorkoutProgram() {
-        return {
-            id: 'six-week-engagement',
-            name: '6-Week Engagement Program',
-            description: 'Complete workout program for engagement photo preparation',
-            version: '1.0.0',
-            created: new Date().toISOString(),
-            weeks: 6,
-            daysPerWeek: 7,
-            metadata: {
-                targetAudience: 'Engagement preparation',
-                difficulty: 'Intermediate',
-                equipment: ['Gym access', 'Dumbbells'],
-                estimatedDuration: '45-60 minutes per session'
-            },
-            exercises: this.generateFullProgram()
-        };
+        try {
+            // Load from CSV file
+            const exercises = await this.loadWorkoutDataFromCSV('assets/workouts/default.csv');
+            
+            return {
+                id: 'six-week-engagement',
+                name: '6-Week Engagement Program',
+                description: 'Complete workout program for engagement photo preparation',
+                version: '1.0.0',
+                created: new Date().toISOString(),
+                weeks: 6,
+                daysPerWeek: 7,
+                metadata: {
+                    targetAudience: 'Engagement preparation',
+                    difficulty: 'Intermediate',
+                    equipment: ['Gym access', 'Dumbbells'],
+                    estimatedDuration: '45-60 minutes per session'
+                },
+                exercises: exercises
+            };
+        } catch (error) {
+            console.error('❌ Failed to load default CSV, falling back to generated data:', error);
+            // Fallback to generated data if CSV fails
+            return {
+                id: 'six-week-engagement',
+                name: '6-Week Engagement Program',
+                description: 'Complete workout program for engagement photo preparation',
+                version: '1.0.0',
+                created: new Date().toISOString(),
+                weeks: 6,
+                daysPerWeek: 7,
+                metadata: {
+                    targetAudience: 'Engagement preparation',
+                    difficulty: 'Intermediate',
+                    equipment: ['Gym access', 'Dumbbells'],
+                    estimatedDuration: '45-60 minutes per session'
+                },
+                exercises: this.generateFullProgram()
+            };
+        }
     }
 
     generateFullProgram() {

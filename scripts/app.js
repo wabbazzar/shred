@@ -598,7 +598,7 @@ class WorkoutApp {
                             <div class="settings-description">View example CSV format for data import</div>
                         </div>
                         <div class="settings-control">
-                            <a href="https://github.com/wabbazzar/shred/blob/main/example_workout_data.csv" target="_blank" class="settings-btn secondary">View Example</a>
+                            <a href="https://github.com/wabbazzar/shred/blob/main/assets/workouts/example.csv" target="_blank" class="settings-btn secondary">View Example</a>
                         </div>
                     </div>
                     

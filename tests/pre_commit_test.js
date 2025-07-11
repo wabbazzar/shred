@@ -180,15 +180,31 @@ class PreCommitValidator {
     }
 
     testCSVExample() {
-        this.log('Testing CSV example file...', 'info');
+        this.log('Testing CSV example files...', 'info');
         
-        if (this.testFileExists('example_workout_data.csv')) {
-            const csvContent = this.readFile('example_workout_data.csv');
-            if (csvContent && csvContent.includes('week,day,exercise_name')) {
-                this.success('CSV example has correct header format');
+        // Test new assets/workouts structure
+        if (this.testFileExists('assets/workouts/default.csv')) {
+            const defaultCsv = this.readFile('assets/workouts/default.csv');
+            if (defaultCsv && defaultCsv.includes('week,day,exercise_name')) {
+                this.success('Default CSV has correct header format');
             } else {
-                this.error('CSV example has incorrect format');
+                this.error('Default CSV has incorrect format');
             }
+        }
+        
+        if (this.testFileExists('assets/workouts/example.csv')) {
+            const exampleCsv = this.readFile('assets/workouts/example.csv');
+            if (exampleCsv && exampleCsv.includes('week,day,exercise_name')) {
+                this.success('Example CSV has correct header format');
+            } else {
+                this.error('Example CSV has incorrect format');
+            }
+        }
+        
+        // Legacy file check (removed - good!)
+        const legacyPath = path.join(this.projectRoot, 'example_workout_data.csv');
+        if (!fs.existsSync(legacyPath)) {
+            this.success('Legacy example_workout_data.csv has been removed');
         }
 
         return true;
