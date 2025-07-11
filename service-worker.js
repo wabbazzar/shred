@@ -1,27 +1,35 @@
-const CACHE_NAME = 'game-template-v1';
-const GAME_ASSETS = [
+const CACHE_NAME = 'workout-tracker-v1';
+const WORKOUT_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/styles/app.css',
   '/styles/mobile.css',
   '/styles/desktop.css',
-  '/scripts/game.js',
-  '/assets/icon-192.png',
-  '/assets/icon-512.png'
-  // Add more game assets as needed:
-  // '/assets/sprites/player.png',
-  // '/assets/audio/background.mp3',
-  // '/assets/fonts/game-font.woff2'
+  '/scripts/app.js',
+  '/scripts/navigation.js',
+  '/scripts/day-view.js',
+  '/scripts/week-view.js',
+  '/scripts/calendar-view.js',
+  '/scripts/data-manager.js',
+  '/scripts/csv-handler.js',
+  '/scripts/service-worker-register.js',
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
+  '/assets/data/workout_program.json'
 ];
 
-// Install event - cache essential game assets
+// Install event - cache essential workout app assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  console.log('Service Worker: Installing workout tracker...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Service Worker: Caching game assets');
-        return cache.addAll(GAME_ASSETS);
+        console.log('Service Worker: Caching workout app assets');
+        return cache.addAll(WORKOUT_ASSETS.map(url => {
+          // Add cache-busting parameter for development
+          return new Request(url, { cache: 'reload' });
+        }));
       })
       .then(() => {
         console.log('Service Worker: Installation complete');
@@ -35,7 +43,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
+  console.log('Service Worker: Activating workout tracker...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -65,11 +73,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // Skip caching for API calls or external resources
+  if (event.request.url.includes('api') || !event.request.url.includes(self.location.origin)) {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
         // Return cached version if available
         if (response) {
+          console.log('Service Worker: Serving from cache', event.request.url);
           return response;
         }
         
@@ -87,12 +101,15 @@ self.addEventListener('fetch', (event) => {
             // Cache the new response
             caches.open(CACHE_NAME)
               .then((cache) => {
+                console.log('Service Worker: Caching new resource', event.request.url);
                 cache.put(event.request, responseToCache);
               });
             
             return response;
           })
           .catch(() => {
+            console.log('Service Worker: Network failed, serving offline fallback');
+            
             // Offline fallback for HTML pages
             if (event.request.destination === 'document') {
               return caches.match('/index.html');
@@ -105,37 +122,57 @@ self.addEventListener('fetch', (event) => {
                 statusText: 'Offline - Image not available'
               });
             }
+            
+            // For CSS/JS files, return empty response to prevent errors
+            if (event.request.destination === 'style' || event.request.destination === 'script') {
+              return new Response('', {
+                status: 200,
+                statusText: 'Offline - Asset not available'
+              });
+            }
           });
       })
   );
 });
 
-// Background sync for game data (optional)
+// Background sync for workout data
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'game-data-sync') {
+  if (event.tag === 'workout-data-sync') {
     event.waitUntil(
-      // Sync game progress, high scores, etc.
-      syncGameData()
+      syncWorkoutData()
     );
   }
 });
 
-// Push notifications for game events (optional)
+// Push notifications for workout reminders (optional)
 self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
     const options = {
-      body: data.body,
-      icon: '/assets/icon-192.png',
-      badge: '/assets/icon-192.png',
+      body: data.body || 'Time for your workout!',
+      icon: '/assets/icons/icon-192.png',
+      badge: '/assets/icons/icon-192.png',
       vibrate: [200, 100, 200],
       data: {
         url: data.url || '/'
-      }
+      },
+      actions: [
+        {
+          action: 'open-app',
+          title: 'Open Workout'
+        },
+        {
+          action: 'dismiss',
+          title: 'Later'
+        }
+      ]
     };
     
     event.waitUntil(
-      self.registration.showNotification(data.title, options)
+      self.registration.showNotification(
+        data.title || '6-Week Workout Reminder',
+        options
+      )
     );
   }
 });
@@ -144,26 +181,98 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   
-  if (event.notification.data && event.notification.data.url) {
+  if (event.action === 'open-app' || !event.action) {
     event.waitUntil(
-      clients.openWindow(event.notification.data.url)
+      clients.matchAll().then((clients) => {
+        // Check if app is already open
+        for (const client of clients) {
+          if (client.url === self.location.origin && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        
+        // Open new window/tab
+        if (clients.openWindow) {
+          const url = event.notification.data?.url || '/';
+          return clients.openWindow(url);
+        }
+      })
     );
   }
 });
 
-// Helper function for syncing game data
-async function syncGameData() {
+// Handle messages from the main app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CACHE_WORKOUT_DATA') {
+    // Cache workout data when updated
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.put('/workout-data', new Response(JSON.stringify(event.data.data)));
+      })
+    );
+  }
+});
+
+// Helper function for syncing workout data
+async function syncWorkoutData() {
   try {
-    // Implement game data synchronization logic here
-    console.log('Service Worker: Syncing game data...');
+    console.log('Service Worker: Syncing workout data...');
     
-    // Example: sync high scores, game progress, etc.
-    // const gameData = await getGameDataFromIndexedDB();
-    // await sendGameDataToServer(gameData);
+    // In a real app, this would sync with a server
+    // For this offline-first app, we just ensure local data is backed up
     
-    console.log('Service Worker: Game data sync complete');
+    const cache = await caches.open(CACHE_NAME);
+    const workoutData = await cache.match('/workout-data');
+    
+    if (workoutData) {
+      const data = await workoutData.json();
+      console.log('Service Worker: Workout data available offline', data);
+    }
+    
+    console.log('Service Worker: Workout data sync complete');
   } catch (error) {
-    console.error('Service Worker: Game data sync failed', error);
+    console.error('Service Worker: Workout data sync failed', error);
     throw error;
   }
-} 
+}
+
+// Periodic background sync for workout reminders
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'workout-reminder') {
+    event.waitUntil(
+      checkWorkoutReminders()
+    );
+  }
+});
+
+// Helper function to check for workout reminders
+async function checkWorkoutReminders() {
+  try {
+    const now = new Date();
+    const today = now.toDateString();
+    
+    // Check if user has completed today's workout
+    const cache = await caches.open(CACHE_NAME);
+    const workoutData = await cache.match('/workout-data');
+    
+    if (workoutData) {
+      const data = await workoutData.json();
+      const todayComplete = data.completedDays && data.completedDays.includes(today);
+      
+      if (!todayComplete && now.getHours() === 18) { // 6 PM reminder
+        self.registration.showNotification('Workout Reminder', {
+          body: 'Don\'t forget to complete today\'s workout!',
+          icon: '/assets/icons/icon-192.png',
+          badge: '/assets/icons/icon-192.png',
+          data: { url: '/' }
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Service Worker: Workout reminder check failed', error);
+  }
+}

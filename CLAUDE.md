@@ -4,9 +4,9 @@
 A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
 
 ## Current Development Status
-- **Current Phase**: Phase -1 - Project initialization and setup
-- **Last Completed**: .cursorrules file created with PWA-specific development principles
-- **Next Steps**: Create Makefile, initialize git, then build project structure
+- **Current Phase**: Phase 0 - Mobile-first PWA infrastructure and test suite
+- **Last Completed**: Phase -1 complete (cursor rules, CLAUDE.md, Makefile, git init)
+- **Next Steps**: Create project structure with PWA manifest and test infrastructure
 - **Known Issues**: None - fresh project initialization
 
 ## Project Structure
