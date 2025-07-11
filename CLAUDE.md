@@ -1,13 +1,31 @@
 # 6-Week Engagement Workout Tracker - Claude AI Development Context
 
+## 🚨 CRITICAL COMMIT STRATEGY 🚨
+**MANDATORY: Commit after EVERY phase completion - NO EXCEPTIONS**
+
+### Commit Protocol (MUST FOLLOW):
+1. **Test First**: Always test in browser before claiming phase complete
+2. **Commit Immediately**: Use `git add . && git commit -m "Phase X: [Description]"` after each phase
+3. **Update CLAUDE.md**: Update "Current Development Status" section in commit
+4. **Never Skip**: Every phase gets its own commit - this is our fallback safety net
+5. **Break Large Phases**: If a phase takes >30 minutes, break it into sub-phases with commits
+
+### Recovery Protocol:
+- If anything breaks, immediately: `git reset --hard <last-working-commit>`
+- Always check `git log --oneline -5` to see recent commits
+- Test app functionality before proceeding to next phase
+
+---
+
 ## Project Overview
 A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
 
 ## Current Development Status
-- **Current Phase**: Phase 0 - Mobile-first PWA infrastructure and test suite
-- **Last Completed**: Phase -1 complete (cursor rules, CLAUDE.md, Makefile, git init)
-- **Next Steps**: Create project structure with PWA manifest and test infrastructure
-- **Known Issues**: None - fresh project initialization
+- **Current Phase**: Phase 3 - Week View Implementation (RESTART)
+- **Last Completed**: Phase 2 complete - Day View with interactive workout tracking
+- **Last Known Good Commit**: `b650721` - Phase 2: Day View Implementation
+- **Next Steps**: Implement Week View with 7-day grid and completion indicators
+- **Known Issues**: None - rolled back to working state after Phase 7 issues
 
 ## Project Structure
 ```
