@@ -1571,6 +1571,8 @@ input:focus {
   border-width: 1px;
   border-style: dashed;
   position: relative;
+  cursor: pointer;
+  background-color: rgba(255, 107, 0, 0.05);
 }
 
 .exercise-input.has-suggestion:focus {
@@ -1579,9 +1581,15 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2);
 }
 
-/* Visual hint for double-tap to auto-fill */
+/* When field has value, remove click affordances */
+.exercise-input.has-suggestion:not(:placeholder-shown) {
+  cursor: text;
+  background-color: var(--bg-tertiary);
+}
+
+/* Visual hint for click/tap to auto-fill */
 .exercise-input.has-suggestion:hover::before {
-  content: "Tab or double-tap to auto-fill";
+  content: "Tab or click to auto-fill";
   position: absolute;
   top: -30px;
   left: 50%;

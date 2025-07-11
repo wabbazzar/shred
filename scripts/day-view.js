@@ -1496,35 +1496,50 @@ class DayView {
         }
     }
 
-    // Enhanced auto-fill functionality - fill suggested values on double-tap
+    // Enhanced auto-fill functionality - fill suggested values on click (when empty)
     setupProgressiveAutoFill() {
-        document.addEventListener('dblclick', (e) => {
-            if (e.target.classList.contains('exercise-input')) {
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('exercise-input') && e.target.classList.contains('has-suggestion')) {
                 const input = e.target;
-                const suggestedValue = input.getAttribute('data-suggested-value');
                 
-                if (suggestedValue && !input.value) {
-                    input.value = suggestedValue;
-                    input.dispatchEvent(new Event('input', { bubbles: true }));
-                    
-                    // Visual feedback with CSS animation
-                    input.classList.add('auto-filled');
+                // Only accept suggestion on click if field is empty
+                if (!input.value && input.dataset.suggestedValue) {
+                    // Small delay to distinguish from focus event
                     setTimeout(() => {
-                        input.classList.remove('auto-filled');
-                        // Remove suggestion styling after use
-                        input.removeAttribute('data-suggested-value');
-                        input.classList.remove('has-suggestion');
-                        // Restore original placeholder
-                        const originalPlaceholder = input.getAttribute('data-original-placeholder');
-                        if (originalPlaceholder) {
-                            input.placeholder = originalPlaceholder;
+                        if (!input.value) {  // Double check it's still empty
+                            this.acceptSuggestion(input);
                         }
-                    }, 300);
-                    
-                    console.log(`✨ Auto-filled ${input.dataset.field} with suggested value: ${suggestedValue}`);
+                    }, 150);
                 }
             }
         });
+    }
+    
+    // Accept suggested value for an input
+    acceptSuggestion(input) {
+        const suggestedValue = input.dataset.suggestedValue;
+        if (!suggestedValue) return;
+        
+        // Set the value
+        input.value = suggestedValue;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        
+        // Visual feedback with CSS animation
+        input.classList.add('auto-filled');
+        
+        setTimeout(() => {
+            input.classList.remove('auto-filled');
+            // Remove suggestion styling after use
+            input.removeAttribute('data-suggested-value');
+            input.classList.remove('has-suggestion');
+            // Restore original placeholder
+            const originalPlaceholder = input.getAttribute('data-original-placeholder');
+            if (originalPlaceholder) {
+                input.placeholder = originalPlaceholder;
+            }
+        }, 300);
+        
+        console.log(`✨ Auto-filled ${input.dataset.field} with suggested value: ${suggestedValue}`);
     }
 }
 
