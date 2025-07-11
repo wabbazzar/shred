@@ -732,7 +732,7 @@ class DayView {
                     
                     // Auto-advance logic for different field types
                     if (this.shouldAutoAdvance(fieldName, value)) {
-                        setTimeout(() => this.focusNextInput(e.target), 100);
+                        setTimeout(() => this.focusNextInput(e.target), 500);
                     }
                 });
             }
@@ -1188,19 +1188,19 @@ class DayView {
     shouldAutoAdvance(fieldName, value) {
         if (!value) return false;
         
-        // Weight inputs: advance after 2-3 digits
+        // Weight inputs: advance after 3+ digits and reasonable weight
         if (fieldName.includes('weight')) {
-            return value.length >= 2 && parseFloat(value) >= 10;
+            return value.length >= 3 && parseFloat(value) >= 25;
         }
         
-        // Rep inputs: advance after 1-2 digits  
+        // Rep inputs: advance after 2+ digits or double-digit number
         if (fieldName.includes('reps')) {
-            return value.length >= 1 && parseInt(value) >= 1;
+            return value.length >= 2 && parseInt(value) >= 10;
         }
         
-        // Time/duration: advance after reasonable input
+        // Time/duration: advance after 2+ digits
         if (fieldName.includes('time') || fieldName.includes('duration')) {
-            return value.length >= 1 && parseInt(value) >= 1;
+            return value.length >= 2 && parseInt(value) >= 10;
         }
         
         return false;
