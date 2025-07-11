@@ -395,7 +395,7 @@ class DayView {
                                data-field="set${set}_weight"
                                value="${weightValue}"
                                min="0" step="2.5"
-                               inputmode="numeric">
+                               inputmode="decimal">
                         <span class="input-unit">lbs</span>
                     </div>
                     <div class="input-group">
@@ -1162,9 +1162,13 @@ class DayView {
     loadExerciseInputs() {
         // Load saved data for all exercises
         const dayData = this.app.dataManager.getDayInfo(this.currentWeek, this.currentDay);
-        if (!dayData || !dayData.exercises) return;
+        if (!dayData) return;
         
-        dayData.exercises.forEach((_, index) => {
+        // Get all exercises from all sections
+        const allExercises = this.app.dataManager.getExercisesForDay(this.currentWeek, this.currentDay);
+        if (!allExercises || allExercises.length === 0) return;
+        
+        allExercises.forEach((_, index) => {
             const progress = this.app.getExerciseProgress(
                 this.currentWeek, 
                 this.currentDay, 
@@ -1207,7 +1211,7 @@ class DayView {
         
         // Rep inputs: advance after 2+ digits or double-digit number
         if (fieldName.includes('reps')) {
-            return value.length >= 1 && parseInt(value) >= 10;
+            return value.length >= 1 && parseInt(value) >= 3;
         }
         
         // Time/duration: advance after 2+ digits

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desktop vs Mobile Parity Test - Shred</title>
+    <link rel="stylesheet" href="../styles/app.css">
+    <link rel="stylesheet" href="../styles/mobile.css">
+    <link rel="stylesheet" href="../styles/desktop.css" media="(min-width: 768px)">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .test-title {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .test-description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .test-button {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 10px 5px;
+            transition: all 0.2s;
+        }
+        
+        .test-button:hover {
+            background: #e55a00;
+            transform: translateY(-1px);
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: rgba(0, 200, 81, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            white-space: pre-wrap;
+        }
+        
+        .test-result.error {
+            background: rgba(255, 82, 82, 0.1);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .test-result.warning {
+            background: rgba(255, 107, 0, 0.1);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        
+        .platform-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .platform-card {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .platform-title {
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .platform-detail {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+        
+        .viewport-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+        
+        .data-test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .data-test-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .data-test-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .data-test-value {
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .data-test-value.success {
+            color: var(--accent-green);
+        }
+        
+        .data-test-value.error {
+            color: var(--accent-red);
+        }
+        
+        .data-test-value.warning {
+            color: var(--accent-orange);
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport-indicator" id="viewport-indicator">
+        Loading...
+    </div>
+    
+    <div class="test-container">
+        <h1 style="color: var(--accent-orange); text-align: center; margin-bottom: 30px;">
+            🖥️📱 Desktop vs Mobile Parity Test
+        </h1>
+        
+        <div class="test-section">
+            <div class="test-title">Platform Detection & Viewport Info</div>
+            <div class="test-description">
+                Detecting current platform and viewport size to understand rendering context.
+            </div>
+            
+            <div class="platform-info" id="platform-info">
+                <!-- Platform info will be populated -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">📊 Data Manager Test</div>
+            <div class="test-description">
+                Testing if the data manager is properly loading workout data across platforms.
+            </div>
+            
+            <button class="test-button" onclick="testDataManager()">Test Data Manager</button>
+            
+            <div class="data-test-grid" id="data-test-results">
+                <!-- Data test results will be populated -->
+            </div>
+            
+            <div class="test-result" id="data-manager-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">🏋️ Day View Exercise Data Test</div>
+            <div class="test-description">
+                Testing if exercises are properly loaded and displayed in day view across different weeks.
+            </div>
+            
+            <button class="test-button" onclick="testDayViewData()">Test Day View Data</button>
+            
+            <div class="test-result" id="day-view-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">📅 Week View Data Test</div>
+            <div class="test-description">
+                Testing if week view properly displays workout previews and completion states.
+            </div>
+            
+            <button class="test-button" onclick="testWeekViewData()">Test Week View Data</button>
+            
+            <div class="test-result" id="week-view-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">🔄 Progressive Auto-fill Test</div>
+            <div class="test-description">
+                Testing if progressive auto-fill is working properly after the recent fixes.
+            </div>
+            
+            <button class="test-button" onclick="testProgressiveAutoFill()">Test Progressive Auto-fill</button>
+            
+            <div class="test-result" id="progressive-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">🎨 CSS & Styling Test</div>
+            <div class="test-description">
+                Testing if desktop and mobile styles are properly applied and consistent.
+            </div>
+            
+            <button class="test-button" onclick="testStyling()">Test Styling</button>
+            
+            <div class="test-result" id="styling-result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Load the actual app scripts -->
+    <script src="../scripts/data-manager.js"></script>
+    <script src="../scripts/day-view.js"></script>
+    <script src="../scripts/week-view.js"></script>
+    <script src="../scripts/calendar-view.js"></script>
+
+    <script>
+        // Test utilities
+        function updateViewportIndicator() {
+            const indicator = document.getElementById('viewport-indicator');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const platform = width >= 768 ? 'Desktop' : 'Mobile';
+            indicator.textContent = `${platform} ${width}x${height}`;
+        }
+        
+        function showResult(elementId, content, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = content;
+            element.className = `test-result ${type}`;
+        }
+        
+        function detectPlatform() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const userAgent = navigator.userAgent;
+            const isDesktop = width >= 768;
+            const isMobile = width < 768;
+            const isTouch = 'ontouchstart' in window;
+            
+            const platformInfo = document.getElementById('platform-info');
+            platformInfo.innerHTML = `
+                <div class="platform-card">
+                    <div class="platform-title">Current Platform</div>
+                    <div class="platform-detail">Type: ${isDesktop ? 'Desktop' : 'Mobile'}</div>
+                    <div class="platform-detail">Viewport: ${width}x${height}</div>
+                    <div class="platform-detail">Touch: ${isTouch ? 'Yes' : 'No'}</div>
+                    <div class="platform-detail">CSS Media: ${window.matchMedia('(min-width: 768px)').matches ? 'Desktop' : 'Mobile'}</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-title">User Agent</div>
+                    <div class="platform-detail" style="word-break: break-all;">${userAgent}</div>
+                </div>
+            `;
+        }
+        
+        async function testDataManager() {
+            const results = [];
+            const testData = {};
+            
+            try {
+                // Initialize data manager
+                const dataManager = new DataManager();
+                await dataManager.init();
+                
+                // Test basic data loading
+                testData.workoutData = dataManager.workoutData ? '✅ Loaded' : '❌ Failed';
+                testData.totalWeeks = dataManager.workoutData?.weeks || 'N/A';
+                testData.programName = dataManager.workoutData?.name || 'N/A';
+                
+                // Test day data retrieval
+                const week1Day1 = dataManager.getDayInfo(1, 1);
+                testData.week1Day1 = week1Day1 ? '✅ Available' : '❌ Missing';
+                
+                const week1Day1Exercises = dataManager.getExercisesForDay(1, 1);
+                testData.week1Day1Exercises = week1Day1Exercises ? `✅ ${week1Day1Exercises.length} exercises` : '❌ No exercises';
+                
+                // Test multiple weeks
+                for (let week = 1; week <= 6; week++) {
+                    for (let day = 1; day <= 7; day++) {
+                        const exercises = dataManager.getExercisesForDay(week, day);
+                        testData[`w${week}d${day}`] = exercises ? exercises.length : 0;
+                    }
+                }
+                
+                // Display results
+                const resultsGrid = document.getElementById('data-test-results');
+                resultsGrid.innerHTML = Object.entries(testData).map(([key, value]) => `
+                    <div class="data-test-item">
+                        <div class="data-test-label">${key}</div>
+                        <div class="data-test-value ${value.toString().includes('❌') ? 'error' : value.toString().includes('✅') ? 'success' : 'warning'}">${value}</div>
+                    </div>
+                `).join('');
+                
+                // Summary
+                const totalExercises = Object.entries(testData)
+                    .filter(([key]) => key.startsWith('w'))
+                    .reduce((sum, [, value]) => sum + (typeof value === 'number' ? value : 0), 0);
+                
+                showResult('data-manager-result', 
+                    `✅ Data Manager Test Complete!\n\n` +
+                    `Program: ${testData.programName}\n` +
+                    `Weeks: ${testData.totalWeeks}\n` +
+                    `Total Exercises: ${totalExercises}\n` +
+                    `Week 1 Day 1: ${testData.week1Day1Exercises}\n\n` +
+                    `${totalExercises > 0 ? '✅ Data loading appears to be working correctly.' : '❌ No exercises found - this is the main issue!'}`,
+                    totalExercises > 0 ? 'success' : 'error'
+                );
+                
+            } catch (error) {
+                showResult('data-manager-result', 
+                    `❌ Data Manager Test Failed!\n\nError: ${error.message}\nStack: ${error.stack}`,
+                    'error'
+                );
+            }
+        }
+        
+        async function testDayViewData() {
+            try {
+                const dataManager = new DataManager();
+                await dataManager.init();
+                
+                const results = [];
+                
+                // Test day view for multiple weeks
+                for (let week = 1; week <= 3; week++) {
+                    for (let day = 1; day <= 7; day++) {
+                        const dayData = dataManager.getDayInfo(week, day);
+                        const exercises = dataManager.getExercisesForDay(week, day);
+                        
+                        results.push({
+                            week,
+                            day,
+                            hasData: !!dayData,
+                            exerciseCount: exercises ? exercises.length : 0,
+                            type: dayData?.type || 'unknown',
+                            focus: dayData?.focus || 'unknown',
+                            hasSections: !!(dayData?.sections && dayData.sections.length > 0)
+                        });
+                    }
+                }
+                
+                const summary = results.reduce((acc, curr) => {
+                    acc.totalDays++;
+                    if (curr.hasData) acc.daysWithData++;
+                    if (curr.exerciseCount > 0) acc.daysWithExercises++;
+                    acc.totalExercises += curr.exerciseCount;
+                    if (curr.hasSections) acc.daysWithSections++;
+                    return acc;
+                }, { totalDays: 0, daysWithData: 0, daysWithExercises: 0, totalExercises: 0, daysWithSections: 0 });
+                
+                const problemDays = results.filter(r => r.hasData && r.exerciseCount === 0);
+                
+                showResult('day-view-result',
+                    `📊 Day View Data Test Results:\n\n` +
+                    `Total Days Tested: ${summary.totalDays}\n` +
+                    `Days with Data: ${summary.daysWithData}\n` +
+                    `Days with Exercises: ${summary.daysWithExercises}\n` +
+                    `Days with Sections: ${summary.daysWithSections}\n` +
+                    `Total Exercises: ${summary.totalExercises}\n\n` +
+                    `${problemDays.length > 0 ? 
+                        `❌ Problem Days (have data but no exercises):\n${problemDays.map(d => `Week ${d.week} Day ${d.day}: ${d.type} - ${d.focus}`).join('\n')}\n\n` : 
+                        '✅ All days with data have exercises.\n\n'
+                    }` +
+                    `${summary.totalExercises > 0 ? '✅ Day view data appears to be working.' : '❌ No exercises found in day view data!'}`,
+                    summary.totalExercises > 0 && problemDays.length === 0 ? 'success' : 'error'
+                );
+                
+            } catch (error) {
+                showResult('day-view-result',
+                    `❌ Day View Test Failed!\n\nError: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+        
+        async function testWeekViewData() {
+            try {
+                const dataManager = new DataManager();
+                await dataManager.init();
+                
+                const results = [];
+                
+                for (let week = 1; week <= 6; week++) {
+                    let weekExercises = 0;
+                    let weekDaysWithData = 0;
+                    
+                    for (let day = 1; day <= 7; day++) {
+                        const exercises = dataManager.getExercisesForDay(week, day);
+                        const dayData = dataManager.getDayInfo(week, day);
+                        
+                        if (exercises && exercises.length > 0) {
+                            weekExercises += exercises.length;
+                        }
+                        
+                        if (dayData) {
+                            weekDaysWithData++;
+                        }
+                    }
+                    
+                    results.push({
+                        week,
+                        exerciseCount: weekExercises,
+                        daysWithData: weekDaysWithData
+                    });
+                }
+                
+                const totalExercises = results.reduce((sum, r) => sum + r.exerciseCount, 0);
+                const weeksWithData = results.filter(r => r.daysWithData > 0).length;
+                const weeksWithExercises = results.filter(r => r.exerciseCount > 0).length;
+                
+                showResult('week-view-result',
+                    `📅 Week View Data Test Results:\n\n` +
+                    `Weeks with Data: ${weeksWithData}/6\n` +
+                    `Weeks with Exercises: ${weeksWithExercises}/6\n` +
+                    `Total Exercises: ${totalExercises}\n\n` +
+                    `Per Week Breakdown:\n` +
+                    results.map(r => `Week ${r.week}: ${r.exerciseCount} exercises, ${r.daysWithData} days with data`).join('\n') + '\n\n' +
+                    `${totalExercises > 0 ? '✅ Week view data appears to be working.' : '❌ No exercises found in week view data!'}`,
+                    totalExercises > 0 ? 'success' : 'error'
+                );
+                
+            } catch (error) {
+                showResult('week-view-result',
+                    `❌ Week View Test Failed!\n\nError: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+        
+        async function testProgressiveAutoFill() {
+            try {
+                const dataManager = new DataManager();
+                await dataManager.init();
+                
+                // Create a mock app object for testing
+                const mockApp = {
+                    dataManager: dataManager,
+                    getExerciseProgress: (week, day, index) => {
+                        // Mock some progress data for testing
+                        if (week === 1 && day === 1 && index === 0) {
+                            return {
+                                data: {
+                                    'set1_weight': '135',
+                                    'set1_reps': '5'
+                                },
+                                completed: true
+                            };
+                        }
+                        return null;
+                    }
+                };
+                
+                // Test DayView progressive autofill
+                const dayView = new DayView(mockApp);
+                dayView.currentWeek = 2;
+                dayView.currentDay = 1;
+                
+                // Test finding most recent data
+                const mostRecentData = dayView.findMostRecentExerciseData(0);
+                
+                let progressiveTestResult = '';
+                
+                if (mostRecentData) {
+                    progressiveTestResult += `✅ Found previous data: Week ${mostRecentData.sourceWeek}\n`;
+                    progressiveTestResult += `Data: ${JSON.stringify(mostRecentData.data)}\n\n`;
+                    
+                    // Test progressive calculation
+                    const progressiveValues = dayView.calculateProgressiveValues(
+                        mostRecentData.data,
+                        2,
+                        0,
+                        mostRecentData.sourceWeek
+                    );
+                    
+                    progressiveTestResult += `✅ Progressive values calculated:\n`;
+                    progressiveTestResult += `${JSON.stringify(progressiveValues, null, 2)}\n\n`;
+                    
+                    // Test weight progression
+                    const weightProgression = dayView.calculateWeightProgression('135', 2, 'strength', 1);
+                    progressiveTestResult += `✅ Weight progression: 135 → ${weightProgression}\n`;
+                    
+                    showResult('progressive-result', progressiveTestResult, 'success');
+                } else {
+                    showResult('progressive-result', 
+                        `❌ Progressive Auto-fill Test Failed!\n\nNo previous data found for testing.\nThis suggests the data structure or retrieval is not working correctly.`,
+                        'error'
+                    );
+                }
+                
+            } catch (error) {
+                showResult('progressive-result',
+                    `❌ Progressive Auto-fill Test Failed!\n\nError: ${error.message}\nStack: ${error.stack}`,
+                    'error'
+                );
+            }
+        }
+        
+        function testStyling() {
+            const width = window.innerWidth;
+            const isDesktop = width >= 768;
+            const mediaQuery = window.matchMedia('(min-width: 768px)');
+            
+            // Test CSS variables
+            const styles = getComputedStyle(document.documentElement);
+            const bgPrimary = styles.getPropertyValue('--bg-primary').trim();
+            const accentOrange = styles.getPropertyValue('--accent-orange').trim();
+            
+            // Test responsive classes
+            const testElement = document.createElement('div');
+            testElement.className = 'test-element';
+            testElement.style.display = 'none';
+            document.body.appendChild(testElement);
+            
+            const computedStyles = getComputedStyle(testElement);
+            
+            document.body.removeChild(testElement);
+            
+            showResult('styling-result',
+                `🎨 Styling Test Results:\n\n` +
+                `Viewport: ${width}x${window.innerHeight}\n` +
+                `Platform: ${isDesktop ? 'Desktop' : 'Mobile'}\n` +
+                `Media Query Match: ${mediaQuery.matches}\n\n` +
+                `CSS Variables:\n` +
+                `--bg-primary: ${bgPrimary || '❌ Missing'}\n` +
+                `--accent-orange: ${accentOrange || '❌ Missing'}\n\n` +
+                `${bgPrimary && accentOrange ? '✅ CSS variables are loading correctly.' : '❌ CSS variables are missing!'}`,
+                bgPrimary && accentOrange ? 'success' : 'error'
+            );
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            updateViewportIndicator();
+            detectPlatform();
+        });
+        
+        window.addEventListener('resize', updateViewportIndicator);
+    </script>
+</body>
+</html> 

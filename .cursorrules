@@ -11,6 +11,14 @@ Mobile-First PWA Development Rules for Shred Workout App:
 9. GIT WORKFLOW: Commit after each phase, before risks, when tests pass
 10. DATA PERSISTENCE: All user data in local storage. CSV export/import for portability.
 
+🎯 CRITICAL CROSS-PLATFORM CONSISTENCY RULES:
+- UNIFIED CODEBASE: One JavaScript codebase serves both mobile and desktop. NO platform-specific logic.
+- RESPONSIVE ENHANCEMENT: Desktop CSS only adds enhancements via media queries. Core functionality identical.
+- SIMULTANEOUS TESTING: Every bug fix MUST be tested on both mobile (< 768px) and desktop (>= 768px).
+- DATA STRUCTURE CONSISTENCY: Same data manager, same methods, same API across all platforms.
+- VISUAL PARITY: Desktop and mobile must show identical data, just with different styling.
+- BUG FIX PROPAGATION: When fixing a bug, verify it's fixed on BOTH platforms before completing.
+
 App-Specific Rules:
 - Three-tab navigation (Day/Week/Calendar) with bottom placement for thumb access
 - Collapsible sections remember state between sessions
@@ -37,4 +45,15 @@ Testing Requirements:
 - Check touch targets with device inspector
 - Test CSV export/import data integrity
 - Validate all input types and ranges
-- Test on slow 3G network speeds 
+- Test on slow 3G network speeds
+- MANDATORY: Test every change on both mobile and desktop viewports
+- Use tests/desktop_mobile_parity_test.html to verify consistency
+
+Cross-Platform Development Workflow:
+1. Implement feature in mobile-first approach
+2. Test on mobile viewport (< 768px)
+3. Add desktop enhancements via CSS media queries only
+4. Test on desktop viewport (>= 768px)
+5. Verify data consistency across both platforms
+6. Test progressive auto-fill on both platforms
+7. Commit only after both platforms work identically 
