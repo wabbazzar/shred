@@ -1201,6 +1201,8 @@ class DayView {
     }
 
     updateDayCompletion() {
+        console.log(`🔍 Current state: Week ${this.currentWeek}, Day ${this.currentDay}`);
+        
         const completion = this.app.getDayCompletion(this.currentWeek, this.currentDay);
         const badge = document.querySelector('.completion-badge');
         

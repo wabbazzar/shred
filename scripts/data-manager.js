@@ -712,17 +712,24 @@ class DataManager {
             return 0;
         }
         
+        // Only show detailed logs for Day 1 to avoid spam
+        const showDetailedLogs = day === 1;
+        
         let completedCount = 0;
         exercises.forEach((_, index) => {
             const progress = this.getExerciseProgress(week, day, index);
-            console.log(`📊 Exercise ${index} progress:`, progress);
+            if (showDetailedLogs) {
+                console.log(`📊 W${week}-D${day} Exercise ${index} progress:`, progress);
+            }
             if (progress && progress.completed) {
                 completedCount++;
             }
         });
         
         const completion = Math.round((completedCount / exercises.length) * 100);
-        console.log(`📋 Day W${week}-D${day}: ${completedCount}/${exercises.length} exercises complete = ${completion}%`);
+        if (showDetailedLogs || completion > 0) {
+            console.log(`📋 Day W${week}-D${day}: ${completedCount}/${exercises.length} exercises complete = ${completion}%`);
+        }
         return completion;
     }
 
