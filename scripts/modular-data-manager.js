@@ -24,7 +24,7 @@ class ModularDataManager {
             dayTemplates: 'assets/configs/examples/day-templates.json',
             exerciseLibrary: 'assets/configs/examples/exercise-library.json',
             sectionDefinitions: 'assets/configs/examples/section-definitions.json',
-            workoutSessions: 'assets/configs/programs/six-week-engagement-sessions.json'
+            workoutSessions: 'assets/configs/programs/six-week-shred-sessions.json'
         };
         
         this.init();
@@ -551,7 +551,7 @@ class ModularDataManager {
     getDefaultSettings() {
         const metadata = this.programMetadata;
         return {
-            currentProgram: metadata?.id || 'six-week-engagement',
+            currentProgram: metadata?.id || 'six-week-shred',
             startDate: this.getTodayString(),
             units: metadata?.settings?.unitSystem || 'imperial',
             darkMode: true,
@@ -732,8 +732,8 @@ class ModularDataManager {
         const metadata = this.programMetadata;
         if (!metadata) {
             return [{
-                id: 'six-week-engagement',
-                name: '6-Week Engagement Program',
+                id: 'six-week-shred',
+                name: '6-Week Shred Program',
                 description: 'Default program',
                 created: new Date().toISOString(),
                 lastAccessed: new Date().toISOString(),
@@ -759,8 +759,8 @@ class ModularDataManager {
         const metadata = this.programMetadata;
         if (!metadata) {
             return {
-                id: 'six-week-engagement',
-                name: '6-Week Engagement Program',
+                id: 'six-week-shred',
+                name: '6-Week Shred Program',
                 description: 'Default program',
                 isDefault: true,
                 created: new Date().toISOString(),
