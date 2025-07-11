@@ -3,7 +3,7 @@
 
 class WorkoutApp {
     constructor() {
-        this.currentView = 'day';
+        this.currentView = 'calendar';
         this.currentWeek = 1;
         this.currentDay = 1;
         
@@ -555,40 +555,6 @@ class WorkoutApp {
                 </div>
             </div>
             
-            <!-- Data Export/Import Section -->
-            <div class="settings-section">
-                <div class="section-header-settings">
-                    <h3>Data Export & Import</h3>
-                </div>
-                <div class="section-content-settings">
-                    <div class="settings-item">
-                        <div>
-                            <div class="settings-label">Export Data</div>
-                            <div class="settings-description">Download your workout data as CSV</div>
-                        </div>
-                        <div class="settings-control">
-                            <button class="settings-btn" id="export-data-btn">Export CSV</button>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div class="settings-label">Import Data</div>
-                            <div class="settings-description">Upload CSV file to restore data</div>
-                        </div>
-                        <div class="settings-control">
-                            <button class="settings-btn secondary" id="import-data-btn">Choose File</button>
-                            <input type="file" id="import-file-input" accept=".csv" style="display: none;">
-                        </div>
-                    </div>
-                    
-                    <div class="file-upload-area" id="file-drop-area" style="display: none;">
-                        <div class="file-upload-icon">📁</div>
-                        <div class="file-upload-text">Drop CSV file here</div>
-                        <div class="file-upload-subtext">or click to select file</div>
-                    </div>
-                </div>
-            </div>
             
             <!-- App Settings Section -->
             <div class="settings-section">
@@ -623,6 +589,16 @@ class WorkoutApp {
                         </div>
                         <div class="settings-control">
                             <button class="settings-btn secondary" id="clear-cache-btn">Clear Cache</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div class="settings-label">CSV Format Reference</div>
+                            <div class="settings-description">View example CSV format for data import</div>
+                        </div>
+                        <div class="settings-control">
+                            <a href="https://github.com/wabbazzar/shred/blob/main/example_workout_data.csv" target="_blank" class="settings-btn secondary">View Example</a>
                         </div>
                     </div>
                     
@@ -921,31 +897,7 @@ class WorkoutApp {
         }
     }
     
-    exportWorkoutData() {
-        try {
-            // TODO: Implement CSV export
-            const exportBtn = document.getElementById('export-data-btn');
-            this.showSettingsMessage('Data exported successfully!', 'success', exportBtn);
-            console.log('📤 Data export initiated');
-        } catch (error) {
-            const exportBtn = document.getElementById('export-data-btn');
-            this.showSettingsMessage('Export failed: ' + error.message, 'error', exportBtn);
-            console.error('❌ Export error:', error);
-        }
-    }
     
-    handleFileImport(file) {
-        if (!file) return;
-        
-        if (!file.name.endsWith('.csv')) {
-            this.showSettingsMessage('Please select a CSV file', 'error');
-            return;
-        }
-        
-        // TODO: Implement CSV import
-        this.showSettingsMessage('File import feature coming soon!', 'info');
-        console.log('📥 File import:', file.name);
-    }
     
     clearAppCache() {
         if ('caches' in window) {
