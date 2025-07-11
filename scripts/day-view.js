@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Day View Implementation
+// Shred - Day View Implementation
 // Detailed workout view with collapsible sections and exercise inputs
 
 class DayView {

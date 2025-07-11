@@ -1,4 +1,4 @@
-Mobile-First PWA Development Rules for 6-Week Engagement Workout App:
+Mobile-First PWA Development Rules for Shred Workout App:
 
 1. MOBILE FIRST: Design for 320px-428px viewports first. Test on iPhone SE baseline. Desktop is enhancement only.
 2. VISUAL VERIFICATION: Test every feature visually in browser, never trust console logs alone

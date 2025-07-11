@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Navigation System
+// Shred - Navigation System
 // Enhanced navigation with touch gestures and smooth transitions
 
 class NavigationManager {

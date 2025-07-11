@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Data Management System
+// Shred - Data Management System
 // Handles workout data, user progress, and offline storage
 
 class DataManager {

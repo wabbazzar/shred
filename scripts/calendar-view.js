@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Calendar View Implementation
+// Shred - Calendar View Implementation
 // 6-week calendar grid layout
 
 class CalendarView {

@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Service Worker Registration
+// Shred - Service Worker Registration
 // PWA service worker registration and management
 
 if ('serviceWorker' in navigator) {

@@ -1,5 +1,5 @@
-# 6-Week Engagement Workout Tracker
-A Progressive Web App for tracking your 6-week engagement photo prep workout program.
+# Shred
+A Progressive Web App for tracking your Shred photo prep workout program.
 
 ## Features
 - 3-tab navigation (Day/Week/Calendar views)

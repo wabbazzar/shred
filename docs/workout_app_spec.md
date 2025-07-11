@@ -1,7 +1,7 @@
-# 6-Week Engagement Workout App - Technical Specification
+# Shred Workout App - Technical Specification
 
 ## Project Overview
-A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. The app features program management, offline functionality, and detailed progress tracking with CSV export/import capabilities.
+A Progressive Web App (PWA) for tracking the Shred photo prep workout program. The app features program management, offline functionality, and detailed progress tracking with CSV export/import capabilities.
 
 ## Technical Requirements
 
@@ -164,7 +164,7 @@ program_name,week,day,day_name,section,exercise_name,prescribed_sets,actual_sets
 ```
 
 ### Program Dropdown (Top Header)
-- **Default:** "6-Week Engagement Program"
+- **Default:** "Shred Program"
 - **Additional programs:** User-saved variations
 - **Switching behavior:** Ask user "Start over or continue at same position?"
 
@@ -229,7 +229,7 @@ program_name,week,day,day_name,section,exercise_name,prescribed_sets,actual_sets
 
 ### First App Load
 - **No onboarding screens** - immediate access
-- **Default state:** 6-Week Engagement Program loaded
+- **Default state:** Shred Program loaded
 - **Starting position:** Day 1, Week 1
 - **Ready to use:** All exercises visible, ready for input
 

@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Week View Implementation
+// Shred - Week View Implementation
 // Weekly overview with clickable day tiles
 
 class WeekView {

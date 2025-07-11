@@ -1,4 +1,4 @@
-# 6-Week Engagement Photo Prep Program
+# Shred Photo Prep Program
 
 ## Program Overview
 **Goal:** Maintain muscle mass while losing fat for engagement photos  

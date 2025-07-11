@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Modular Data Management System
+// Shred - Modular Data Management System
 // Handles multiple data types, config-driven workout generation, LLM-friendly
 
 class ModularDataManager {

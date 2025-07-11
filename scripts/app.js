@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - Main Application
+// Shred - Main Application
 // Mobile-first PWA with offline functionality
 
 class WorkoutApp {
@@ -901,7 +901,7 @@ class WorkoutApp {
     }
     
     showAboutDialog() {
-        alert(`6-Week Engagement Workout Tracker v1.0
+        alert(`Shred v1.0
         
 Mobile-first Progressive Web App
 Built for engagement photo prep workouts
@@ -1031,7 +1031,7 @@ Features:
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🌟 Starting 6-Week Engagement Workout Tracker...');
+    console.log('🌟 Starting Shred...');
     window.workoutApp = new WorkoutApp();
     
     // Make debugging methods globally accessible

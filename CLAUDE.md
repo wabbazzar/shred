@@ -1,4 +1,4 @@
-# 6-Week Engagement Workout Tracker - Claude AI Development Context
+# Shred - Claude AI Development Context
 
 ## 🚨 CRITICAL COMMIT STRATEGY 🚨
 **MANDATORY: Commit after EVERY phase completion - NO EXCEPTIONS**
@@ -19,7 +19,7 @@
 ---
 
 ## Project Overview
-A Progressive Web App (PWA) for tracking the 6-week engagement photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
+A Progressive Web App (PWA) for tracking the Shred photo prep workout program. Features include 3-tab navigation (Day/Week/Calendar views), offline functionality, exercise tracking with auto-suggestions, and CSV export/import capabilities. Built mobile-first with a dark theme and optimized for touch interactions.
 
 ## Current Development Status
 - **Current Phase**: Complete six-week-shred modular system

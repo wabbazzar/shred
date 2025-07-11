@@ -94,8 +94,8 @@ git-init:
 	@echo "dist/" >> .gitignore
 	@echo ".cache/" >> .gitignore
 	@echo "*.csv" >> .gitignore
-	@echo "# 6-Week Engagement Workout Tracker" > README.md
-	@echo "A Progressive Web App for tracking your 6-week engagement photo prep workout program." >> README.md
+	@echo "# Shred" > README.md
+	@echo "A Progressive Web App for tracking your Shred photo prep workout program." >> README.md
 	@echo "" >> README.md
 	@echo "## Features" >> README.md
 	@echo "- 3-tab navigation (Day/Week/Calendar views)" >> README.md
@@ -163,7 +163,7 @@ build:
 
 # Help command
 help:
-	@echo "6-Week Engagement Workout Tracker - Available Commands:"
+	@echo "Shred - Available Commands:"
 	@echo ""
 	@echo "Development:"
 	@echo "  make serve       - Start development server"

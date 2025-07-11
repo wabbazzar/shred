@@ -1,4 +1,4 @@
-// 6-Week Engagement Workout Tracker - CSV Import/Export Handler
+// Shred - CSV Import/Export Handler
 // CSV data handling for workout programs
 
 class CSVHandler {
