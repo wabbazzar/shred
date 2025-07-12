@@ -1433,7 +1433,8 @@ class DayView {
             const progressionRate = this.app.dataManager.getWeightProgression(
                 exerciseName, 
                 exerciseCategory, 
-                currentWeight
+                currentWeight,
+                this.app.dataManager.programTemplate
             );
             
             // Apply weekly tapering (reduce progression in later weeks)
@@ -1473,7 +1474,7 @@ class DayView {
         }
         
         // Use config-driven progression from DataManager
-        const progressionPerWeek = this.app.dataManager.getRepsProgression(exerciseCategory);
+        const progressionPerWeek = this.app.dataManager.getRepsProgression(exerciseCategory, this.app.dataManager.programTemplate);
         
         let totalProgression = 0;
         
@@ -1507,7 +1508,7 @@ class DayView {
         if (timeValue === null) return previousTime;
         
         // Use config-driven progression from DataManager
-        const progressionPerWeek = this.app.dataManager.getTimeProgression(exerciseCategory);
+        const progressionPerWeek = this.app.dataManager.getTimeProgression(exerciseCategory, this.app.dataManager.programTemplate);
         
         let totalProgressionSeconds = 0;
         
