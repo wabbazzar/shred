@@ -306,6 +306,37 @@ class DataManager {
         }
     }
 
+    async loadProgramFromJSON(jsonPath) {
+        try {
+            const response = await fetch(jsonPath);
+            if (!response.ok) {
+                throw new Error(`Failed to load program from ${jsonPath}: ${response.status}`);
+            }
+            
+            const programTemplate = await response.json();
+            console.log(`📋 External program loaded: ${programTemplate.name}`);
+            
+            // Convert template to full workout program
+            const fullProgram = {
+                id: programTemplate.id,
+                name: programTemplate.name,
+                description: programTemplate.description,
+                version: programTemplate.version,
+                created: new Date().toISOString(),
+                weeks: programTemplate.weeks,
+                daysPerWeek: programTemplate.daysPerWeek,
+                metadata: programTemplate.metadata,
+                exercises: this.generateFullProgramFromTemplate(programTemplate)
+            };
+            
+            return fullProgram;
+            
+        } catch (error) {
+            console.error(`❌ Failed to load program from ${jsonPath}:`, error);
+            throw error;
+        }
+    }
+
     getFallbackTemplate() {
         return {
             id: 'fallback',
@@ -386,6 +417,17 @@ class DataManager {
         return program;
     }
 
+    generateFullProgramFromTemplate(template) {
+        const program = {};
+        
+        // Generate all weeks based on provided template
+        for (let week = 1; week <= template.weeks; week++) {
+            program[week] = this.generateWeekProgramFromTemplate(template, week);
+        }
+        
+        return program;
+    }
+
     generateWeekProgram(week) {
         const weekProgram = {};
         
@@ -401,6 +443,21 @@ class DataManager {
         return weekProgram;
     }
 
+    generateWeekProgramFromTemplate(template, week) {
+        const weekProgram = {};
+        
+        // Generate each day of the week using provided template
+        for (let day = 1; day <= template.daysPerWeek; day++) {
+            const dayTemplate = template.workoutTemplate[day.toString()];
+            
+            if (dayTemplate) {
+                weekProgram[day] = this.processWorkoutTemplateFromTemplate(template, dayTemplate, week);
+            }
+        }
+        
+        return weekProgram;
+    }
+
     processWorkoutTemplate(template, week) {
         // Deep clone the template to avoid modifying original
         const workout = JSON.parse(JSON.stringify(template));
@@ -408,6 +465,18 @@ class DataManager {
         // Apply weekly progressions
         if (this.programTemplate.weeklyProgression) {
             this.applyWeeklyProgressions(workout, week);
+        }
+        
+        return workout;
+    }
+
+    processWorkoutTemplateFromTemplate(programTemplate, dayTemplate, week) {
+        // Deep clone the template to avoid modifying original
+        const workout = JSON.parse(JSON.stringify(dayTemplate));
+        
+        // Apply weekly progressions using provided template
+        if (programTemplate.weeklyProgression) {
+            this.applyWeeklyProgressionsFromTemplate(programTemplate, workout, week);
         }
         
         return workout;
@@ -430,6 +499,33 @@ class DataManager {
         // Add more progression types as needed
     }
 
+    applyWeeklyProgressionsFromTemplate(programTemplate, workout, week) {
+        // Apply progressions based on the provided template
+        if (programTemplate.weeklyProgression) {
+            const variables = {};
+            
+            // Handle different progression types
+            if (programTemplate.weeklyProgression.strengthReps) {
+                variables.strengthReps = this.getStrengthRepsForWeekFromTemplate(programTemplate, week);
+            }
+            
+            if (programTemplate.weeklyProgression.mainLiftIntensity) {
+                variables.mainLiftIntensity = this.getMainLiftIntensityForWeek(programTemplate, week);
+            }
+            
+            if (Object.keys(variables).length > 0) {
+                console.log(`🔧 Applying template variables for week ${week}:`, variables);
+                
+                // Replace template variables in the workout object
+                const updatedWorkout = this.replaceTemplateVariables(workout, variables);
+                // Copy the updated properties back to the original workout object
+                Object.assign(workout, updatedWorkout);
+                
+                console.log(`✅ Template variables applied for week ${week}`);
+            }
+        }
+    }
+
     getStrengthRepsForWeek(week) {
         const progressions = this.programTemplate.weeklyProgression.strengthReps;
         
@@ -443,6 +539,36 @@ class DataManager {
         
         // Default fallback
         return progressions['weeks1-2'] || '5';
+    }
+
+    getStrengthRepsForWeekFromTemplate(programTemplate, week) {
+        const progressions = programTemplate.weeklyProgression.strengthReps;
+        
+        if (week <= 2 && progressions['weeks1-2']) {
+            return progressions['weeks1-2'];
+        } else if (week <= 4 && progressions['weeks3-4']) {
+            return progressions['weeks3-4'];
+        } else if (week <= 6 && progressions['weeks5-6']) {
+            return progressions['weeks5-6'];
+        }
+        
+        // Default fallback
+        return progressions['weeks1-2'] || progressions['weeks1'] || '5';
+    }
+
+    getMainLiftIntensityForWeek(programTemplate, week) {
+        const progressions = programTemplate.weeklyProgression.mainLiftIntensity;
+        
+        if (week === 1 && progressions['weeks1']) {
+            return progressions['weeks1'];
+        } else if (week === 2 && progressions['weeks2']) {
+            return progressions['weeks2'];
+        } else if (week === 3 && progressions['weeks3']) {
+            return progressions['weeks3'];
+        }
+        
+        // Default fallback
+        return progressions['weeks1'] || 'medium';
     }
 
     replaceTemplateVariables(obj, variables) {
@@ -798,12 +924,19 @@ class DataManager {
             if (stored) {
                 return JSON.parse(stored);
             } else {
-                // Initialize with default program only
+                // Initialize with default programs
                 const defaultProgram = await this.getDefaultWorkoutProgram();
+                const nsunsCap3Program = await this.loadProgramFromJSON('assets/workouts/nsuns_cap3.json');
+                
                 const savedPrograms = {
                     [defaultProgram.id]: {
                         ...defaultProgram,
                         isDefault: true,
+                        lastAccessed: new Date().toISOString()
+                    },
+                    [nsunsCap3Program.id]: {
+                        ...nsunsCap3Program,
+                        isDefault: false,
                         lastAccessed: new Date().toISOString()
                     }
                 };

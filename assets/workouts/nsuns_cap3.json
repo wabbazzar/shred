@@ -1,0 +1,440 @@
+{
+  "id": "nsuns-cap3",
+  "name": "nSuns CAP3 (Cyclical AMRAP Progression)",
+  "description": "3-week cyclical AMRAP progression program for strength and muscle building",
+  "version": "1.0.0",
+  "weeks": 3,
+  "daysPerWeek": 7,
+  "metadata": {
+    "targetAudience": "Powerlifting and strength training",
+    "difficulty": "Advanced",
+    "equipment": ["Full gym access", "Barbell", "Plates", "Bands"],
+    "estimatedDuration": "60-90 minutes per session"
+  },
+  "dayTypes": {
+    "1": "gym",
+    "2": "gym", 
+    "3": "gym",
+    "4": "gym",
+    "5": "rest",
+    "6": "gym",
+    "7": "gym"
+  },
+  "dayFocus": {
+    "1": "Chest & Biceps",
+    "2": "Back, Abs, & Triceps",
+    "3": "Shoulders & Legs", 
+    "4": "Chest & Biceps",
+    "5": "REST",
+    "6": "Back, Abs, & Triceps",
+    "7": "Legs & Shoulders"
+  },
+  "weeklyProgression": {
+    "mainLiftIntensity": {
+      "weeks1": "medium",
+      "weeks2": "high", 
+      "weeks3": "peak"
+    }
+  },
+  "workoutTemplate": {
+    "1": {
+      "type": "gym",
+      "focus": "Chest & Biceps",
+      "duration": "60-90 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Band Pull-Aparts",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "200",
+              "notes": "Pre-activation for shoulders"
+            },
+            {
+              "name": "Banded Shoulder Dislocations",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "100",
+              "notes": "Shoulder mobility and activation"
+            },
+            {
+              "name": "Bodyweight Chin/Pull-Ups",
+              "category": "bodyweight",
+              "sets": 4,
+              "reps": "AMRAP",
+              "notes": "Warm-up activation sets"
+            }
+          ]
+        },
+        {
+          "name": "Main Lifts",
+          "exercises": [
+            {
+              "name": "Flat Bench Press",
+              "category": "strength",
+              "sets": 7,
+              "reps": "4/4/4/4/4/4/4",
+              "notes": "Week 1: 4x4@170, 2x4@180, 1x4@185 | Week 2: 4x3@180, 2x3@190, 1x3@190, 1x3@195 | Week 3: 1x6@190 or 1x4@200, 1x2@210"
+            },
+            {
+              "name": "Incline Bench Press",
+              "category": "strength",
+              "sets": 1,
+              "reps": "10+ AMRAP",
+              "notes": "Week 1: 10+@140, MRS 8+@125, EMOM 5 reps | Week 2: 8+@145, MRS 6+@135, EMOM 4 reps | Week 3: 12+@130, MRS 10+@115, EMOM 6 reps"
+            }
+          ]
+        },
+        {
+          "name": "EMOM Work",
+          "exercises": [
+            {
+              "name": "Incline Bench EMOM",
+              "category": "emom",
+              "time": "Until failure",
+              "notes": "EMOM until failure to complete prescribed reps - varies by week"
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "type": "gym",
+      "focus": "Back, Abs, & Triceps",
+      "duration": "60-90 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Band Pull-Aparts",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "200",
+              "notes": "Pre-activation for shoulders"
+            },
+            {
+              "name": "Banded Shoulder Dislocations",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "100",
+              "notes": "Shoulder mobility and activation"
+            },
+            {
+              "name": "Weighted Chin/Pull-Ups",
+              "category": "strength",
+              "sets": 1,
+              "reps": "30",
+              "notes": "Week 1: 30 total | Week 2: 30 total | Week 3: 15 total"
+            }
+          ]
+        },
+        {
+          "name": "Main Lifts",
+          "exercises": [
+            {
+              "name": "Romanian Deadlift",
+              "category": "strength",
+              "sets": 9,
+              "reps": "5/5/4/4/4/4/4",
+              "notes": "Week 1: 4x5@240, 2x4@255, 2x4@255, 1x4@265 | Week 2: 4x8@205, 2x6@215, 1x6@230 | Week 3: 4x6@225, 1x6@225, 2x5@235, 1x5@245"
+            },
+            {
+              "name": "Strict Barbell Row",
+              "category": "strength",
+              "sets": 1,
+              "reps": "6+ AMRAP",
+              "notes": "Week 1: 6+@110, MRS 4+@100, EMOM 3 reps | Week 2: 10+@100, MRS 6+@90, EMOM 5 reps | Week 3: 8+@105, MRS 5+@95, EMOM 4 reps"
+            }
+          ]
+        },
+        {
+          "name": "EMOM Work",
+          "exercises": [
+            {
+              "name": "Strict Barbell Row EMOM",
+              "category": "emom",
+              "time": "Until failure",
+              "notes": "EMOM until failure to complete prescribed reps - varies by week"
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "type": "gym",
+      "focus": "Shoulders & Legs",
+      "duration": "60-90 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Band Pull-Aparts",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "200",
+              "notes": "Pre-activation for shoulders"
+            },
+            {
+              "name": "Banded Shoulder Dislocations",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "100",
+              "notes": "Shoulder mobility and activation"
+            },
+            {
+              "name": "Mobility Work",
+              "category": "mobility",
+              "time": "10 minutes",
+              "notes": "Hip and ankle mobility preparation"
+            }
+          ]
+        },
+        {
+          "name": "Main Lifts",
+          "exercises": [
+            {
+              "name": "Low Bar Squat",
+              "category": "strength",
+              "sets": 8,
+              "reps": "3/3/3/3/3/3/3",
+              "notes": "Week 1: 4x3@260, 2x3@275, 1x3@275, 1x3@285 | Week 2: 1x6@270 or 1x4@280, 1x2@300 | Week 3: 3x4@255, 2x4@265, 1x4@265, 1x4@275"
+            },
+            {
+              "name": "Z Press",
+              "category": "strength",
+              "sets": 1,
+              "reps": "8+ AMRAP",
+              "notes": "Week 1: 8+@95, MRS 6+@85, EMOM 4 reps | Week 2: 12+@85, MRS 10+@75, EMOM 6 reps | Week 3: 10+@90, MRS 8+@80, EMOM 5 reps"
+            }
+          ]
+        },
+        {
+          "name": "EMOM Work",
+          "exercises": [
+            {
+              "name": "Z Press EMOM",
+              "category": "emom",
+              "time": "Until failure",
+              "notes": "EMOM until failure to complete prescribed reps - varies by week"
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "type": "gym",
+      "focus": "Chest & Biceps",
+      "duration": "60-90 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Band Pull-Aparts",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "200",
+              "notes": "Pre-activation for shoulders"
+            },
+            {
+              "name": "Banded Shoulder Dislocations",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "100",
+              "notes": "Shoulder mobility and activation"
+            },
+            {
+              "name": "Bodyweight Chin/Pull-Ups",
+              "category": "bodyweight",
+              "sets": 4,
+              "reps": "AMRAP",
+              "notes": "Warm-up activation sets"
+            }
+          ]
+        },
+        {
+          "name": "Main Lifts",
+          "exercises": [
+            {
+              "name": "Flat Bench Press",
+              "category": "strength",
+              "sets": 9,
+              "reps": "6/6/6/6/5/5/5",
+              "notes": "Week 1: 4x6@155, 2x6@155, 2x5@170, 1x5@180 | Week 2: 4x5@170, 2x4@180, 2x4@180, 1x4@190 | Week 3: 4x8@145, 2x6@155, 1x6@165"
+            },
+            {
+              "name": "Incline Bench Press",
+              "category": "strength",
+              "sets": 1,
+              "reps": "8+ AMRAP",
+              "notes": "Week 1: 8+@145, MRS 6+@135, EMOM 4 reps | Week 2: 3x6@140, 1x5-8@155 | Week 3: 10+@140, MRS 10+@125, EMOM 5 reps"
+            }
+          ]
+        },
+        {
+          "name": "EMOM Work",
+          "exercises": [
+            {
+              "name": "Incline Bench EMOM",
+              "category": "emom",
+              "time": "Until failure",
+              "notes": "EMOM until failure to complete prescribed reps - Week 1 & 3 only"
+            }
+          ]
+        }
+      ]
+    },
+    "5": {
+      "type": "rest",
+      "focus": "REST",
+      "duration": "Complete rest",
+      "sections": [
+        {
+          "name": "Recovery",
+          "exercises": [
+            {
+              "name": "Complete Rest",
+              "category": "rest",
+              "notes": "Full rest day for recovery and adaptation"
+            },
+            {
+              "name": "Light Mobility (Optional)",
+              "category": "mobility",
+              "time": "15-20 minutes",
+              "notes": "Optional light stretching or mobility work"
+            }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "type": "gym",
+      "focus": "Back, Abs, & Triceps",
+      "duration": "60-90 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Band Pull-Aparts",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "200",
+              "notes": "Pre-activation for shoulders"
+            },
+            {
+              "name": "Banded Shoulder Dislocations",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "100",
+              "notes": "Shoulder mobility and activation"
+            },
+            {
+              "name": "Weighted Chin/Pull-Ups",
+              "category": "strength",
+              "sets": 1,
+              "reps": "15",
+              "notes": "Week 1: 15 total | Week 2: 15 total | Week 3: 15 total"
+            }
+          ]
+        },
+        {
+          "name": "Main Lifts",
+          "exercises": [
+            {
+              "name": "Deadlift",
+              "category": "strength",
+              "sets": 3,
+              "reps": "6/2 (Optional)",
+              "notes": "Week 1: 1x6@290 or 1x4@305, 1x2@320 | Week 2: 4x4@275, 2x4@280, 1x4@290 | Week 3: 4x3@285, 2x3@295, 1x3@295, 1x3@305"
+            },
+            {
+              "name": "Barbell Cheat Row",
+              "category": "strength",
+              "sets": 4,
+              "reps": "10/10/10/8-12",
+              "notes": "Week 1: 3x10@120, 1x8-12@135 | Week 2: 10+@150 AMRAP, MRS 8+@135, EMOM 5 reps | Week 3: 8+@140 AMRAP, MRS 6+@130, EMOM 4 reps"
+            }
+          ]
+        },
+        {
+          "name": "EMOM Work",
+          "exercises": [
+            {
+              "name": "Barbell Cheat Row EMOM",
+              "category": "emom",
+              "time": "Until failure",
+              "notes": "EMOM until failure to complete prescribed reps - Week 2 & 3 only"
+            }
+          ]
+        }
+      ]
+    },
+    "7": {
+      "type": "gym",
+      "focus": "Legs & Shoulders",
+      "duration": "60-90 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Band Pull-Aparts",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "200",
+              "notes": "Pre-activation for shoulders"
+            },
+            {
+              "name": "Banded Shoulder Dislocations",
+              "category": "mobility",
+              "sets": 1,
+              "reps": "100",
+              "notes": "Shoulder mobility and activation"
+            },
+            {
+              "name": "Mobility Work",
+              "category": "mobility",
+              "time": "10 minutes",
+              "notes": "Hip and ankle mobility preparation"
+            }
+          ]
+        },
+        {
+          "name": "Main Lifts",
+          "exercises": [
+            {
+              "name": "Paused Squat",
+              "category": "strength",
+              "sets": 9,
+              "reps": "5/5/4/4/4/4/4",
+              "notes": "Week 1: 4x5@220, 2x4@230, 2x4@230, 1x4@245 | Week 2: 4x8@185, 2x6@200, 1x6@210 | Week 3: 4x6@205, 1x6@205, 2x5@215, 1x5@225"
+            },
+            {
+              "name": "Push Press",
+              "category": "strength",
+              "sets": 1,
+              "reps": "6+ AMRAP",
+              "notes": "Week 1: 6+@100, MRS 5+@90, EMOM 3 reps | Week 2: 3x5@85, 1x6-10@95 | Week 3: 10+@90, MRS 8+@80, EMOM 5 reps"
+            }
+          ]
+        },
+        {
+          "name": "EMOM Work",
+          "exercises": [
+            {
+              "name": "Push Press EMOM",
+              "category": "emom",
+              "time": "Until failure",
+              "notes": "EMOM until failure to complete prescribed reps - Week 1 & 3 only"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
