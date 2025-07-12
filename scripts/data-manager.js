@@ -513,6 +513,20 @@ class DataManager {
                 variables.mainLiftIntensity = this.getMainLiftIntensityForWeek(programTemplate, week);
             }
             
+            // Handle exercise-specific progressions (nSuns CAP3 style)
+            Object.keys(programTemplate.weeklyProgression).forEach(exerciseKey => {
+                if (exerciseKey !== 'strengthReps' && exerciseKey !== 'mainLiftIntensity') {
+                    const progression = programTemplate.weeklyProgression[exerciseKey];
+                    const weekKey = `week${week}`;
+                    
+                    if (progression[weekKey]) {
+                        variables[exerciseKey] = progression[weekKey];
+                        // Also set the sets count based on the rep array length
+                        variables[`${exerciseKey}Sets`] = progression[weekKey].length;
+                    }
+                }
+            });
+            
             if (Object.keys(variables).length > 0) {
                 console.log(`🔧 Applying template variables for week ${week}:`, variables);
                 
