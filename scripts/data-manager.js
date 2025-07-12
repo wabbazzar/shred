@@ -52,8 +52,17 @@ class DataManager {
             // Try local storage first
             const stored = localStorage.getItem('workout-program-data');
             if (stored) {
-                this.workoutData = JSON.parse(stored);
-                console.log('📋 Workout data loaded from local storage');
+                const storedData = JSON.parse(stored);
+                
+                // Check if stored data has template variables that need processing
+                if (this.hasUnprocessedTemplateVariables(storedData)) {
+                    console.log('🔄 Stored data has unprocessed template variables, regenerating...');
+                    this.workoutData = await this.getDefaultWorkoutProgram();
+                    await this.saveWorkoutData();
+                } else {
+                    this.workoutData = storedData;
+                    console.log('📋 Workout data loaded from local storage');
+                }
                 return;
             }
 
@@ -458,6 +467,18 @@ class DataManager {
         }
         
         return obj;
+    }
+
+    hasUnprocessedTemplateVariables(obj) {
+        if (typeof obj === 'string') {
+            return /\{\{(\w+)\}\}/.test(obj);
+        } else if (Array.isArray(obj)) {
+            return obj.some(item => this.hasUnprocessedTemplateVariables(item));
+        } else if (typeof obj === 'object' && obj !== null) {
+            return Object.values(obj).some(value => this.hasUnprocessedTemplateVariables(value));
+        }
+        
+        return false;
     }
 
     getDefaultSettings() {
