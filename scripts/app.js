@@ -608,7 +608,8 @@ class WorkoutApp {
         for (const program of programList) {
             const programTypeMap = {
                 'six-week-shred': 'six_week_shred',
-                'nsuns-cap3': 'nsuns_cap3'
+                'nsuns-cap3': 'nsuns_cap3',
+                'lean-sculpt-program': 'lean_sculpt_program'
             };
             
             const programType = programTypeMap[program.id] || 'unknown';
@@ -622,6 +623,8 @@ class WorkoutApp {
                 programFocus = 'Engagement photo prep • 6 weeks • Intermediate';
             } else if (program.id === 'nsuns-cap3') {
                 programFocus = 'Powerlifting strength • 3 weeks • Advanced';
+            } else if (program.id === 'lean-sculpt-program') {
+                programFocus = 'Glutes & lower body focus • 6 weeks • Intermediate';
             } else {
                 programFocus = 'Custom program';
             }
@@ -1101,7 +1104,8 @@ Features:
             
             const programNames = {
                 'six_week_shred': 'Six Week Shred Program',
-                'nsuns_cap3': 'nSuns CAP3 Program'
+                'nsuns_cap3': 'nSuns CAP3 Program',
+                'lean_sculpt_program': 'Lean Sculpt Program'
             };
             
             this.showWorkoutModal(programNames[programType], htmlContent);

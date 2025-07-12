@@ -81,14 +81,15 @@ class DataManager {
     
     async loadCorrespondingProgramTemplate() {
         try {
-            // Determine which template to load based on the current workout data
-            let templatePath = 'assets/workouts/six_week_shred.json'; // default
+            // Auto-detect template based on current workout data ID
+            let templatePath = 'assets/workouts/six_week_shred.json'; // default fallback
             
             if (this.workoutData && this.workoutData.id) {
-                if (this.workoutData.id === 'nsuns-cap3') {
-                    templatePath = 'assets/workouts/nsuns_cap3.json';
+                // Try to find matching JSON file for the current program ID
+                const detectedPath = await this.detectProgramTemplatePath(this.workoutData.id);
+                if (detectedPath) {
+                    templatePath = detectedPath;
                 }
-                // Add more program mappings as needed
             }
             
             await this.loadProgramTemplate(templatePath);
@@ -98,6 +99,72 @@ class DataManager {
             console.error('❌ Failed to load corresponding program template:', error);
             // Fallback to default template
             await this.loadProgramTemplate();
+        }
+    }
+
+    async detectProgramTemplatePath(programId) {
+        try {
+            // List of common JSON files to try based on program ID
+            const possiblePaths = [
+                `assets/workouts/${programId}.json`,
+                `assets/workouts/${programId.replace(/-/g, '_')}.json`,
+                `assets/workouts/${programId.replace(/_/g, '-')}.json`
+            ];
+            
+            // Try each possible path
+            for (const path of possiblePaths) {
+                try {
+                    const response = await fetch(path, { method: 'HEAD' });
+                    if (response.ok) {
+                        console.log(`✅ Found program template: ${path}`);
+                        return path;
+                    }
+                } catch (error) {
+                    // Continue to next path
+                    continue;
+                }
+            }
+            
+            console.log(`⚠️ No template found for program ID: ${programId}, using default`);
+            return null;
+            
+        } catch (error) {
+            console.error('❌ Failed to detect program template path:', error);
+            return null;
+        }
+    }
+
+    async discoverAvailablePrograms() {
+        try {
+            // List of known program files to try
+            const knownPrograms = [
+                'assets/workouts/six_week_shred.json',
+                'assets/workouts/nsuns_cap3.json',
+                'assets/workouts/lean_sculpt_program.json'
+            ];
+            
+            const availablePrograms = [];
+            
+            // Check each known program
+            for (const programPath of knownPrograms) {
+                try {
+                    const response = await fetch(programPath, { method: 'HEAD' });
+                    if (response.ok) {
+                        availablePrograms.push(programPath);
+                        console.log(`✅ Discovered program: ${programPath}`);
+                    }
+                } catch (error) {
+                    console.log(`⚠️ Program not found: ${programPath}`);
+                }
+            }
+            
+            console.log(`🔍 Discovered ${availablePrograms.length} available programs`);
+            return availablePrograms;
+            
+        } catch (error) {
+            console.error('❌ Failed to discover available programs:', error);
+            // Return default programs as fallback
+            return ['assets/workouts/six_week_shred.json'];
         }
     }
 
@@ -1137,22 +1204,38 @@ class DataManager {
             if (stored) {
                 return JSON.parse(stored);
             } else {
-                // Initialize with default programs
-                const defaultProgram = await this.getDefaultWorkoutProgram();
-                const nsunsCap3Program = await this.loadProgramFromJSON('assets/workouts/nsuns_cap3.json');
+                // Auto-discover and initialize all available programs
+                const availablePrograms = await this.discoverAvailablePrograms();
+                const savedPrograms = {};
                 
-                const savedPrograms = {
-                    [defaultProgram.id]: {
+                // Load each discovered program
+                for (const programPath of availablePrograms) {
+                    try {
+                        const program = await this.loadProgramFromJSON(programPath);
+                        const isDefault = programPath.includes('six_week_shred.json');
+                        
+                        savedPrograms[program.id] = {
+                            ...program,
+                            isDefault: isDefault,
+                            lastAccessed: new Date().toISOString()
+                        };
+                        
+                        console.log(`✅ Loaded program: ${program.name} from ${programPath}`);
+                    } catch (error) {
+                        console.warn(`⚠️ Failed to load program from ${programPath}:`, error.message);
+                    }
+                }
+                
+                // Ensure we have at least one default program
+                if (Object.keys(savedPrograms).length === 0) {
+                    const defaultProgram = await this.getDefaultWorkoutProgram();
+                    savedPrograms[defaultProgram.id] = {
                         ...defaultProgram,
                         isDefault: true,
                         lastAccessed: new Date().toISOString()
-                    },
-                    [nsunsCap3Program.id]: {
-                        ...nsunsCap3Program,
-                        isDefault: false,
-                        lastAccessed: new Date().toISOString()
-                    }
-                };
+                    };
+                }
+                
                 await this.saveProgramList(savedPrograms);
                 return savedPrograms;
             }
@@ -1254,10 +1337,11 @@ class DataManager {
                 exercises: targetProgram.exercises
             };
             
-            // Load the program template based on the program ID
-            let templatePath = 'assets/workouts/six_week_shred.json'; // default
-            if (programId === 'nsuns-cap3') {
-                templatePath = 'assets/workouts/nsuns_cap3.json';
+            // Auto-detect the program template based on program ID
+            let templatePath = 'assets/workouts/six_week_shred.json'; // default fallback
+            const detectedPath = await this.detectProgramTemplatePath(programId);
+            if (detectedPath) {
+                templatePath = detectedPath;
             }
             
             // Load the program template to ensure progression rules are available
