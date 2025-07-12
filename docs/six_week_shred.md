@@ -1,7 +1,7 @@
 # Shred Photo Prep Program
 
 ## Program Overview
-**Goal:** Maintain muscle mass while losing fat for engagement photos  
+**Goal:** Maintain muscle mass while losing fat
 **Duration:** 6 weeks  
 **Frequency:** 6 days/week + 2-3 cardio sessions  
 **Style:** High-volume metabolic work with strength foundation

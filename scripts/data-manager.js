@@ -133,99 +133,99 @@ class DataManager {
         }
     }
 
-    // CSV Loading Methods
-    async loadWorkoutDataFromCSV(csvPath) {
-        try {
-            const response = await fetch(csvPath);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch CSV: ${response.status} ${response.statusText}`);
-            }
+    // // CSV Loading Methods
+    // async loadWorkoutDataFromCSV(csvPath) {
+    //     try {
+    //         const response = await fetch(csvPath);
+    //         if (!response.ok) {
+    //             throw new Error(`Failed to fetch CSV: ${response.status} ${response.statusText}`);
+    //         }
             
-            const csvText = await response.text();
-            return this.parseCSVToWorkoutStructure(csvText);
-        } catch (error) {
-            console.error(`❌ Error loading CSV from ${csvPath}:`, error);
-            throw error;
-        }
-    }
+    //         const csvText = await response.text();
+    //         return this.parseCSVToWorkoutStructure(csvText);
+    //     } catch (error) {
+    //         console.error(`❌ Error loading CSV from ${csvPath}:`, error);
+    //         throw error;
+    //     }
+    // }
     
-    parseCSVToWorkoutStructure(csvText) {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',').map(h => h.trim());
+    // parseCSVToWorkoutStructure(csvText) {
+    //     const lines = csvText.trim().split('\n');
+    //     const headers = lines[0].split(',').map(h => h.trim());
         
-        // Validate CSV format
-        const expectedHeaders = ['week', 'day', 'exercise_name', 'category', 'sets', 'reps', 'time', 'notes'];
-        const hasValidHeaders = expectedHeaders.every(header => headers.includes(header));
+    //     // Validate CSV format
+    //     const expectedHeaders = ['week', 'day', 'exercise_name', 'category', 'sets', 'reps', 'time', 'notes'];
+    //     const hasValidHeaders = expectedHeaders.every(header => headers.includes(header));
         
-        if (!hasValidHeaders) {
-            throw new Error('Invalid CSV format - missing required headers');
-        }
+    //     if (!hasValidHeaders) {
+    //         throw new Error('Invalid CSV format - missing required headers');
+    //     }
         
-        const exercises = {};
+    //     const exercises = {};
         
-        // Parse each data row
-        for (let i = 1; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
+    //     // Parse each data row
+    //     for (let i = 1; i < lines.length; i++) {
+    //         const line = lines[i].trim();
+    //         if (!line) continue;
             
-            const values = this.parseCSVLine(line);
-            if (values.length !== headers.length) {
-                console.warn(`⚠️ Skipping malformed CSV line ${i + 1}: ${line}`);
-                continue;
-            }
+    //         const values = this.parseCSVLine(line);
+    //         if (values.length !== headers.length) {
+    //             console.warn(`⚠️ Skipping malformed CSV line ${i + 1}: ${line}`);
+    //             continue;
+    //         }
             
-            const exercise = {};
-            headers.forEach((header, index) => {
-                exercise[header] = values[index].trim();
-            });
+    //         const exercise = {};
+    //         headers.forEach((header, index) => {
+    //             exercise[header] = values[index].trim();
+    //         });
             
-            // Convert string numbers to actual numbers where appropriate
-            const week = parseInt(exercise.week);
-            const day = parseInt(exercise.day);
+    //         // Convert string numbers to actual numbers where appropriate
+    //         const week = parseInt(exercise.week);
+    //         const day = parseInt(exercise.day);
             
-            if (isNaN(week) || isNaN(day)) {
-                console.warn(`⚠️ Skipping invalid week/day on line ${i + 1}: week=${exercise.week}, day=${exercise.day}`);
-                continue;
-            }
+    //         if (isNaN(week) || isNaN(day)) {
+    //             console.warn(`⚠️ Skipping invalid week/day on line ${i + 1}: week=${exercise.week}, day=${exercise.day}`);
+    //             continue;
+    //         }
             
-            // Initialize nested structure
-            if (!exercises[week]) exercises[week] = {};
-            if (!exercises[week][day]) {
-                exercises[week][day] = {
-                    type: this.getDayType(day),
-                    focus: this.getDayFocus(day),
-                    duration: '45-60 minutes',
-                    sections: [{
-                        name: 'Workout',
-                        exercises: []
-                    }]
-                };
-            }
+    //         // Initialize nested structure
+    //         if (!exercises[week]) exercises[week] = {};
+    //         if (!exercises[week][day]) {
+    //             exercises[week][day] = {
+    //                 type: this.getDayType(day),
+    //                 focus: this.getDayFocus(day),
+    //                 duration: '45-60 minutes',
+    //                 sections: [{
+    //                     name: 'Workout',
+    //                     exercises: []
+    //                 }]
+    //             };
+    //         }
             
-            // Create exercise object
-            const exerciseObj = {
-                name: exercise.exercise_name,
-                category: exercise.category,
-                notes: exercise.notes || ''
-            };
+    //         // Create exercise object
+    //         const exerciseObj = {
+    //             name: exercise.exercise_name,
+    //             category: exercise.category,
+    //             notes: exercise.notes || ''
+    //         };
             
-            // Add sets, reps, time as appropriate
-            if (exercise.sets && exercise.sets !== '') {
-                exerciseObj.sets = parseInt(exercise.sets) || exercise.sets;
-            }
-            if (exercise.reps && exercise.reps !== '') {
-                exerciseObj.reps = exercise.reps;
-            }
-            if (exercise.time && exercise.time !== '') {
-                exerciseObj.time = exercise.time;
-            }
+    //         // Add sets, reps, time as appropriate
+    //         if (exercise.sets && exercise.sets !== '') {
+    //             exerciseObj.sets = parseInt(exercise.sets) || exercise.sets;
+    //         }
+    //         if (exercise.reps && exercise.reps !== '') {
+    //             exerciseObj.reps = exercise.reps;
+    //         }
+    //         if (exercise.time && exercise.time !== '') {
+    //             exerciseObj.time = exercise.time;
+    //         }
             
-            exercises[week][day].sections[0].exercises.push(exerciseObj);
-        }
+    //         exercises[week][day].sections[0].exercises.push(exerciseObj);
+    //     }
         
-        console.log('📋 Successfully parsed CSV workout data');
-        return exercises;
-    }
+    //     console.log('📋 Successfully parsed CSV workout data');
+    //     return exercises;
+    // }
     
     parseCSVLine(line) {
         const result = [];
@@ -250,6 +250,10 @@ class DataManager {
     }
     
     getDayType(day) {
+        if (this.programTemplate && this.programTemplate.dayTypes) {
+            return this.programTemplate.dayTypes[day.toString()] || 'gym';
+        }
+        // Fallback to default
         const dayTypes = {
             1: 'gym', 2: 'home', 3: 'gym', 4: 'home', 
             5: 'gym', 6: 'recovery', 7: 'rest'
@@ -258,6 +262,10 @@ class DataManager {
     }
     
     getDayFocus(day) {
+        if (this.programTemplate && this.programTemplate.dayFocus) {
+            return this.programTemplate.dayFocus[day.toString()] || 'Workout';
+        }
+        // Fallback to default
         const dayFocus = {
             1: 'Upper Body Strength + Volume',
             2: 'Dumbbell HIIT + Cardio', 
@@ -270,23 +278,90 @@ class DataManager {
         return dayFocus[day] || 'Workout';
     }
 
-    // Default Data Generators
-    async getDefaultWorkoutProgram() {
-        // Use generated data primarily - it has proper section structure
+    // Program Template Loading
+    async loadProgramTemplate(programPath = 'assets/workouts/six_week_shred.json') {
+        try {
+            const response = await fetch(programPath);
+            if (!response.ok) {
+                throw new Error(`Failed to load program template: ${response.status}`);
+            }
+            
+            this.programTemplate = await response.json();
+            console.log(`📋 Program template loaded: ${this.programTemplate.name}`);
+            return this.programTemplate;
+            
+        } catch (error) {
+            console.error('❌ Failed to load program template:', error);
+            // Return minimal fallback template
+            return this.getFallbackTemplate();
+        }
+    }
+
+    getFallbackTemplate() {
         return {
-            id: 'six-week-shred',
-            name: '6-Week Shred Program',
-            description: 'Complete workout program for engagement photo preparation',
+            id: 'fallback',
+            name: 'Fallback Program',
+            description: 'Basic fallback program',
             version: '1.0.0',
-            created: new Date().toISOString(),
             weeks: 6,
             daysPerWeek: 7,
             metadata: {
-                targetAudience: 'Engagement preparation',
-                difficulty: 'Intermediate',
-                equipment: ['Gym access', 'Dumbbells'],
-                estimatedDuration: '45-60 minutes per session'
+                targetAudience: 'General',
+                difficulty: 'Beginner',
+                equipment: ['Bodyweight'],
+                estimatedDuration: '30 minutes per session'
             },
+            dayTypes: {
+                1: 'gym', 2: 'home', 3: 'gym', 4: 'home', 
+                5: 'gym', 6: 'recovery', 7: 'rest'
+            },
+            dayFocus: {
+                1: 'Upper Body', 2: 'Cardio', 3: 'Lower Body',
+                4: 'Cardio', 5: 'Full Body', 6: 'Recovery', 7: 'Rest'
+            },
+            weeklyProgression: {
+                strengthReps: {
+                    'weeks1-2': '8',
+                    'weeks3-4': '6', 
+                    'weeks5-6': '5'
+                }
+            },
+            workoutTemplate: {
+                1: {
+                    type: 'gym',
+                    focus: 'Upper Body',
+                    duration: '30 minutes',
+                    sections: [{
+                        name: 'Basic Workout',
+                        exercises: [{
+                            name: 'Push-ups',
+                            category: 'bodyweight',
+                            sets: 3,
+                            reps: '10',
+                            notes: 'Basic push-up exercise'
+                        }]
+                    }]
+                }
+            }
+        };
+    }
+
+    // Default Data Generators
+    async getDefaultWorkoutProgram() {
+        // Load program template first
+        if (!this.programTemplate) {
+            await this.loadProgramTemplate();
+        }
+        
+        return {
+            id: this.programTemplate.id,
+            name: this.programTemplate.name,
+            description: this.programTemplate.description,
+            version: this.programTemplate.version,
+            created: new Date().toISOString(),
+            weeks: this.programTemplate.weeks,
+            daysPerWeek: this.programTemplate.daysPerWeek,
+            metadata: this.programTemplate.metadata,
             exercises: this.generateFullProgram()
         };
     }
@@ -294,8 +369,8 @@ class DataManager {
     generateFullProgram() {
         const program = {};
         
-        // Generate all 6 weeks
-        for (let week = 1; week <= 6; week++) {
+        // Generate all weeks based on template
+        for (let week = 1; week <= this.programTemplate.weeks; week++) {
             program[week] = this.generateWeekProgram(week);
         }
         
@@ -303,343 +378,74 @@ class DataManager {
     }
 
     generateWeekProgram(week) {
-        // Progressive rep scheme for strength exercises based on the actual plan
-        const strengthReps = week <= 2 ? '5' : week <= 4 ? '4' : '3';
+        const weekProgram = {};
         
-        return {
-            1: { // Monday - Upper Body Strength + Volume (Gym)
-                type: 'gym',
-                focus: 'Upper Body Strength + Volume',
-                duration: '45-60 minutes',
-                sections: [
-                    {
-                        name: 'Strength Block',
-                        exercises: [
-                            {
-                                name: 'Bench Press',
-                                category: 'strength',
-                                sets: 4,
-                                reps: strengthReps,
-                                notes: `Weeks 1-2: 5 reps, Weeks 3-4: 4 reps, Weeks 5-6: 3 reps`
-                            },
-                            {
-                                name: 'Bent-Over Row',
-                                category: 'strength',
-                                sets: 4,
-                                reps: strengthReps,
-                                notes: 'Pull to lower chest, squeeze shoulder blades'
-                            },
-                            {
-                                name: 'Overhead Press',
-                                category: 'strength',
-                                sets: 3,
-                                reps: strengthReps,
-                                notes: 'Keep core tight, controlled movement'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Volume Block (EMOM/AMRAP)',
-                        exercises: [
-                            {
-                                name: 'EMOM 12 minutes: Pull-ups / Push-ups',
-                                category: 'emom',
-                                time: '12 minutes',
-                                notes: 'Minute 1: Pull-ups x 8-12, Minute 2: Push-ups x 15-20. Alternate each minute.'
-                            },
-                            {
-                                name: 'AMRAP 8 minutes',
-                                category: 'amrap',
-                                time: '8 minutes',
-                                notes: 'Dumbbell rows x 12 each arm, Incline dumbbell press x 15, Lateral raises x 20'
-                            },
-                            {
-                                name: 'Plank Hold',
-                                category: 'time',
-                                sets: 3,
-                                time: '45-60 seconds',
-                                notes: 'Maintain straight line from head to toe'
-                            }
-                        ]
-                    }
-                ]
-            },
-            2: { // Tuesday - Dumbbell HIIT + Cardio (Home)
-                type: 'home',
-                focus: 'Dumbbell HIIT + Cardio',
-                duration: '30-45 minutes',
-                sections: [
-                    {
-                        name: 'Warm-up',
-                        exercises: [
-                            {
-                                name: 'Dynamic Movement',
-                                category: 'mobility',
-                                time: '5 minutes',
-                                notes: 'Prepare body for workout'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'EMOM 20 minutes',
-                        exercises: [
-                            {
-                                name: 'EMOM 20 minutes: 4 exercises',
-                                category: 'emom',
-                                time: '20 minutes',
-                                notes: 'Min 1: Dumbbell thrusters x 12-15, Min 2: Renegade rows x 8-10 each arm, Min 3: Single-arm overhead carry + reverse lunge x 6 each side, Min 4: Dumbbell burpees x 8-12'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Finisher',
-                        exercises: [
-                            {
-                                name: 'AMRAP 5 minutes',
-                                category: 'amrap',
-                                time: '5 minutes',
-                                notes: 'Dumbbell swings x 15, Push-ups x 10, Squat jumps x 10'
-                            }
-                        ]
-                    }
-                ]
-            },
-            3: { // Wednesday - Lower Body Strength + Volume (Gym)
-                type: 'gym',
-                focus: 'Lower Body Strength + Volume',
-                duration: '45-60 minutes',
-                sections: [
-                    {
-                        name: 'Strength Block',
-                        exercises: [
-                            {
-                                name: 'Back Squat',
-                                category: 'strength',
-                                sets: 4,
-                                reps: strengthReps,
-                                notes: 'Same rep scheme as Monday'
-                            },
-                            {
-                                name: 'Romanian Deadlift',
-                                category: 'strength',
-                                sets: 4,
-                                reps: strengthReps,
-                                notes: 'Hip hinge movement, keep bar close to body'
-                            },
-                            {
-                                name: 'Bulgarian Split Squats',
-                                category: 'strength',
-                                sets: 3,
-                                reps: '8 each leg',
-                                notes: 'Rear foot elevated on bench'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Volume Block',
-                        exercises: [
-                            {
-                                name: 'EMOM 15 minutes',
-                                category: 'emom',
-                                time: '15 minutes',
-                                notes: 'Minutes 1-5: Goblet squats x 15, Minutes 6-10: Single-leg RDL x 8 each leg, Minutes 11-15: Jump squats x 12'
-                            },
-                            {
-                                name: 'AMRAP 6 minutes',
-                                category: 'amrap',
-                                time: '6 minutes',
-                                notes: 'Walking lunges x 20 (10 each leg), Calf raises x 25, Wall sit x 30 seconds'
-                            }
-                        ]
-                    }
-                ]
-            },
-            4: { // Thursday - Dumbbell Metabolic + Cardio (Home)
-                type: 'home',
-                focus: 'Dumbbell Metabolic + Cardio',
-                duration: '30-45 minutes',
-                sections: [
-                    {
-                        name: 'Circuit 1',
-                        exercises: [
-                            {
-                                name: 'Circuit 1 (4 rounds)',
-                                category: 'circuit',
-                                sets: 4,
-                                time: '45 sec work / 15 sec rest',
-                                notes: '1. Dumbbell squat to press, 2. Single-arm row (alternate), 3. Reverse lunges with bicep curls, 4. Renegade rows, 5. Dumbbell deadlift to upright row, 6. Mountain climbers'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Rest',
-                        exercises: [
-                            {
-                                name: 'Rest Period',
-                                category: 'rest',
-                                time: '2 minutes',
-                                notes: 'Recover between circuits'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Circuit 2',
-                        exercises: [
-                            {
-                                name: 'Circuit 2 (3 rounds)',
-                                category: 'circuit',
-                                sets: 3,
-                                time: '40 sec work / 20 sec rest',
-                                notes: '1. Dumbbell Romanian deadlifts, 2. Push-up to T-rotation, 3. Goblet squats with pulse, 4. Single-arm overhead press (switch arms), 5. Dumbbell step-ups, 6. Plank with dumbbell pull-throughs'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Finisher',
-                        exercises: [
-                            {
-                                name: 'Farmer\'s Walk',
-                                category: 'strength',
-                                sets: 3,
-                                time: '30 seconds',
-                                notes: 'Use 50lb dumbbells or adjust weight as needed'
-                            }
-                        ]
-                    }
-                ]
-            },
-            5: { // Friday - Full Body Power + AMRAP (Gym)
-                type: 'gym',
-                focus: 'Full Body Power + AMRAP',
-                duration: '45-60 minutes',
-                sections: [
-                    {
-                        name: 'Power Block',
-                        exercises: [
-                            {
-                                name: 'Deadlift',
-                                category: 'strength',
-                                sets: 5,
-                                reps: '3',
-                                notes: 'Focus on speed and power'
-                            },
-                            {
-                                name: 'Push Press',
-                                category: 'strength',
-                                sets: 4,
-                                reps: '5',
-                                notes: 'Explosive overhead movement'
-                            },
-                            {
-                                name: 'Box Jumps or Jump Squats',
-                                category: 'bodyweight',
-                                sets: 4,
-                                reps: '8',
-                                notes: 'Explosive lower body power'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'AMRAP Finisher (20 minutes)',
-                        exercises: [
-                            {
-                                name: 'AMRAP Round 1 (5 min)',
-                                category: 'amrap',
-                                time: '5 minutes',
-                                notes: 'Burpees x 5, Kettlebell swings x 10, Mountain climbers x 20'
-                            },
-                            {
-                                name: 'AMRAP Round 2 (5 min)',
-                                category: 'amrap',
-                                time: '5 minutes',
-                                notes: 'Thrusters x 8, Pull-ups x 6, Push-ups x 12'
-                            },
-                            {
-                                name: 'AMRAP Round 3 (5 min)',
-                                category: 'amrap',
-                                time: '5 minutes',
-                                notes: 'Squat to calf raise x 15, Pike push-ups x 8, Plank to downward dog x 10'
-                            },
-                            {
-                                name: 'AMRAP Round 4 (5 min)',
-                                category: 'amrap',
-                                time: '5 minutes',
-                                notes: 'Repeat Round 1: Burpees x 5, Kettlebell swings x 10, Mountain climbers x 20'
-                            }
-                        ]
-                    }
-                ]
-            },
-            6: { // Saturday - Yoga/Mobility (45-60 min)
-                type: 'recovery',
-                focus: 'Yoga/Mobility',
-                duration: '45-60 minutes',
-                sections: [
-                    {
-                        name: 'Flow 1 - Dynamic Warm-up',
-                        exercises: [
-                            {
-                                name: 'Dynamic Warm-up',
-                                category: 'mobility',
-                                time: '10 minutes',
-                                notes: 'Cat-cow stretches, World\'s greatest stretch, Hip circles and leg swings, Arm circles and shoulder rolls'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Flow 2 - Strength-Flexibility',
-                        exercises: [
-                            {
-                                name: 'Strength-Flexibility Flow',
-                                category: 'flexibility',
-                                time: '25 minutes',
-                                notes: 'Sun salutation A (5 rounds), Warrior sequence (30 sec holds), Triangle pose series, Twisted chair pose, Eagle pose balance, Low lunge with side stretch'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Flow 3 - Recovery/Restoration',
-                        exercises: [
-                            {
-                                name: 'Recovery/Restoration',
-                                category: 'flexibility',
-                                time: '15 minutes',
-                                notes: 'Pigeon pose (2 min each side), Seated spinal twist, Happy baby pose, Legs up the wall, Savasana'
-                            }
-                        ]
-                    }
-                ]
-            },
-            7: { // Sunday - Active Recovery + Optional Cardio
-                type: 'recovery',
-                focus: 'Active Recovery + Optional Cardio',
-                duration: 'Flexible',
-                sections: [
-                    {
-                        name: 'Active Recovery',
-                        exercises: [
-                            {
-                                name: 'Complete Rest',
-                                category: 'rest',
-                                notes: 'Focus on sleep, hydration, and meal prep for the week'
-                            },
-                            {
-                                name: 'Optional Cardio',
-                                category: 'cardio',
-                                time: '20-30 minutes',
-                                notes: 'Light cardio if desired: walking, easy cycling, or swimming'
-                            },
-                            {
-                                name: 'Meal Prep',
-                                category: 'lifestyle',
-                                time: '1-2 hours',
-                                notes: 'Prepare healthy meals for the upcoming week'
-                            }
-                        ]
-                    }
-                ]
+        // Generate each day of the week
+        for (let day = 1; day <= this.programTemplate.daysPerWeek; day++) {
+            const dayTemplate = this.programTemplate.workoutTemplate[day.toString()];
+            
+            if (dayTemplate) {
+                weekProgram[day] = this.processWorkoutTemplate(dayTemplate, week);
             }
-        };
+        }
+        
+        return weekProgram;
+    }
+
+    processWorkoutTemplate(template, week) {
+        // Deep clone the template to avoid modifying original
+        const workout = JSON.parse(JSON.stringify(template));
+        
+        // Apply weekly progressions
+        if (this.programTemplate.weeklyProgression) {
+            this.applyWeeklyProgressions(workout, week);
+        }
+        
+        return workout;
+    }
+
+    applyWeeklyProgressions(workout, week) {
+        // Apply strength rep progressions
+        if (this.programTemplate.weeklyProgression.strengthReps) {
+            const strengthReps = this.getStrengthRepsForWeek(week);
+            this.replaceTemplateVariables(workout, { strengthReps });
+        }
+        
+        // Add more progression types as needed
+    }
+
+    getStrengthRepsForWeek(week) {
+        const progressions = this.programTemplate.weeklyProgression.strengthReps;
+        
+        if (week <= 2 && progressions['weeks1-2']) {
+            return progressions['weeks1-2'];
+        } else if (week <= 4 && progressions['weeks3-4']) {
+            return progressions['weeks3-4'];
+        } else if (week <= 6 && progressions['weeks5-6']) {
+            return progressions['weeks5-6'];
+        }
+        
+        // Default fallback
+        return progressions['weeks1-2'] || '5';
+    }
+
+    replaceTemplateVariables(obj, variables) {
+        if (typeof obj === 'string') {
+            // Replace template variables like {{strengthReps}}
+            return obj.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+                return variables[key] || match;
+            });
+        } else if (Array.isArray(obj)) {
+            return obj.map(item => this.replaceTemplateVariables(item, variables));
+        } else if (typeof obj === 'object' && obj !== null) {
+            const result = {};
+            for (const [key, value] of Object.entries(obj)) {
+                result[key] = this.replaceTemplateVariables(value, variables);
+            }
+            return result;
+        }
+        
+        return obj;
     }
 
     getDefaultSettings() {
