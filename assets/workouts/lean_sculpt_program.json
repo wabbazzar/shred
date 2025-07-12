@@ -1,0 +1,544 @@
+{
+  "id": "lean-sculpt-program",
+  "name": "Lean Sculpt Program",
+  "description": "Build lean muscle with emphasis on glutes and lower body definition",
+  "version": "1.0.0",
+  "weeks": 6,
+  "daysPerWeek": 7,
+  "metadata": {
+    "targetAudience": "130lb woman seeking lean, sculpted physique",
+    "difficulty": "Intermediate",
+    "equipment": ["Dumbbells", "Resistance Bands", "Gym Equipment", "Bodyweight"],
+    "estimatedDuration": "45-75 minutes per session"
+  },
+  "dayTypes": {
+    "1": "gym",
+    "2": "home",
+    "3": "gym",
+    "4": "home",
+    "5": "gym",
+    "6": "home",
+    "7": "recovery"
+  },
+  "dayFocus": {
+    "1": "Lower Body Power (Glutes & Quads Focus)",
+    "2": "Upper Body Strength + Dumbbell Work",
+    "3": "Lower Body Volume (Glutes & Hamstrings Focus)",
+    "4": "HIIT Cardio + Core",
+    "5": "Full Body Strength + Glute Finisher",
+    "6": "Yoga Flow (with partner)",
+    "7": "Active Recovery + Light Movement"
+  },
+  "weeklyProgression": {
+    "strengthReps": {
+      "week1": ["8", "8", "8", "8"],
+      "week2": ["8", "8", "8", "8"],
+      "week3": ["6", "6", "6", "6"],
+      "week4": ["6", "6", "6", "6"],
+      "week5": ["5", "5", "5", "5"],
+      "week6": ["5", "5", "5", "5"]
+    }
+  },
+  "progressionRules": {
+    "weight": {
+      "categoryDefaults": {
+        "strength": { "light": 2.5, "heavy": 5.0 },
+        "bodyweight": 0,
+        "cardio": 0,
+        "time": 0,
+        "flexibility": 0,
+        "mobility": 0,
+        "circuit": 0,
+        "emom": 0,
+        "amrap": 0
+      },
+      "exerciseSpecific": {
+        "Goblet Squats": { "light": 2.5, "heavy": 5.0 },
+        "Romanian Deadlifts": { "light": 2.5, "heavy": 5.0 },
+        "Hip Thrusts": { "light": 5.0, "heavy": 10.0 },
+        "Sumo Deadlifts": { "light": 5.0, "heavy": 10.0 },
+        "Deadlifts": { "light": 5.0, "heavy": 10.0 },
+        "Dumbbell Bench Press": { "light": 2.5, "heavy": 5.0 }
+      },
+      "heavyThreshold": 50
+    },
+    "reps": {
+      "bodyweight": 1,
+      "emom": 1,
+      "amrap": 2,
+      "time": 5,
+      "circuit": 1
+    },
+    "time": {
+      "flexibility": 15,
+      "mobility": 10,
+      "cardio": 30,
+      "time": 10,
+      "circuit": 5
+    }
+  },
+  "workoutTemplate": {
+    "1": {
+      "type": "gym",
+      "focus": "Lower Body Power (Glutes & Quads Focus)",
+      "duration": "60-75 minutes",
+      "sections": [
+        {
+          "name": "Strength Block",
+          "exercises": [
+            {
+              "name": "Goblet Squats",
+              "category": "strength",
+              "sets": 4,
+              "reps": "{{strengthReps}}",
+              "notes": "Focus on depth and glute activation"
+            },
+            {
+              "name": "Romanian Deadlifts",
+              "category": "strength",
+              "sets": 4,
+              "reps": "{{strengthReps}}",
+              "notes": "Emphasize hip hinge pattern"
+            },
+            {
+              "name": "Walking Lunges",
+              "category": "strength",
+              "sets": 3,
+              "reps": "10 each leg",
+              "notes": "Focus on form and balance"
+            },
+            {
+              "name": "Hip Thrusts",
+              "category": "strength",
+              "sets": 4,
+              "reps": "{{strengthReps}}",
+              "notes": "Add weight progressively"
+            }
+          ]
+        },
+        {
+          "name": "Power & Volume Block",
+          "exercises": [
+            {
+              "name": "EMOM 12 minutes",
+              "category": "emom",
+              "time": "12 minutes",
+              "notes": "Minute 1: Jump squats x 8-10, Minute 2: Single-leg glute bridges x 8 each leg. Alternate each minute."
+            }
+          ]
+        },
+        {
+          "name": "Glute Finisher Circuit",
+          "exercises": [
+            {
+              "name": "Glute Activation Circuit",
+              "category": "circuit",
+              "sets": 3,
+              "time": "45 seconds work/15 seconds rest",
+              "notes": "Lateral walks with resistance band x 15 each direction, Clamshells x 20 each side, Fire hydrants x 15 each side, Glute bridges x 25"
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "type": "home",
+      "focus": "Upper Body Strength + Dumbbell Work",
+      "duration": "45-60 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Dynamic Warm-up",
+              "category": "mobility",
+              "time": "5 minutes",
+              "notes": "Arm circles, shoulder rolls, light movement"
+            }
+          ]
+        },
+        {
+          "name": "Upper Body Strength",
+          "exercises": [
+            {
+              "name": "Dumbbell Chest Press",
+              "category": "strength",
+              "sets": 4,
+              "reps": "12-15",
+              "notes": "Focus on controlled movement"
+            },
+            {
+              "name": "Single-arm Dumbbell Rows",
+              "category": "strength",
+              "sets": 4,
+              "reps": "10 each arm",
+              "notes": "Engage core for stability"
+            },
+            {
+              "name": "Dumbbell Shoulder Press",
+              "category": "strength",
+              "sets": 4,
+              "reps": "10-12",
+              "notes": "Keep core tight"
+            },
+            {
+              "name": "Dumbbell Bicep Curls",
+              "category": "strength",
+              "sets": 4,
+              "reps": "12-15",
+              "notes": "Controlled tempo"
+            },
+            {
+              "name": "Tricep Dips",
+              "category": "bodyweight",
+              "sets": 4,
+              "reps": "8-12",
+              "notes": "Use chair or couch"
+            }
+          ]
+        },
+        {
+          "name": "Metabolic Finisher",
+          "exercises": [
+            {
+              "name": "EMOM 10 minutes",
+              "category": "emom",
+              "time": "10 minutes",
+              "notes": "Minute 1: Dumbbell thrusters x 8-10, Minute 2: Push-ups (modified if needed) x 5-8"
+            }
+          ]
+        },
+        {
+          "name": "Core Finisher",
+          "exercises": [
+            {
+              "name": "Plank Hold",
+              "category": "time",
+              "sets": 3,
+              "time": "30-45 seconds",
+              "notes": "Maintain straight line"
+            },
+            {
+              "name": "Dead Bugs",
+              "category": "bodyweight",
+              "sets": 2,
+              "reps": "10 each side",
+              "notes": "Slow and controlled"
+            },
+            {
+              "name": "Bird Dogs",
+              "category": "bodyweight",
+              "sets": 2,
+              "reps": "8 each side",
+              "notes": "Focus on balance"
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "type": "gym",
+      "focus": "Lower Body Volume (Glutes & Hamstrings Focus)",
+      "duration": "60-75 minutes",
+      "sections": [
+        {
+          "name": "Strength Block",
+          "exercises": [
+            {
+              "name": "Sumo Deadlifts",
+              "category": "strength",
+              "sets": 4,
+              "reps": "{{strengthReps}}",
+              "notes": "Wide stance, focus on glutes"
+            },
+            {
+              "name": "Bulgarian Split Squats",
+              "category": "strength",
+              "sets": 4,
+              "reps": "8 each leg",
+              "notes": "Rear foot elevated"
+            },
+            {
+              "name": "Single-leg Romanian Deadlifts",
+              "category": "strength",
+              "sets": 3,
+              "reps": "6 each leg",
+              "notes": "Focus on balance and hamstring stretch"
+            },
+            {
+              "name": "Curtsy Lunges",
+              "category": "strength",
+              "sets": 3,
+              "reps": "10 each leg",
+              "notes": "Cross behind for glute activation"
+            }
+          ]
+        },
+        {
+          "name": "Volume Block",
+          "exercises": [
+            {
+              "name": "EMOM 15 minutes",
+              "category": "emom",
+              "time": "15 minutes",
+              "notes": "Minutes 1-5: Reverse lunges x 10 each leg, Minutes 6-10: Glute bridges x 15, Minutes 11-15: Lateral lunges x 8 each leg"
+            }
+          ]
+        },
+        {
+          "name": "AMRAP Finisher",
+          "exercises": [
+            {
+              "name": "AMRAP 8 minutes",
+              "category": "amrap",
+              "time": "8 minutes",
+              "notes": "Step-ups x 10 each leg, Calf raises x 20, Wall sit x 30 seconds"
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "type": "home",
+      "focus": "HIIT Cardio + Core",
+      "duration": "45-60 minutes",
+      "sections": [
+        {
+          "name": "Warm-up",
+          "exercises": [
+            {
+              "name": "Dynamic Movement",
+              "category": "mobility",
+              "time": "5 minutes",
+              "notes": "Light movement to prepare for HIIT"
+            }
+          ]
+        },
+        {
+          "name": "HIIT Circuit 1",
+          "exercises": [
+            {
+              "name": "HIIT Circuit 1",
+              "category": "circuit",
+              "sets": 4,
+              "time": "40 seconds work/20 seconds rest",
+              "notes": "Jumping Jacks, High Knees, Butt Kicks, Mountain Climbers, Squat Jumps, Burpees (modified if needed)"
+            }
+          ]
+        },
+        {
+          "name": "HIIT Circuit 2",
+          "exercises": [
+            {
+              "name": "HIIT Circuit 2",
+              "category": "circuit",
+              "sets": 3,
+              "time": "45 seconds work/15 seconds rest",
+              "notes": "Alternating Jump Lunges, Plank Jacks, Tuck Jumps, Push-up to T-rotation, Skaters, Sprint in place"
+            }
+          ]
+        },
+        {
+          "name": "Core Finisher",
+          "exercises": [
+            {
+              "name": "Russian Twists",
+              "category": "bodyweight",
+              "sets": 3,
+              "reps": "20",
+              "notes": "Engage core throughout"
+            },
+            {
+              "name": "Leg Raises",
+              "category": "bodyweight",
+              "sets": 3,
+              "reps": "12",
+              "notes": "Control the descent"
+            },
+            {
+              "name": "Bicycle Crunches",
+              "category": "bodyweight",
+              "sets": 3,
+              "reps": "20",
+              "notes": "Slow and controlled"
+            },
+            {
+              "name": "Side Plank",
+              "category": "time",
+              "sets": 2,
+              "time": "20 seconds each side",
+              "notes": "Hold strong position"
+            },
+            {
+              "name": "Dead Bug",
+              "category": "bodyweight",
+              "sets": 2,
+              "reps": "10 each side",
+              "notes": "Maintain core stability"
+            }
+          ]
+        }
+      ]
+    },
+    "5": {
+      "type": "gym",
+      "focus": "Full Body Strength + Glute Finisher",
+      "duration": "60-75 minutes",
+      "sections": [
+        {
+          "name": "Upper Body Strength",
+          "exercises": [
+            {
+              "name": "Dumbbell Bench Press",
+              "category": "strength",
+              "sets": 4,
+              "reps": "8-10",
+              "notes": "Focus on form and control"
+            },
+            {
+              "name": "Bent-Over Rows",
+              "category": "strength",
+              "sets": 4,
+              "reps": "8-10",
+              "notes": "Squeeze shoulder blades"
+            },
+            {
+              "name": "Overhead Press",
+              "category": "strength",
+              "sets": 3,
+              "reps": "8-10",
+              "notes": "Keep core engaged"
+            }
+          ]
+        },
+        {
+          "name": "Lower Body Power",
+          "exercises": [
+            {
+              "name": "Deadlifts",
+              "category": "strength",
+              "sets": 4,
+              "reps": "5",
+              "notes": "Focus on form and power"
+            },
+            {
+              "name": "Goblet Squats",
+              "category": "strength",
+              "sets": 3,
+              "reps": "12",
+              "notes": "Deep squat position"
+            },
+            {
+              "name": "Lateral Lunges",
+              "category": "strength",
+              "sets": 3,
+              "reps": "8 each leg",
+              "notes": "Focus on hip mobility"
+            }
+          ]
+        },
+        {
+          "name": "Glute Activation Finisher",
+          "exercises": [
+            {
+              "name": "Glute Activation Circuit",
+              "category": "circuit",
+              "sets": 3,
+              "time": "45 seconds work/15 seconds rest",
+              "notes": "Banded glute bridges, Lateral walks, Clamshells (alternate sides), Single-leg deadlifts (bodyweight), Glute kickbacks, Squat pulses"
+            }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "type": "home",
+      "focus": "Yoga Flow (with partner)",
+      "duration": "55 minutes",
+      "sections": [
+        {
+          "name": "Dynamic Warm-up",
+          "exercises": [
+            {
+              "name": "Yoga Warm-up Flow",
+              "category": "flexibility",
+              "time": "10 minutes",
+              "notes": "Cat-cow stretches, Hip circles and gentle twists, Shoulder rolls and arm swings, Gentle spinal waves"
+            }
+          ]
+        },
+        {
+          "name": "Strength & Flexibility",
+          "exercises": [
+            {
+              "name": "Sun Salutation A",
+              "category": "flexibility",
+              "sets": 5,
+              "time": "2 minutes per round",
+              "notes": "Flow through complete sequence"
+            },
+            {
+              "name": "Warrior Sequence",
+              "category": "flexibility",
+              "time": "8 minutes",
+              "notes": "Warrior I (45 sec each side), Warrior II (45 sec each side), Side angle pose (30 sec each side)"
+            },
+            {
+              "name": "Balance Series",
+              "category": "flexibility",
+              "time": "5 minutes",
+              "notes": "Tree pose (30 sec each side), Dancer's pose (20 sec each side), Eagle pose (20 sec each side)"
+            },
+            {
+              "name": "Hip Opening Flow",
+              "category": "flexibility",
+              "time": "8 minutes",
+              "notes": "Low lunge with twist (1 min each side), Lizard pose (1 min each side), Pigeon prep (2 min each side)"
+            }
+          ]
+        },
+        {
+          "name": "Recovery & Restoration",
+          "exercises": [
+            {
+              "name": "Restorative Yoga",
+              "category": "flexibility",
+              "time": "15 minutes",
+              "notes": "Seated forward fold, Supine spinal twist, Happy baby pose, Legs up the wall, Savasana (final relaxation)"
+            }
+          ]
+        }
+      ]
+    },
+    "7": {
+      "type": "recovery",
+      "focus": "Active Recovery + Light Movement",
+      "duration": "30-45 minutes",
+      "sections": [
+        {
+          "name": "Active Recovery Options",
+          "exercises": [
+            {
+              "name": "Gentle Walk + Stretching",
+              "category": "cardio",
+              "time": "30-45 minutes",
+              "notes": "20-30 minute walk (moderate pace) + 10-15 minutes full body stretching"
+            },
+            {
+              "name": "Mobility Flow",
+              "category": "mobility",
+              "time": "35 minutes",
+              "notes": "Hip mobility routine (10 min), Shoulder mobility routine (10 min), Gentle yoga flow (15 min)"
+            },
+            {
+              "name": "Light Activity",
+              "category": "lifestyle",
+              "time": "30-45 minutes",
+              "notes": "Dancing, swimming, or recreational activity. Keep intensity low and enjoyable."
+            }
+          ]
+        }
+      ]
+    }
+  }
+} 
