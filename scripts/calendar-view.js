@@ -184,18 +184,8 @@ class CalendarView {
         const weeks = workoutData.weeks || 6;
         const programName = workoutData.name || 'Workout Program';
         
-        // Create dynamic title based on program
-        let title = programName;
-        if (weeks === 3) {
-            title = `${programName} (3-Week Program)`;
-        } else if (weeks === 6) {
-            title = `${programName} (6-Week Program)`;
-        } else {
-            title = `${programName} (${weeks}-Week Program)`;
-        }
-        
         return {
-            title: title,
+            title: programName,
             subtitle: 'Complete Overview',
             weeks: weeks
         };
