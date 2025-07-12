@@ -690,6 +690,95 @@ class DataManager {
         return repsArray.join('/');
     }
 
+    // Config-driven progression methods
+    getWeightProgression(exerciseName, category, currentWeight, programTemplate = null) {
+        const template = programTemplate || this.programTemplate;
+        const rules = template?.progressionRules?.weight;
+        
+        if (!rules) {
+            // Fallback to hardcoded logic if no rules defined
+            return this.getHardcodedWeightProgression(category, currentWeight);
+        }
+        
+        const heavyThreshold = rules.heavyThreshold || 100;
+        const isHeavy = currentWeight >= heavyThreshold;
+        
+        // 1. Check exercise-specific rules first
+        if (rules.exerciseSpecific && rules.exerciseSpecific[exerciseName]) {
+            const rule = rules.exerciseSpecific[exerciseName];
+            if (typeof rule === 'object' && rule.light !== undefined && rule.heavy !== undefined) {
+                return isHeavy ? rule.heavy : rule.light;
+            }
+            // Handle legacy single-value format
+            return typeof rule === 'number' ? rule : rule.light || rule.heavy || 2.5;
+        }
+        
+        // 2. Check category defaults
+        if (rules.categoryDefaults && rules.categoryDefaults[category]) {
+            const rule = rules.categoryDefaults[category];
+            if (typeof rule === 'object' && rule.light !== undefined && rule.heavy !== undefined) {
+                return isHeavy ? rule.heavy : rule.light;
+            }
+            // Handle legacy single-value format
+            return typeof rule === 'number' ? rule : rule.light || rule.heavy || 2.5;
+        }
+        
+        // 3. Fallback to hardcoded logic
+        return this.getHardcodedWeightProgression(category, currentWeight);
+    }
+
+    getHardcodedWeightProgression(category, currentWeight) {
+        // Original hardcoded logic as fallback
+        if (category === 'strength') {
+            return currentWeight >= 100 ? 5.0 : 2.5;
+        }
+        return currentWeight >= 50 ? 2.5 : 2.5;
+    }
+
+    getRepsProgression(category, programTemplate = null) {
+        const template = programTemplate || this.programTemplate;
+        const rules = template?.progressionRules?.reps;
+        
+        if (!rules) {
+            // Fallback to hardcoded logic
+            return this.getHardcodedRepsProgression(category);
+        }
+        
+        return rules[category] || this.getHardcodedRepsProgression(category);
+    }
+
+    getHardcodedRepsProgression(category) {
+        // Original hardcoded logic as fallback
+        if (category === 'emom' || category === 'amrap') {
+            return 1;
+        } else if (category === 'bodyweight') {
+            return 1;
+        }
+        return 1;
+    }
+
+    getTimeProgression(category, programTemplate = null) {
+        const template = programTemplate || this.programTemplate;
+        const rules = template?.progressionRules?.time;
+        
+        if (!rules) {
+            // Fallback to hardcoded logic
+            return this.getHardcodedTimeProgression(category);
+        }
+        
+        return rules[category] || this.getHardcodedTimeProgression(category);
+    }
+
+    getHardcodedTimeProgression(category) {
+        // Original hardcoded logic as fallback
+        if (category === 'time' || category === 'flexibility') {
+            return 10;
+        } else if (category === 'cardio') {
+            return 30;
+        }
+        return 5;
+    }
+
     hasUnprocessedTemplateVariables(obj) {
         if (typeof obj === 'string') {
             return /\{\{(\w+)\}\}/.test(obj);

@@ -61,6 +61,62 @@
       "week3": ["6", "6", "6", "6", "6", "5", "5", "5"]
     }
   },
+  "progressionRules": {
+    "weight": {
+      "categoryDefaults": {
+        "strength": {
+          "light": 5.0,
+          "heavy": 10.0
+        },
+        "bodyweight": 0,
+        "mobility": 0
+      },
+      "exerciseSpecific": {
+        "Flat Bench Press": {
+          "light": 5.0,
+          "heavy": 10.0
+        },
+        "Romanian Deadlift": {
+          "light": 10.0,
+          "heavy": 15.0
+        },
+        "Low Bar Squat": {
+          "light": 10.0,
+          "heavy": 15.0
+        },
+        "Deadlift": {
+          "light": 15.0,
+          "heavy": 20.0
+        },
+        "Paused Squat": {
+          "light": 10.0,
+          "heavy": 15.0
+        },
+        "Incline Bench Press": {
+          "light": 5.0,
+          "heavy": 7.5
+        },
+        "Strict Barbell Row": {
+          "light": 5.0,
+          "heavy": 10.0
+        },
+        "Weighted Chin/Pull-Ups": {
+          "light": 2.5,
+          "heavy": 5.0
+        }
+      },
+      "heavyThreshold": 135
+    },
+    "reps": {
+      "bodyweight": 1,
+      "emom": 1,
+      "amrap": 2
+    },
+    "time": {
+      "mobility": 10,
+      "emom": 30
+    }
+  },
   "workoutTemplate": {
     "1": {
       "type": "gym",

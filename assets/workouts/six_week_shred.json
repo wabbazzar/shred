@@ -36,6 +36,60 @@
       "weeks5-6": "3"
     }
   },
+  "progressionRules": {
+    "weight": {
+      "categoryDefaults": {
+        "strength": {
+          "light": 2.5,
+          "heavy": 5.0
+        },
+        "bodyweight": 0,
+        "cardio": 0,
+        "time": 0,
+        "flexibility": 0,
+        "mobility": 0
+      },
+      "exerciseSpecific": {
+        "Bench Press": {
+          "light": 2.5,
+          "heavy": 5.0
+        },
+        "Back Squat": {
+          "light": 5.0,
+          "heavy": 10.0
+        },
+        "Deadlift": {
+          "light": 5.0,
+          "heavy": 10.0
+        },
+        "Overhead Press": {
+          "light": 2.5,
+          "heavy": 2.5
+        },
+        "Bent-Over Row": {
+          "light": 2.5,
+          "heavy": 5.0
+        },
+        "Romanian Deadlift": {
+          "light": 5.0,
+          "heavy": 7.5
+        }
+      },
+      "heavyThreshold": 100
+    },
+    "reps": {
+      "bodyweight": 1,
+      "emom": 1,
+      "amrap": 2,
+      "time": 5
+    },
+    "time": {
+      "flexibility": 15,
+      "mobility": 10,
+      "cardio": 30,
+      "time": 10
+    }
+  },
   "workoutTemplate": {
     "1": {
       "type": "gym",

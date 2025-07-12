@@ -1381,6 +1381,9 @@ class DayView {
         const exercise = this.app.dataManager.getExercisesForDay(this.currentWeek, this.currentDay)[exerciseIndex];
         const exerciseCategory = exercise?.category || 'general';
         
+        // Store exercise context for progression calculations
+        this.currentExerciseContext = exercise;
+        
         // Calculate how many weeks to progress (if sourceWeek is provided)
         const weeksToProgress = sourceWeek ? (currentWeek - sourceWeek) : 1;
         
@@ -1406,6 +1409,9 @@ class DayView {
             progressiveValues[field] = progressiveValue;
         });
         
+        // Clear exercise context after calculations
+        this.currentExerciseContext = null;
+        
         return progressiveValues;
     }
 
@@ -1413,35 +1419,47 @@ class DayView {
         const weight = parseFloat(previousWeight);
         if (isNaN(weight)) return previousWeight;
         
+        // Get the exercise name from the current context
+        const exerciseName = this.getCurrentExerciseName();
+        
         let totalProgression = 0;
         
         // Calculate progression for each week
         for (let i = 0; i < weeksToProgress; i++) {
             const weekNum = currentWeek - weeksToProgress + i + 1;
-            let progressionRate = 0;
+            const currentWeight = weight + totalProgression;
             
-            // Different progression rates based on exercise category and week
-            if (exerciseCategory === 'strength') {
-                // Strength exercises: 2.5-5 lbs per week, tapering as weeks progress
-                if (weekNum <= 2) {
-                    progressionRate = weight >= 100 ? 5 : 2.5; // Heavier weights progress more
-                } else if (weekNum <= 4) {
-                    progressionRate = weight >= 100 ? 2.5 : 2.5;
-                } else {
-                    progressionRate = weight >= 100 ? 2.5 : 2.5; // Maintain progression
-                }
-            } else {
-                // Other categories: smaller progression
-                progressionRate = weight >= 50 ? 2.5 : 2.5;
+            // Use config-driven progression from DataManager
+            const progressionRate = this.app.dataManager.getWeightProgression(
+                exerciseName, 
+                exerciseCategory, 
+                currentWeight
+            );
+            
+            // Apply weekly tapering (reduce progression in later weeks)
+            let adjustedProgression = progressionRate;
+            if (weekNum > 4) {
+                adjustedProgression *= 0.8; // 20% reduction in weeks 5+
+            } else if (weekNum > 2) {
+                adjustedProgression *= 0.9; // 10% reduction in weeks 3-4
             }
             
-            totalProgression += progressionRate;
+            totalProgression += adjustedProgression;
         }
         
         const newWeight = weight + totalProgression;
         
         // Round to nearest 2.5 lbs (standard plate increment)
         return Math.round(newWeight / 2.5) * 2.5;
+    }
+
+    getCurrentExerciseName() {
+        // Try to get the current exercise name from the context
+        // This is a helper method to identify which exercise we're calculating progression for
+        if (this.currentExerciseContext) {
+            return this.currentExerciseContext.name;
+        }
+        return 'Unknown Exercise';
     }
 
     calculateRepsProgression(previousReps, currentWeek, exerciseCategory, weeksToProgress = 1) {
@@ -1454,23 +1472,27 @@ class DayView {
             return reps; // No rep progression for strength
         }
         
+        // Use config-driven progression from DataManager
+        const progressionPerWeek = this.app.dataManager.getRepsProgression(exerciseCategory);
+        
         let totalProgression = 0;
         
         // Calculate progression for each week
         for (let i = 0; i < weeksToProgress; i++) {
             const weekNum = currentWeek - weeksToProgress + i + 1;
-            let progressionAmount = 0;
+            let progressionAmount = progressionPerWeek;
             
-            if (exerciseCategory === 'emom' || exerciseCategory === 'amrap') {
-                // EMOM/AMRAP: increase reps by 1-2 per week
-                progressionAmount = weekNum <= 3 ? 1 : 2;
-            } else if (exerciseCategory === 'bodyweight') {
-                // Bodyweight: increase reps by 1-3 per week
-                const currentReps = reps + totalProgression;
-                progressionAmount = currentReps < 10 ? 1 : currentReps < 20 ? 2 : 3;
-            } else {
-                // General: small progression
-                progressionAmount = 1;
+            // Apply contextual adjustments based on current reps
+            const currentReps = reps + totalProgression;
+            if (exerciseCategory === 'bodyweight') {
+                // Bodyweight: scale progression based on current reps
+                if (currentReps < 10) {
+                    progressionAmount = Math.max(1, progressionPerWeek);
+                } else if (currentReps < 20) {
+                    progressionAmount = Math.max(2, progressionPerWeek);
+                } else {
+                    progressionAmount = Math.max(3, progressionPerWeek);
+                }
             }
             
             totalProgression += progressionAmount;
@@ -1484,23 +1506,29 @@ class DayView {
         const timeValue = this.parseTimeValue(previousTime);
         if (timeValue === null) return previousTime;
         
+        // Use config-driven progression from DataManager
+        const progressionPerWeek = this.app.dataManager.getTimeProgression(exerciseCategory);
+        
         let totalProgressionSeconds = 0;
         
         // Calculate progression for each week
         for (let i = 0; i < weeksToProgress; i++) {
             const currentTimeValue = timeValue + totalProgressionSeconds;
-            let progressionSeconds = 0;
+            let progressionSeconds = progressionPerWeek;
             
-            // Different progression based on exercise category
+            // Apply contextual adjustments based on current time and category
             if (exerciseCategory === 'time' || exerciseCategory === 'flexibility') {
-                // Timed holds: increase by 5-15 seconds per week
-                progressionSeconds = currentTimeValue < 30 ? 5 : currentTimeValue < 60 ? 10 : 15;
+                // Timed holds: scale based on current duration
+                if (currentTimeValue < 30) {
+                    progressionSeconds = Math.max(5, progressionPerWeek);
+                } else if (currentTimeValue < 60) {
+                    progressionSeconds = Math.max(10, progressionPerWeek);
+                } else {
+                    progressionSeconds = Math.max(15, progressionPerWeek);
+                }
             } else if (exerciseCategory === 'cardio') {
-                // Cardio: increase by 15-30 seconds per week
-                progressionSeconds = currentTimeValue < 120 ? 15 : 30;
-            } else {
-                // General: small progression
-                progressionSeconds = 5;
+                // Cardio: larger jumps for longer durations
+                progressionSeconds = currentTimeValue < 120 ? 15 : Math.max(30, progressionPerWeek);
             }
             
             totalProgressionSeconds += progressionSeconds;
