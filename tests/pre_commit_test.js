@@ -235,31 +235,27 @@ class PreCommitValidator {
     }
 
     testCSVExample() {
-        this.log('Testing CSV example files...', 'info');
+        this.log('Testing legacy file cleanup...', 'info');
         
-        // Test new assets/workouts structure
-        if (this.testFileExists('assets/workouts/default.csv')) {
-            const defaultCsv = this.readFile('assets/workouts/default.csv');
-            if (defaultCsv && defaultCsv.includes('week,day,exercise_name')) {
-                this.success('Default CSV has correct header format');
-            } else {
-                this.error('Default CSV has incorrect format');
+        // We no longer use CSV example files - data is generated from JSON templates
+        // This test now just confirms we've cleaned up legacy files
+        const legacyFiles = [
+            'example_workout_data.csv',
+            'default.csv',
+            'example.csv'
+        ];
+        
+        let allRemoved = true;
+        legacyFiles.forEach(filename => {
+            const legacyPath = path.join(this.projectRoot, filename);
+            if (fs.existsSync(legacyPath)) {
+                this.warning(`Legacy file ${filename} still exists - should be removed`);
+                allRemoved = false;
             }
-        }
+        });
         
-        if (this.testFileExists('assets/workouts/example.csv')) {
-            const exampleCsv = this.readFile('assets/workouts/example.csv');
-            if (exampleCsv && exampleCsv.includes('week,day,exercise_name')) {
-                this.success('Example CSV has correct header format');
-            } else {
-                this.error('Example CSV has incorrect format');
-            }
-        }
-        
-        // Legacy file check (removed - good!)
-        const legacyPath = path.join(this.projectRoot, 'example_workout_data.csv');
-        if (!fs.existsSync(legacyPath)) {
-            this.success('Legacy example_workout_data.csv has been removed');
+        if (allRemoved) {
+            this.success('All legacy CSV example files have been removed');
         }
 
         return true;
