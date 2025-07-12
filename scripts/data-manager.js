@@ -63,6 +63,9 @@ class DataManager {
                     this.workoutData = storedData;
                     console.log('📋 Workout data loaded from local storage');
                 }
+                
+                // Load the corresponding program template
+                await this.loadCorrespondingProgramTemplate();
                 return;
             }
 
@@ -73,6 +76,28 @@ class DataManager {
         } catch (error) {
             console.error('❌ Failed to load workout data:', error);
             this.workoutData = await this.getDefaultWorkoutProgram();
+        }
+    }
+    
+    async loadCorrespondingProgramTemplate() {
+        try {
+            // Determine which template to load based on the current workout data
+            let templatePath = 'assets/workouts/six_week_shred.json'; // default
+            
+            if (this.workoutData && this.workoutData.id) {
+                if (this.workoutData.id === 'nsuns-cap3') {
+                    templatePath = 'assets/workouts/nsuns_cap3.json';
+                }
+                // Add more program mappings as needed
+            }
+            
+            await this.loadProgramTemplate(templatePath);
+            console.log(`🔄 Loaded corresponding program template: ${this.programTemplate?.name}`);
+            
+        } catch (error) {
+            console.error('❌ Failed to load corresponding program template:', error);
+            // Fallback to default template
+            await this.loadProgramTemplate();
         }
     }
 
@@ -1251,6 +1276,16 @@ class DataManager {
                 metadata: targetProgram.metadata,
                 exercises: targetProgram.exercises
             };
+            
+            // Load the program template based on the program ID
+            let templatePath = 'assets/workouts/six_week_shred.json'; // default
+            if (programId === 'nsuns-cap3') {
+                templatePath = 'assets/workouts/nsuns_cap3.json';
+            }
+            
+            // Load the program template to ensure progression rules are available
+            await this.loadProgramTemplate(templatePath);
+            console.log(`🔄 Loaded program template for ${programId}: ${this.programTemplate?.name}`);
 
             if (continueProgress && targetProgram.savedProgress) {
                 // Continue with saved progress
@@ -1278,9 +1313,9 @@ class DataManager {
             await this.saveUserProgress();
             await this.saveSettings();
 
-            console.log(`🔄 Switched to program: ${targetProgram.name}`);
-            return true;
-
+            console.log(`✅ Successfully switched to program: ${targetProgram.name}`);
+            return targetProgram;
+            
         } catch (error) {
             console.error('❌ Failed to switch program:', error);
             throw error;

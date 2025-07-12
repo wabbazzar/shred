@@ -1449,6 +1449,14 @@ class DayView {
             const currentWeight = weight + totalProgression;
             
             // Use config-driven progression from DataManager
+            console.log(`🔍 About to call getWeightProgression with:`, {
+                exerciseName,
+                exerciseCategory,
+                currentWeight,
+                programTemplate: this.app.dataManager.programTemplate,
+                hasProgressionRules: !!this.app.dataManager.programTemplate?.progressionRules
+            });
+            
             const progressionRate = this.app.dataManager.getWeightProgression(
                 exerciseName, 
                 exerciseCategory, 
