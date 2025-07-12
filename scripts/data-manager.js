@@ -408,7 +408,14 @@ class DataManager {
         // Apply strength rep progressions
         if (this.programTemplate.weeklyProgression.strengthReps) {
             const strengthReps = this.getStrengthRepsForWeek(week);
-            this.replaceTemplateVariables(workout, { strengthReps });
+            console.log(`🔧 Applying template variables for week ${week}: strengthReps = ${strengthReps}`);
+            
+            // Replace template variables in the workout object
+            const updatedWorkout = this.replaceTemplateVariables(workout, { strengthReps });
+            // Copy the updated properties back to the original workout object
+            Object.assign(workout, updatedWorkout);
+            
+            console.log(`✅ Template variables applied for week ${week}`);
         }
         
         // Add more progression types as needed
@@ -432,9 +439,14 @@ class DataManager {
     replaceTemplateVariables(obj, variables) {
         if (typeof obj === 'string') {
             // Replace template variables like {{strengthReps}}
-            return obj.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-                return variables[key] || match;
+            const result = obj.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+                const replacement = variables[key] || match;
+                if (replacement !== match) {
+                    console.log(`🔄 Replacing ${match} with ${replacement} in: "${obj}"`);
+                }
+                return replacement;
             });
+            return result;
         } else if (Array.isArray(obj)) {
             return obj.map(item => this.replaceTemplateVariables(item, variables));
         } else if (typeof obj === 'object' && obj !== null) {
