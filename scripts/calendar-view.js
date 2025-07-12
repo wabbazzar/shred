@@ -12,10 +12,13 @@ class CalendarView {
         const calendarView = document.getElementById('calendar-view');
         if (!calendarView) return;
 
+        // Get program info for dynamic content
+        const programInfo = this.getProgramInfo();
+
         calendarView.innerHTML = `
             <div class="calendar-header">
-                <h2>6-Week Program</h2>
-                <div class="calendar-subtitle">Complete Overview</div>
+                <h2>${programInfo.title}</h2>
+                <div class="calendar-subtitle">${programInfo.subtitle}</div>
             </div>
             
             <div class="calendar-legend">
@@ -40,14 +43,17 @@ class CalendarView {
         
         this.setupDayTileClicks();
         
-        console.log('🗓️ Calendar View rendered');
+        console.log(`🗓️ Calendar View rendered: ${programInfo.weeks} weeks`);
     }
     
     generateCalendarGrid() {
         let gridHTML = '';
         
-        // Generate 6 weeks
-        for (let week = 1; week <= 6; week++) {
+        // Get dynamic number of weeks from program data
+        const totalWeeks = this.getProgramWeeks();
+        
+        // Generate weeks dynamically
+        for (let week = 1; week <= totalWeeks; week++) {
             gridHTML += `
                 <div class="calendar-week">
                     <div class="week-label">Week ${week}</div>
@@ -164,6 +170,43 @@ class CalendarView {
         );
     }
     
+    // Get program information for dynamic display
+    getProgramInfo() {
+        const workoutData = this.app.dataManager.workoutData;
+        if (!workoutData) {
+            return {
+                title: 'Workout Program',
+                subtitle: 'Complete Overview',
+                weeks: 6
+            };
+        }
+        
+        const weeks = workoutData.weeks || 6;
+        const programName = workoutData.name || 'Workout Program';
+        
+        // Create dynamic title based on program
+        let title = programName;
+        if (weeks === 3) {
+            title = `${programName} (3-Week Program)`;
+        } else if (weeks === 6) {
+            title = `${programName} (6-Week Program)`;
+        } else {
+            title = `${programName} (${weeks}-Week Program)`;
+        }
+        
+        return {
+            title: title,
+            subtitle: 'Complete Overview',
+            weeks: weeks
+        };
+    }
+    
+    // Get total number of weeks from program data
+    getProgramWeeks() {
+        const workoutData = this.app.dataManager.workoutData;
+        return workoutData?.weeks || 6; // Default to 6 for backwards compatibility
+    }
+
     // Refresh calendar data without full re-render
     refreshCalendarData() {
         // Update week tiles with completion data

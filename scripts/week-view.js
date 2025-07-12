@@ -35,10 +35,10 @@ class WeekView {
                     <div class="week-indicator">
                         <span class="current-week">${week}</span>
                         <span class="week-separator">/</span>
-                        <span>6</span>
+                        <span>${this.getTotalWeeks()}</span>
                     </div>
                     
-                    <button class="week-nav" id="next-week" ${week >= 6 ? 'disabled' : ''}>
+                    <button class="week-nav" id="next-week" ${week >= this.getTotalWeeks() ? 'disabled' : ''}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -229,7 +229,7 @@ class WeekView {
         
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
-                if (this.currentWeek < 6) {
+                if (this.currentWeek < this.getTotalWeeks()) {
                     this.render(this.currentWeek + 1);
                     this.app.currentWeek = this.currentWeek;
                 }
@@ -335,6 +335,12 @@ class WeekView {
         return total;
     }
     
+    // Get total number of weeks from program data
+    getTotalWeeks() {
+        const workoutData = this.app.dataManager.workoutData;
+        return workoutData?.weeks || 6; // Default to 6 for backwards compatibility
+    }
+
     // Refresh week data without full re-render
     refreshWeekData() {
         // Update completion percentage in header

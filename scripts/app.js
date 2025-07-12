@@ -195,15 +195,18 @@ class WorkoutApp {
         }
 
         if (calendarView && !calendarView.innerHTML.trim()) {
+            const totalWeeks = this.dataManager.workoutData?.weeks || 6;
+            const totalDays = totalWeeks * 7;
+            
             calendarView.innerHTML = `
                 <div class="calendar-header">
-                    <h2>6-Week Program Calendar</h2>
+                    <h2>${totalWeeks}-Week Program Calendar</h2>
                 </div>
                 <div class="placeholder-content">
                     <h3>Calendar View</h3>
-                    <p>6-week calendar grid will be implemented here</p>
+                    <p>${totalWeeks}-week calendar grid will be implemented here</p>
                     <div class="calendar-grid">
-                        ${Array.from({length: 42}, (_, i) => `
+                        ${Array.from({length: totalDays}, (_, i) => `
                             <div class="calendar-day" data-day="${i + 1}">
                                 <div>${i + 1}</div>
                             </div>
@@ -270,12 +273,15 @@ class WorkoutApp {
         
         this.programStarted = true;
         
-        if (daysDiff >= 0 && daysDiff < 42) { // 6 weeks = 42 days
+        const totalWeeks = this.dataManager.workoutData?.weeks || 6;
+        const totalDays = totalWeeks * 7;
+        
+        if (daysDiff >= 0 && daysDiff < totalDays) {
             this.currentWeek = Math.floor(daysDiff / 7) + 1;
             this.currentDay = (daysDiff % 7) + 1;
-        } else if (daysDiff >= 42) {
+        } else if (daysDiff >= totalDays) {
             // Program completed - show last week/day
-            this.currentWeek = 6;
+            this.currentWeek = totalWeeks;
             this.currentDay = 7;
             console.log(`📅 Program completed! Showing final week/day`);
         } else {
