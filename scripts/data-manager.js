@@ -589,11 +589,18 @@ class DataManager {
         if (typeof obj === 'string') {
             // Replace template variables like {{strengthReps}}
             const result = obj.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-                const replacement = variables[key] || match;
-                if (replacement !== match) {
-                    console.log(`🔄 Replacing ${match} with ${replacement} in: "${obj}"`);
+                const replacement = variables[key];
+                if (replacement !== undefined) {
+                    // If replacement is an array, keep it as an array (don't convert to string)
+                    if (Array.isArray(replacement)) {
+                        console.log(`🔄 Replacing ${match} with array [${replacement.join(', ')}] in: "${obj}"`);
+                        return replacement; // This will be handled by the parent object assignment
+                    } else {
+                        console.log(`🔄 Replacing ${match} with ${replacement} in: "${obj}"`);
+                        return replacement;
+                    }
                 }
-                return replacement;
+                return match;
             });
             return result;
         } else if (Array.isArray(obj)) {
@@ -601,7 +608,28 @@ class DataManager {
         } else if (typeof obj === 'object' && obj !== null) {
             const result = {};
             for (const [key, value] of Object.entries(obj)) {
-                result[key] = this.replaceTemplateVariables(value, variables);
+                const replacedValue = this.replaceTemplateVariables(value, variables);
+                
+                // Special handling for template variables that should be replaced with arrays
+                if (typeof value === 'string' && value.includes('{{')) {
+                    const templateMatch = value.match(/\{\{(\w+)\}\}/);
+                    if (templateMatch) {
+                        const templateKey = templateMatch[1];
+                        const templateReplacement = variables[templateKey];
+                        
+                        // If the entire value is just a template variable and replacement is an array
+                        if (value === `{{${templateKey}}}` && Array.isArray(templateReplacement)) {
+                            result[key] = templateReplacement;
+                            console.log(`🔄 Replacing ${key}: ${value} with array [${templateReplacement.join(', ')}]`);
+                        } else {
+                            result[key] = replacedValue;
+                        }
+                    } else {
+                        result[key] = replacedValue;
+                    }
+                } else {
+                    result[key] = replacedValue;
+                }
             }
             return result;
         }
@@ -616,6 +644,11 @@ class DataManager {
         // Handle array format: ["4", "4", "4", "4", "4", "4", "4"]
         if (Array.isArray(exercise.reps)) {
             return exercise.reps.map(rep => rep.toString());
+        }
+        
+        // Handle comma-separated string format: "4,4,4,4,4,4,4" (from template replacement)
+        if (typeof exercise.reps === 'string' && exercise.reps.includes(',')) {
+            return exercise.reps.split(',').map(rep => rep.trim());
         }
         
         // Handle string format with forward slashes: "4/4/4/4/4/4/4"

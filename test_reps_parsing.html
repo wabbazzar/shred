@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reps Parsing Test</title>
+</head>
+<body>
+    <h1>Reps Parsing Test</h1>
+    <div id="test-results"></div>
+
+    <script src="scripts/data-manager.js"></script>
+    <script>
+        // Test the reps parsing functionality
+        const dataManager = new DataManager();
+        
+        // Test cases
+        const testCases = [
+            {
+                name: "Array format",
+                exercise: { reps: ["4", "4", "4", "4", "4", "4", "4"], sets: 7 },
+                expected: ["4", "4", "4", "4", "4", "4", "4"]
+            },
+            {
+                name: "Comma-separated string",
+                exercise: { reps: "4,4,4,4,4,4,4", sets: 7 },
+                expected: ["4", "4", "4", "4", "4", "4", "4"]
+            },
+            {
+                name: "Slash-separated string",
+                exercise: { reps: "4/4/4/4/4/4/4", sets: 7 },
+                expected: ["4", "4", "4", "4", "4", "4", "4"]
+            },
+            {
+                name: "Simple string",
+                exercise: { reps: "5", sets: 3 },
+                expected: ["5", "5", "5"]
+            },
+            {
+                name: "Complex nSuns pattern",
+                exercise: { reps: "5,5,5,5,4,4,4,4,4", sets: 9 },
+                expected: ["5", "5", "5", "5", "4", "4", "4", "4", "4"]
+            }
+        ];
+
+        let results = "<h2>Test Results:</h2>";
+        
+        testCases.forEach((testCase, index) => {
+            const parsed = dataManager.parseRepsForExercise(testCase.exercise);
+            const passed = JSON.stringify(parsed) === JSON.stringify(testCase.expected);
+            
+            results += `<div style="margin: 10px 0; padding: 10px; border: 1px solid ${passed ? 'green' : 'red'};">`;
+            results += `<strong>Test ${index + 1}: ${testCase.name}</strong><br>`;
+            results += `Input: ${JSON.stringify(testCase.exercise.reps)}<br>`;
+            results += `Expected: ${JSON.stringify(testCase.expected)}<br>`;
+            results += `Actual: ${JSON.stringify(parsed)}<br>`;
+            results += `<strong>Status: ${passed ? 'PASS' : 'FAIL'}</strong>`;
+            results += `</div>`;
+            
+            // Test individual set retrieval
+            if (passed) {
+                results += `<div style="margin-left: 20px; font-size: 0.9em;">`;
+                results += `Individual sets: `;
+                for (let i = 0; i < testCase.exercise.sets; i++) {
+                    const setReps = dataManager.getRepsForSet(testCase.exercise, i);
+                    results += `Set ${i + 1}: ${setReps}, `;
+                }
+                results += `</div>`;
+            }
+        });
+
+        document.getElementById('test-results').innerHTML = results;
+    </script>
+</body>
+</html> 
