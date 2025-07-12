@@ -895,6 +895,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  flex-wrap: wrap;
 }
 
 /* Settings Buttons */
@@ -944,6 +945,13 @@ body {
   background-color: #d32f2f;
 }
 
+.settings-btn.compact {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.85rem;
+  min-width: auto;
+  min-height: 36px;
+}
+
 /* Settings Input Fields */
 .settings-input {
   background-color: var(--bg-primary);
@@ -979,6 +987,281 @@ body {
   outline: none;
   border-color: var(--accent-orange);
   box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2);
+}
+
+/* Workout Description Modal */
+.workout-modal .modal-content {
+  width: 95%;
+  max-width: 800px;
+  max-height: 90vh;
+}
+
+.workout-modal-body {
+  padding: var(--spacing-lg);
+  line-height: 1.6;
+}
+
+.workout-description-content {
+  color: var(--text-primary);
+}
+
+.workout-description-content h1 {
+  color: var(--accent-orange);
+  font-size: 1.8rem;
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--accent-orange);
+  padding-bottom: var(--spacing-sm);
+}
+
+.workout-description-content h2 {
+  color: var(--accent-orange);
+  font-size: 1.4rem;
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--spacing-xs);
+}
+
+.workout-description-content h3 {
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+}
+
+.workout-description-content p {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+.workout-description-content ul {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-lg);
+}
+
+.workout-description-content li {
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-secondary);
+}
+
+.workout-description-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.workout-description-content em {
+  color: var(--accent-orange);
+  font-style: italic;
+}
+
+.workout-description-content hr {
+  border: none;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: var(--spacing-xl) 0;
+}
+
+/* Responsive adjustments for workout modal */
+@media (max-width: 768px) {
+  .workout-modal .modal-content {
+    width: 98%;
+    max-height: 95vh;
+  }
+  
+  .workout-modal-body {
+    padding: var(--spacing-md);
+  }
+  
+  .workout-description-content h1 {
+    font-size: 1.5rem;
+  }
+  
+  .workout-description-content h2 {
+    font-size: 1.2rem;
+  }
+  
+  .workout-description-content h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Program Cards */
+.program-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.program-card {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  transition: all var(--transition-speed);
+  position: relative;
+}
+
+.program-card:hover {
+  border-color: var(--accent-orange);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.15);
+}
+
+.program-card.active {
+  border-color: var(--accent-green);
+  background-color: rgba(0, 200, 81, 0.05);
+}
+
+.program-card.load-new {
+  border-style: dashed;
+  border-color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.program-card.load-new:hover {
+  border-color: var(--accent-orange);
+  background-color: rgba(255, 107, 0, 0.05);
+}
+
+.program-card-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.program-card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-xs);
+}
+
+.program-card-title h4 {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.program-card-badges {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.program-badge {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.program-badge.active {
+  background-color: var(--accent-green);
+  color: var(--bg-primary);
+}
+
+.program-badge.default {
+  background-color: var(--accent-orange);
+  color: var(--bg-primary);
+}
+
+.program-badge.progress {
+  background-color: var(--bg-primary);
+  color: var(--accent-orange);
+  border: 1px solid var(--accent-orange);
+}
+
+.program-card-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: var(--spacing-xs);
+}
+
+.program-card-meta {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.program-card-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.program-action-btn {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  white-space: nowrap;
+}
+
+.program-action-btn:hover {
+  background-color: var(--accent-orange);
+  color: var(--bg-primary);
+  border-color: var(--accent-orange);
+  transform: translateY(-1px);
+}
+
+.program-action-btn.view-details:hover {
+  background-color: var(--accent-green);
+  border-color: var(--accent-green);
+}
+
+.program-action-btn.delete-program:hover {
+  background-color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.program-action-btn.reset-program:hover {
+  background-color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.program-actions-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Responsive adjustments for program cards */
+@media (max-width: 768px) {
+  .program-card {
+    padding: var(--spacing-sm);
+  }
+  
+  .program-card-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .program-card-badges {
+    align-self: flex-start;
+  }
+  
+  .program-action-btn {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+    min-height: 28px;
+  }
+  
+  .program-card-actions {
+    gap: 6px;
+  }
 }
 
 /* File Upload Areas */

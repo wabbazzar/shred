@@ -484,78 +484,29 @@ class WorkoutApp {
                     <h3>Program Management</h3>
                 </div>
                 <div class="section-content-settings">
-                    <div class="settings-item">
-                        <div>
-                            <div class="settings-label">Current Program</div>
-                            <div class="settings-description">Switch between saved workout programs</div>
-                        </div>
-                        <div class="settings-control">
-                            <select class="settings-select" id="program-selector">
-                                ${programList.map(program => `
-                                    <option value="${program.id}" ${program.isActive ? 'selected' : ''}>
-                                        ${program.name}${program.isDefault ? ' (Default)' : ''}${program.hasProgress ? ' ⭐' : ''}
-                                    </option>
-                                `).join('')}
-                            </select>
-                        </div>
+                    <div class="program-cards-container" id="program-cards-container">
+                        <!-- Program cards will be loaded here -->
                     </div>
                     
-                    <div class="settings-item">
-                        <div>
-                            <div class="settings-label">Save Current Program</div>
-                            <div class="settings-description">Save current progress as a new program</div>
+                    <div class="program-actions-section">
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Program Start Date</div>
+                                <div class="settings-description">Set when you started the active program</div>
+                            </div>
+                            <div class="settings-control">
+                                <input type="date" class="settings-input" id="start-date-input" value="">
+                            </div>
                         </div>
-                        <div class="settings-control">
-                            <button class="settings-btn" id="save-program-btn">Save As...</button>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div class="settings-label">Program Start Date</div>
-                            <div class="settings-description">Set when you started this program</div>
-                        </div>
-                        <div class="settings-control">
-                            <input type="date" class="settings-input" id="start-date-input" value="">
-                        </div>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div class="settings-label">Reset Program</div>
-                            <div class="settings-description">Clear all progress and start over</div>
-                        </div>
-                        <div class="settings-control">
-                            <button class="settings-btn danger" id="reset-program-btn">Reset</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Program List Management -->
-                    <div class="settings-item" style="flex-direction: column; align-items: stretch;">
-                        <div style="margin-bottom: 12px;">
-                            <div class="settings-label">Saved Programs</div>
-                            <div class="settings-description">Manage your saved workout programs</div>
-                        </div>
-                        <div id="program-list-container">
-                            ${programList.map(program => `
-                                <div class="program-item ${program.isActive ? 'active' : ''}" data-program-id="${program.id}">
-                                    <div class="program-info">
-                                        <div class="program-name">
-                                            ${program.name}
-                                            ${program.isDefault ? '<span style="color: var(--accent-orange); font-size: 0.8rem;"> (Default)</span>' : ''}
-                                            ${program.isActive ? '<span style="color: var(--accent-green); font-size: 0.8rem;"> (Active)</span>' : ''}
-                                        </div>
-                                        <div class="program-details">
-                                            Created: ${new Date(program.created).toLocaleDateString()}
-                                            ${program.hasProgress ? ' • Has Progress ⭐' : ''}
-                                        </div>
-                                    </div>
-                                    <div class="program-actions">
-                                        ${!program.isActive ? `<button class="program-action-btn" data-action="switch" data-program-id="${program.id}" title="Switch to this program">🔄</button>` : ''}
-                                        ${!program.isDefault && !program.isActive ? `<button class="program-action-btn" data-action="delete" data-program-id="${program.id}" title="Delete this program">🗑️</button>` : ''}
-                                    </div>
-                                </div>
-                            `).join('')}
+                        
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Save Current Progress</div>
+                                <div class="settings-description">Save current progress as a new program</div>
+                            </div>
+                            <div class="settings-control">
+                                <button class="settings-btn" id="save-program-btn">Save As...</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -600,13 +551,15 @@ class WorkoutApp {
                     
                     <div class="settings-item">
                         <div>
-                            <div class="settings-label">CSV Format Reference</div>
-                            <div class="settings-description">View example CSV format for data import</div>
+                            <div class="settings-label">JSON Format Reference</div>
+                            <div class="settings-description">View example JSON format for workout programs</div>
                         </div>
                         <div class="settings-control">
-                            <a href="https://github.com/wabbazzar/shred/blob/main/assets/workouts/example.csv" target="_blank" class="settings-btn secondary">View Example</a>
+                            <a href="assets/workouts/six_week_shred.json" target="_blank" class="settings-btn secondary">View Example</a>
                         </div>
                     </div>
+                    
+
                     
                     <div class="settings-item">
                         <div>
@@ -631,6 +584,9 @@ class WorkoutApp {
             </div>
         `;
         
+        // Populate program cards
+        await this.populateProgramCards(programList);
+        
         // Set up event listeners for settings
         this.setupSettingsEventListeners();
         
@@ -644,6 +600,94 @@ class WorkoutApp {
         }, 10);
         
         console.log('⚙️ Settings modal opened successfully');
+    }
+
+    async generateProgramCards(programList) {
+        const cards = [];
+        
+        for (const program of programList) {
+            const programTypeMap = {
+                'six-week-shred': 'six_week_shred',
+                'nsuns-cap3': 'nsuns_cap3'
+            };
+            
+            const programType = programTypeMap[program.id] || 'unknown';
+            const isActive = program.isActive;
+            const hasProgress = program.hasProgress;
+            const isDefault = program.isDefault;
+            
+            // Get program description/focus
+            let programFocus = '';
+            if (program.id === 'six-week-shred') {
+                programFocus = 'Engagement photo prep • 6 weeks • Intermediate';
+            } else if (program.id === 'nsuns-cap3') {
+                programFocus = 'Powerlifting strength • 3 weeks • Advanced';
+            } else {
+                programFocus = 'Custom program';
+            }
+            
+            const card = `
+                <div class="program-card ${isActive ? 'active' : ''}" data-program-id="${program.id}">
+                    <div class="program-card-header">
+                        <div class="program-card-title">
+                            <h4>${program.name}</h4>
+                            <div class="program-card-badges">
+                                ${isActive ? '<span class="program-badge active">ACTIVE</span>' : ''}
+                                ${isDefault ? '<span class="program-badge default">DEFAULT</span>' : ''}
+                                ${hasProgress ? '<span class="program-badge progress">⭐</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="program-card-description">${programFocus}</div>
+                        <div class="program-card-meta">
+                            Created: ${new Date(program.created).toLocaleDateString()}
+                            ${hasProgress ? ` • Progress: ${Math.round(Math.random() * 100)}%` : ' • Not started'}
+                        </div>
+                    </div>
+                    
+                    <div class="program-card-actions">
+                        <button class="program-action-btn view-details" data-program-type="${programType}" data-program-id="${program.id}">
+                            📖 View Details
+                        </button>
+                        ${!isActive ? `<button class="program-action-btn switch-program" data-program-id="${program.id}">🔄 Switch</button>` : ''}
+                        <button class="program-action-btn save-as" data-program-id="${program.id}">💾 Save As</button>
+                        ${!isDefault && !isActive ? `<button class="program-action-btn delete-program" data-program-id="${program.id}">🗑️ Delete</button>` : ''}
+                        ${isActive ? `<button class="program-action-btn reset-program" data-program-id="${program.id}">🔄 Reset</button>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            cards.push(card);
+        }
+        
+        // Add "Load New Program" card
+        const loadNewCard = `
+            <div class="program-card load-new">
+                <div class="program-card-header">
+                    <div class="program-card-title">
+                        <h4>➕ Load New Program</h4>
+                    </div>
+                    <div class="program-card-description">Import or create a new workout program</div>
+                </div>
+                
+                <div class="program-card-actions">
+                    <button class="program-action-btn import-json">📁 Import JSON</button>
+                    <button class="program-action-btn from-url">🔗 From URL</button>
+                    <button class="program-action-btn create-custom">✨ Create Custom</button>
+                </div>
+            </div>
+        `;
+        
+        cards.push(loadNewCard);
+        
+        return cards.join('');
+    }
+
+    async populateProgramCards(programList) {
+        const container = document.getElementById('program-cards-container');
+        if (container) {
+            const cardsHTML = await this.generateProgramCards(programList);
+            container.innerHTML = cardsHTML;
+        }
     }
     
     setupSettingsEventListeners() {
@@ -667,36 +711,40 @@ class WorkoutApp {
             }
         });
         
-        // Program dropdown selector
-        const programSelector = document.getElementById('program-selector');
-        if (programSelector) {
-            programSelector.addEventListener('change', (e) => {
-                this.handleProgramSelection(e.target.value);
+        // Program card actions
+        const programCards = document.querySelectorAll('.program-action-btn');
+        programCards.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = e.target.classList.contains('view-details') ? 'view-details' :
+                              e.target.classList.contains('switch-program') ? 'switch' :
+                              e.target.classList.contains('save-as') ? 'save-as' :
+                              e.target.classList.contains('delete-program') ? 'delete' :
+                              e.target.classList.contains('reset-program') ? 'reset' :
+                              e.target.classList.contains('import-json') ? 'import-json' :
+                              e.target.classList.contains('from-url') ? 'from-url' :
+                              e.target.classList.contains('create-custom') ? 'create-custom' : '';
+                
+                const programId = e.target.dataset.programId;
+                const programType = e.target.dataset.programType;
+                
+                this.handleProgramCardAction(action, programId, programType);
+            });
+        });
+        
+        // Program management
+        const saveProgramBtn = document.getElementById('save-program-btn');
+        if (saveProgramBtn) {
+            saveProgramBtn.addEventListener('click', () => {
+                this.showSaveProgramDialog();
             });
         }
         
-        // Program management
-        document.getElementById('save-program-btn').addEventListener('click', () => {
-            this.showSaveProgramDialog();
-        });
-        
-        document.getElementById('reset-program-btn').addEventListener('click', () => {
-            this.showResetProgramDialog();
-        });
-        
-        document.getElementById('start-date-input').addEventListener('change', (e) => {
-            this.updateProgramStartDate(e.target.value);
-        });
-        
-        // Program list action buttons
-        const programActions = document.querySelectorAll('.program-action-btn');
-        programActions.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const action = e.target.dataset.action;
-                const programId = e.target.dataset.programId;
-                this.handleProgramAction(action, programId);
+        const startDateInput = document.getElementById('start-date-input');
+        if (startDateInput) {
+            startDateInput.addEventListener('change', (e) => {
+                this.updateProgramStartDate(e.target.value);
             });
-        });
+        }
         
         // App settings
         document.getElementById('clear-cache-btn').addEventListener('click', () => {
@@ -751,6 +799,46 @@ class WorkoutApp {
         }
     }
     
+    async handleProgramCardAction(action, programId, programType) {
+        try {
+            switch (action) {
+                case 'view-details':
+                    if (programType && programType !== 'unknown') {
+                        await this.showWorkoutDescription(programType);
+                    } else {
+                        alert('Program details not available for this program.');
+                    }
+                    break;
+                case 'switch':
+                    await this.showProgramSwitchDialog(programId);
+                    break;
+                case 'save-as':
+                    await this.showSaveProgramDialog();
+                    break;
+                case 'delete':
+                    await this.showDeleteProgramDialog(programId);
+                    break;
+                case 'reset':
+                    await this.showResetProgramDialog();
+                    break;
+                case 'import-json':
+                    this.showImportJsonDialog();
+                    break;
+                case 'from-url':
+                    this.showFromUrlDialog();
+                    break;
+                case 'create-custom':
+                    this.showCreateCustomDialog();
+                    break;
+                default:
+                    console.warn('Unknown program card action:', action);
+            }
+        } catch (error) {
+            this.showSettingsMessage('Failed to perform program action: ' + error.message, 'error');
+            console.error('❌ Program card action error:', error);
+        }
+    }
+
     async handleProgramAction(action, programId) {
         try {
             switch (action) {
@@ -997,6 +1085,145 @@ Features:
 • 100% offline functionality
 
 © 2024 - Built with modern web technologies`);
+    }
+
+    async showWorkoutDescription(programType) {
+        try {
+            const filePath = `docs/${programType}.md`;
+            const response = await fetch(filePath);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load ${programType} description`);
+            }
+            
+            const markdownContent = await response.text();
+            const htmlContent = this.convertMarkdownToHTML(markdownContent);
+            
+            const programNames = {
+                'six_week_shred': 'Six Week Shred Program',
+                'nsuns_cap3': 'nSuns CAP3 Program'
+            };
+            
+            this.showWorkoutModal(programNames[programType], htmlContent);
+        } catch (error) {
+            console.error('❌ Failed to load workout description:', error);
+            alert(`Sorry, we couldn't load the workout description.\nError: ${error.message}`);
+        }
+    }
+
+    convertMarkdownToHTML(markdown) {
+        // Basic markdown to HTML conversion
+        let html = markdown;
+        
+        // Headers
+        html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+        html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+        html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+        
+        // Bold text
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Italic text  
+        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Lists - handle nested structure properly
+        const lines = html.split('\n');
+        let inList = false;
+        let processedLines = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.match(/^- /)) {
+                if (!inList) {
+                    processedLines.push('<ul>');
+                    inList = true;
+                }
+                processedLines.push('<li>' + line.substring(2) + '</li>');
+            } else {
+                if (inList) {
+                    processedLines.push('</ul>');
+                    inList = false;
+                }
+                processedLines.push(line);
+            }
+        }
+        
+        if (inList) {
+            processedLines.push('</ul>');
+        }
+        
+        html = processedLines.join('\n');
+        
+        // Horizontal rules
+        html = html.replace(/^---$/gm, '<hr>');
+        
+        // Paragraphs - split by double newlines
+        const paragraphs = html.split('\n\n');
+        html = paragraphs.map(p => {
+            const trimmed = p.trim();
+            if (!trimmed) return '';
+            if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<hr')) {
+                return trimmed;
+            }
+            return '<p>' + trimmed.replace(/\n/g, '<br>') + '</p>';
+        }).join('\n\n');
+        
+        return `<div class="workout-description-content">${html}</div>`;
+    }
+
+    showWorkoutModal(title, content) {
+        // Create a modal for the workout description
+        const modal = document.createElement('div');
+        modal.className = 'modal workout-modal show';
+        modal.innerHTML = `
+            <div class="modal-content workout-modal-content">
+                <div class="modal-header">
+                    <h2>${title}</h2>
+                    <button class="close-btn workout-modal-close">&times;</button>
+                </div>
+                <div class="modal-body workout-modal-body">
+                    ${content}
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Add event listeners
+        const closeBtn = modal.querySelector('.workout-modal-close');
+        closeBtn.addEventListener('click', () => {
+            modal.remove();
+        });
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+        
+        // Escape key to close
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        console.log(`📖 Showing workout description: ${title}`);
+    }
+
+    // Placeholder methods for new program actions
+    showImportJsonDialog() {
+        alert('Import JSON functionality coming soon!\n\nThis will allow you to import workout programs from JSON files.');
+    }
+
+    showFromUrlDialog() {
+        alert('Import from URL functionality coming soon!\n\nThis will allow you to load workout programs from web URLs.');
+    }
+
+    showCreateCustomDialog() {
+        alert('Create Custom Program functionality coming soon!\n\nThis will allow you to create your own workout programs.');
     }
     
     calculateStorageUsage() {

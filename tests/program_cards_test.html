@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Cards Test</title>
+    <link rel="stylesheet" href="../styles/app.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #121212; 
+            color: white; 
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #333;
+        }
+        .success { background: #4CAF50; }
+        .error { background: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Program Cards Test</h1>
+        
+        <div class="test-section">
+            <h2>Program Cards Display</h2>
+            <div class="program-cards-container" id="test-cards-container">
+                <!-- Cards will be loaded here -->
+            </div>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Mock program data
+        const mockPrograms = [
+            {
+                id: 'six-week-shred',
+                name: '6-Week Shred Program',
+                description: 'Engagement photo prep program',
+                created: '2024-01-01T00:00:00Z',
+                isActive: true,
+                isDefault: true,
+                hasProgress: true
+            },
+            {
+                id: 'nsuns-cap3',
+                name: 'nSuns CAP3 Program',
+                description: 'Powerlifting strength program',
+                created: '2023-12-15T00:00:00Z',
+                isActive: false,
+                isDefault: false,
+                hasProgress: false
+            }
+        ];
+
+        // Mock card generation function
+        function generateProgramCards(programList) {
+            const cards = [];
+            
+            for (const program of programList) {
+                const programTypeMap = {
+                    'six-week-shred': 'six_week_shred',
+                    'nsuns-cap3': 'nsuns_cap3'
+                };
+                
+                const programType = programTypeMap[program.id] || 'unknown';
+                const isActive = program.isActive;
+                const hasProgress = program.hasProgress;
+                const isDefault = program.isDefault;
+                
+                // Get program description/focus
+                let programFocus = '';
+                if (program.id === 'six-week-shred') {
+                    programFocus = 'Engagement photo prep • 6 weeks • Intermediate';
+                } else if (program.id === 'nsuns-cap3') {
+                    programFocus = 'Powerlifting strength • 3 weeks • Advanced';
+                } else {
+                    programFocus = 'Custom program';
+                }
+                
+                const card = `
+                    <div class="program-card ${isActive ? 'active' : ''}" data-program-id="${program.id}">
+                        <div class="program-card-header">
+                            <div class="program-card-title">
+                                <h4>${program.name}</h4>
+                                <div class="program-card-badges">
+                                    ${isActive ? '<span class="program-badge active">ACTIVE</span>' : ''}
+                                    ${isDefault ? '<span class="program-badge default">DEFAULT</span>' : ''}
+                                    ${hasProgress ? '<span class="program-badge progress">⭐</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="program-card-description">${programFocus}</div>
+                            <div class="program-card-meta">
+                                Created: ${new Date(program.created).toLocaleDateString()}
+                                ${hasProgress ? ` • Progress: ${Math.round(Math.random() * 100)}%` : ' • Not started'}
+                            </div>
+                        </div>
+                        
+                        <div class="program-card-actions">
+                            <button class="program-action-btn view-details" data-program-type="${programType}" data-program-id="${program.id}">
+                                📖 View Details
+                            </button>
+                            ${!isActive ? `<button class="program-action-btn switch-program" data-program-id="${program.id}">🔄 Switch</button>` : ''}
+                            <button class="program-action-btn save-as" data-program-id="${program.id}">💾 Save As</button>
+                            ${!isDefault && !isActive ? `<button class="program-action-btn delete-program" data-program-id="${program.id}">🗑️ Delete</button>` : ''}
+                            ${isActive ? `<button class="program-action-btn reset-program" data-program-id="${program.id}">🔄 Reset</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                cards.push(card);
+            }
+            
+            // Add "Load New Program" card
+            const loadNewCard = `
+                <div class="program-card load-new">
+                    <div class="program-card-header">
+                        <div class="program-card-title">
+                            <h4>➕ Load New Program</h4>
+                        </div>
+                        <div class="program-card-description">Import or create a new workout program</div>
+                    </div>
+                    
+                    <div class="program-card-actions">
+                        <button class="program-action-btn import-json">📁 Import JSON</button>
+                        <button class="program-action-btn from-url">🔗 From URL</button>
+                        <button class="program-action-btn create-custom">✨ Create Custom</button>
+                    </div>
+                </div>
+            `;
+            
+            cards.push(loadNewCard);
+            
+            return cards.join('');
+        }
+
+        function showTestResult(message, type) {
+            const results = document.getElementById('test-results');
+            const result = document.createElement('div');
+            result.className = `test-result ${type}`;
+            result.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(result);
+            
+            // Auto-scroll to bottom
+            results.scrollTop = results.scrollHeight;
+        }
+
+        // Initialize test
+        function initTest() {
+            try {
+                const container = document.getElementById('test-cards-container');
+                const cardsHTML = generateProgramCards(mockPrograms);
+                container.innerHTML = cardsHTML;
+                
+                // Add event listeners to test buttons
+                const buttons = container.querySelectorAll('.program-action-btn');
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = e.target.classList.contains('view-details') ? 'view-details' :
+                                      e.target.classList.contains('switch-program') ? 'switch' :
+                                      e.target.classList.contains('save-as') ? 'save-as' :
+                                      e.target.classList.contains('delete-program') ? 'delete' :
+                                      e.target.classList.contains('reset-program') ? 'reset' :
+                                      e.target.classList.contains('import-json') ? 'import-json' :
+                                      e.target.classList.contains('from-url') ? 'from-url' :
+                                      e.target.classList.contains('create-custom') ? 'create-custom' : 'unknown';
+                        
+                        const programId = e.target.dataset.programId;
+                        const programType = e.target.dataset.programType;
+                        
+                        showTestResult(`🎯 Action: ${action}, Program: ${programId || 'N/A'}, Type: ${programType || 'N/A'}`, 'success');
+                    });
+                });
+                
+                showTestResult('✅ Program cards loaded successfully', 'success');
+                showTestResult(`📊 Generated ${buttons.length} action buttons`, 'success');
+                
+            } catch (error) {
+                showTestResult(`❌ Test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', initTest);
+    </script>
+</body>
+</html> 

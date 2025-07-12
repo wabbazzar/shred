@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Description Test</title>
+    <link rel="stylesheet" href="../styles/app.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #121212; 
+            color: white; 
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-button {
+            background: #FF6B00;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #e55a00;
+        }
+        .test-result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #333;
+        }
+        .success { background: #4CAF50; }
+        .error { background: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Workout Description Test</h1>
+        
+        <div class="test-section">
+            <h2>Test Workout Description Modal</h2>
+            <button class="test-button" id="test-six-week-btn">Test Six Week Shred</button>
+            <button class="test-button" id="test-nsuns-btn">Test nSuns CAP3</button>
+            <button class="test-button" id="test-markdown-btn">Test Markdown Conversion</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Mock app class with just the methods we need
+        class MockApp {
+            convertMarkdownToHTML(markdown) {
+                // Basic markdown to HTML conversion
+                let html = markdown;
+                
+                // Headers
+                html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+                html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+                html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+                
+                // Bold text
+                html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // Italic text  
+                html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                
+                // Lists - handle nested structure properly
+                const lines = html.split('\n');
+                let inList = false;
+                let processedLines = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (line.match(/^- /)) {
+                        if (!inList) {
+                            processedLines.push('<ul>');
+                            inList = true;
+                        }
+                        processedLines.push('<li>' + line.substring(2) + '</li>');
+                    } else {
+                        if (inList) {
+                            processedLines.push('</ul>');
+                            inList = false;
+                        }
+                        processedLines.push(line);
+                    }
+                }
+                
+                if (inList) {
+                    processedLines.push('</ul>');
+                }
+                
+                html = processedLines.join('\n');
+                
+                // Horizontal rules
+                html = html.replace(/^---$/gm, '<hr>');
+                
+                // Paragraphs - split by double newlines
+                const paragraphs = html.split('\n\n');
+                html = paragraphs.map(p => {
+                    const trimmed = p.trim();
+                    if (!trimmed) return '';
+                    if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<hr')) {
+                        return trimmed;
+                    }
+                    return '<p>' + trimmed.replace(/\n/g, '<br>') + '</p>';
+                }).join('\n\n');
+                
+                return `<div class="workout-description-content">${html}</div>`;
+            }
+
+            showWorkoutModal(title, content) {
+                // Create a modal for the workout description
+                const modal = document.createElement('div');
+                modal.className = 'modal workout-modal show';
+                modal.innerHTML = `
+                    <div class="modal-content workout-modal-content">
+                        <div class="modal-header">
+                            <h2>${title}</h2>
+                            <button class="close-btn workout-modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body workout-modal-body">
+                            ${content}
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Add event listeners
+                const closeBtn = modal.querySelector('.workout-modal-close');
+                closeBtn.addEventListener('click', () => {
+                    modal.remove();
+                });
+                
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                });
+                
+                // Escape key to close
+                const escapeHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        modal.remove();
+                        document.removeEventListener('keydown', escapeHandler);
+                    }
+                };
+                document.addEventListener('keydown', escapeHandler);
+                
+                console.log(`📖 Showing workout description: ${title}`);
+            }
+
+            async showWorkoutDescription(programType) {
+                try {
+                    const filePath = `../docs/${programType}.md`;
+                    const response = await fetch(filePath);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to load ${programType} description`);
+                    }
+                    
+                    const markdownContent = await response.text();
+                    const htmlContent = this.convertMarkdownToHTML(markdownContent);
+                    
+                    const programNames = {
+                        'six_week_shred': 'Six Week Shred Program',
+                        'nsuns_cap3': 'nSuns CAP3 Program'
+                    };
+                    
+                    this.showWorkoutModal(programNames[programType], htmlContent);
+                    this.showTestResult('✅ Successfully loaded ' + programNames[programType], 'success');
+                } catch (error) {
+                    console.error('❌ Failed to load workout description:', error);
+                    this.showTestResult(`❌ Failed to load ${programType}: ${error.message}`, 'error');
+                }
+            }
+
+            showTestResult(message, type) {
+                const results = document.getElementById('test-results');
+                const result = document.createElement('div');
+                result.className = `test-result ${type}`;
+                result.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+                results.appendChild(result);
+                
+                // Auto-scroll to bottom
+                results.scrollTop = results.scrollHeight;
+            }
+        }
+
+        // Initialize test app
+        const testApp = new MockApp();
+
+        // Test button event listeners
+        document.getElementById('test-six-week-btn').addEventListener('click', () => {
+            testApp.showWorkoutDescription('six_week_shred');
+        });
+
+        document.getElementById('test-nsuns-btn').addEventListener('click', () => {
+            testApp.showWorkoutDescription('nsuns_cap3');
+        });
+
+        document.getElementById('test-markdown-btn').addEventListener('click', () => {
+            const testMarkdown = `# Test Header
+## Subheader
+**Bold text** and *italic text*
+
+- List item 1
+- List item 2
+- List item 3
+
+---
+
+This is a paragraph with some text.`;
+            
+            const html = testApp.convertMarkdownToHTML(testMarkdown);
+            testApp.showWorkoutModal('Markdown Test', html);
+            testApp.showTestResult('✅ Markdown conversion test completed', 'success');
+        });
+
+        // Show initial message
+        testApp.showTestResult('🧪 Test page loaded successfully', 'success');
+    </script>
+</body>
+</html> 
