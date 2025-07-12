@@ -385,6 +385,9 @@ class DayView {
             const weightValue = savedData[`set${set}_weight`] || '';
             const repsValue = savedData[`set${set}_reps`] || '';
             
+            // Get specific reps for this set using DataManager helper
+            const setReps = this.app.dataManager.getRepsForSet(exercise, set - 1); // 0-indexed
+            
             inputsHTML += `
                 <div class="input-row">
                     <label class="set-label">Set ${set}</label>
@@ -401,7 +404,7 @@ class DayView {
                     <div class="input-group">
                         <input type="number" 
                                class="exercise-input reps-input" 
-                               placeholder="${exercise.reps || 'Reps'}"
+                               placeholder="${setReps}"
                                data-field="set${set}_reps"
                                value="${repsValue}"
                                min="0"
@@ -485,13 +488,16 @@ class DayView {
         for (let set = 1; set <= sets; set++) {
             const repsValue = savedData[`set${set}_reps`] || '';
             
+            // Get specific reps for this set using DataManager helper
+            const setReps = this.app.dataManager.getRepsForSet(exercise, set - 1); // 0-indexed
+            
             inputsHTML += `
                 <div class="input-row">
                     <label class="set-label">Set ${set}</label>
                     <div class="input-group full-width">
                         <input type="number" 
                                class="exercise-input reps-input" 
-                               placeholder="${exercise.reps || 'Reps'}"
+                               placeholder="${setReps}"
                                data-field="set${set}_reps"
                                value="${repsValue}"
                                min="0"
@@ -1087,7 +1093,9 @@ class DayView {
         }
         
         if (exercise.reps) {
-            desc += desc ? ` of ${exercise.reps}` : exercise.reps;
+            // Use DataManager helper to format reps display
+            const repsDisplay = this.app.dataManager.formatRepsDisplay(exercise);
+            desc += desc ? ` of ${repsDisplay}` : repsDisplay;
         }
         
         if (exercise.time) {

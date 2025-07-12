@@ -595,6 +595,54 @@ class DataManager {
         return obj;
     }
 
+    // Helper method to parse reps - handles both string and array formats
+    parseRepsForExercise(exercise) {
+        if (!exercise.reps) return null;
+        
+        // Handle array format: ["4", "4", "4", "4", "4", "4", "4"]
+        if (Array.isArray(exercise.reps)) {
+            return exercise.reps.map(rep => rep.toString());
+        }
+        
+        // Handle string format with forward slashes: "4/4/4/4/4/4/4"
+        if (typeof exercise.reps === 'string' && exercise.reps.includes('/')) {
+            return exercise.reps.split('/').map(rep => rep.trim());
+        }
+        
+        // Handle simple string format: "5" or "8-10"
+        if (typeof exercise.reps === 'string') {
+            const sets = exercise.sets || 1;
+            // Return array with same reps for each set
+            return Array(sets).fill(exercise.reps);
+        }
+        
+        return null;
+    }
+
+    // Helper method to get rep count for a specific set
+    getRepsForSet(exercise, setIndex) {
+        const repsArray = this.parseRepsForExercise(exercise);
+        if (!repsArray) return exercise.reps || 'Reps';
+        
+        // Return specific set's reps or the last value if set index exceeds array
+        return repsArray[setIndex] || repsArray[repsArray.length - 1] || 'Reps';
+    }
+
+    // Helper method to format reps display for exercise description
+    formatRepsDisplay(exercise) {
+        const repsArray = this.parseRepsForExercise(exercise);
+        if (!repsArray) return exercise.reps || 'Reps';
+        
+        // If all reps are the same, show simplified format
+        const uniqueReps = [...new Set(repsArray)];
+        if (uniqueReps.length === 1) {
+            return uniqueReps[0];
+        }
+        
+        // Show complex format for varying reps
+        return repsArray.join('/');
+    }
+
     hasUnprocessedTemplateVariables(obj) {
         if (typeof obj === 'string') {
             return /\{\{(\w+)\}\}/.test(obj);

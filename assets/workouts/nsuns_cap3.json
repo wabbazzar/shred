@@ -75,7 +75,7 @@
               "name": "Flat Bench Press",
               "category": "strength",
               "sets": 7,
-              "reps": "4/4/4/4/4/4/4",
+              "reps": ["4", "4", "4", "4", "4", "4", "4"],
               "notes": "Week 1: 4x4@170, 2x4@180, 1x4@185 | Week 2: 4x3@180, 2x3@190, 1x3@190, 1x3@195 | Week 3: 1x6@190 or 1x4@200, 1x2@210"
             },
             {
@@ -138,7 +138,7 @@
               "name": "Romanian Deadlift",
               "category": "strength",
               "sets": 9,
-              "reps": "5/5/4/4/4/4/4",
+              "reps": ["5", "5", "4", "4", "4", "4", "4"],
               "notes": "Week 1: 4x5@240, 2x4@255, 2x4@255, 1x4@265 | Week 2: 4x8@205, 2x6@215, 1x6@230 | Week 3: 4x6@225, 1x6@225, 2x5@235, 1x5@245"
             },
             {
@@ -200,7 +200,7 @@
               "name": "Low Bar Squat",
               "category": "strength",
               "sets": 8,
-              "reps": "3/3/3/3/3/3/3",
+              "reps": ["3", "3", "3", "3", "3", "3", "3"],
               "notes": "Week 1: 4x3@260, 2x3@275, 1x3@275, 1x3@285 | Week 2: 1x6@270 or 1x4@280, 1x2@300 | Week 3: 3x4@255, 2x4@265, 1x4@265, 1x4@275"
             },
             {
@@ -263,7 +263,7 @@
               "name": "Flat Bench Press",
               "category": "strength",
               "sets": 9,
-              "reps": "6/6/6/6/5/5/5",
+              "reps": ["6", "6", "6", "6", "5", "5", "5"],
               "notes": "Week 1: 4x6@155, 2x6@155, 2x5@170, 1x5@180 | Week 2: 4x5@170, 2x4@180, 2x4@180, 1x4@190 | Week 3: 4x8@145, 2x6@155, 1x6@165"
             },
             {
@@ -349,14 +349,14 @@
               "name": "Deadlift",
               "category": "strength",
               "sets": 3,
-              "reps": "6/2 (Optional)",
+              "reps": ["6", "2", "Optional"],
               "notes": "Week 1: 1x6@290 or 1x4@305, 1x2@320 | Week 2: 4x4@275, 2x4@280, 1x4@290 | Week 3: 4x3@285, 2x3@295, 1x3@295, 1x3@305"
             },
             {
               "name": "Barbell Cheat Row",
               "category": "strength",
               "sets": 4,
-              "reps": "10/10/10/8-12",
+              "reps": ["10", "10", "10", "8-12"],
               "notes": "Week 1: 3x10@120, 1x8-12@135 | Week 2: 10+@150 AMRAP, MRS 8+@135, EMOM 5 reps | Week 3: 8+@140 AMRAP, MRS 6+@130, EMOM 4 reps"
             }
           ]
@@ -411,7 +411,7 @@
               "name": "Paused Squat",
               "category": "strength",
               "sets": 9,
-              "reps": "5/5/4/4/4/4/4",
+              "reps": ["5", "5", "4", "4", "4", "4", "4"],
               "notes": "Week 1: 4x5@220, 2x4@230, 2x4@230, 1x4@245 | Week 2: 4x8@185, 2x6@200, 1x6@210 | Week 3: 4x6@205, 1x6@205, 2x5@215, 1x5@225"
             },
             {
