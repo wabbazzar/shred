@@ -720,15 +720,7 @@ class DataManager {
         const template = programTemplate || this.programTemplate;
         const rules = template?.progressionRules?.weight;
         
-        console.log(`🔍 Weight progression debug for "${exerciseName}":`, {
-            currentWeight,
-            category,
-            programName: template?.metadata?.name,
-            rulesExist: !!rules
-        });
-        
         if (!rules) {
-            console.log(`⚠️ No progression rules found, using hardcoded logic`);
             // Fallback to hardcoded logic if no rules defined
             return this.getHardcodedWeightProgression(category, currentWeight);
         }
@@ -736,46 +728,31 @@ class DataManager {
         const heavyThreshold = rules.heavyThreshold || 100;
         const isHeavy = currentWeight >= heavyThreshold;
         
-        console.log(`📊 Threshold analysis:`, {
-            heavyThreshold,
-            currentWeight,
-            isHeavy,
-            exerciseSpecificRules: !!rules.exerciseSpecific?.[exerciseName],
-            categoryDefaults: !!rules.categoryDefaults?.[category]
-        });
-        
         // 1. Check exercise-specific rules first
         if (rules.exerciseSpecific && rules.exerciseSpecific[exerciseName]) {
             const rule = rules.exerciseSpecific[exerciseName];
-            console.log(`🎯 Using exercise-specific rule for "${exerciseName}":`, rule);
             if (typeof rule === 'object' && rule.light !== undefined && rule.heavy !== undefined) {
                 const progression = isHeavy ? rule.heavy : rule.light;
-                console.log(`✅ Exercise-specific progression: ${progression} (${isHeavy ? 'heavy' : 'light'} threshold)`);
                 return progression;
             }
             // Handle legacy single-value format
             const progression = typeof rule === 'number' ? rule : rule.light || rule.heavy || 2.5;
-            console.log(`✅ Exercise-specific progression (legacy): ${progression}`);
             return progression;
         }
         
         // 2. Check category defaults
         if (rules.categoryDefaults && rules.categoryDefaults[category]) {
             const rule = rules.categoryDefaults[category];
-            console.log(`🏷️ Using category default for "${category}":`, rule);
             if (typeof rule === 'object' && rule.light !== undefined && rule.heavy !== undefined) {
                 const progression = isHeavy ? rule.heavy : rule.light;
-                console.log(`✅ Category default progression: ${progression} (${isHeavy ? 'heavy' : 'light'} threshold)`);
                 return progression;
             }
             // Handle legacy single-value format
             const progression = typeof rule === 'number' ? rule : rule.light || rule.heavy || 2.5;
-            console.log(`✅ Category default progression (legacy): ${progression}`);
             return progression;
         }
         
         // 3. Fallback to hardcoded logic
-        console.log(`⚠️ No matching rules found, using hardcoded logic`);
         return this.getHardcodedWeightProgression(category, currentWeight);
     }
 
