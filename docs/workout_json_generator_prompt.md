@@ -201,6 +201,69 @@ Use `{{variableName}}` for dynamic values that change based on week or progressi
 - `{{benchPress}}`: References specific exercise progression
 - `{{customVariable}}`: Any custom progression scheme
 
+## Weekly Progression System
+
+For complex programs with specific rep/weight schemes per week, use the `weeklyProgression` system:
+
+### Structure:
+```json
+{
+  "weeklyProgression": {
+    "exerciseName": {
+      "week1": ["rep1", "rep2", "rep3", "..."],
+      "week2": ["rep1", "rep2", "rep3", "..."],
+      "week3": ["rep1", "rep2", "rep3", "..."]
+    }
+  }
+}
+```
+
+### Example from nSuns CAP3:
+```json
+{
+  "weeklyProgression": {
+    "benchPress": {
+      "week1": ["4", "4", "4", "4", "4", "4", "4"],
+      "week2": ["3", "3", "3", "3", "3", "3", "3"],
+      "week3": ["6", "2"]
+    },
+    "romanianDeadlift": {
+      "week1": ["5", "5", "5", "5", "4", "4", "4", "4", "4"],
+      "week2": ["8", "8", "8", "8", "6", "6", "6"],
+      "week3": ["6", "6", "6", "6", "6", "5", "5", "5"]
+    }
+  }
+}
+```
+
+### Key Points:
+- **Exercise Names**: Must match exactly with exercise names in the workout structure
+- **Week Keys**: Use format `week1`, `week2`, etc.
+- **Rep Arrays**: Each array represents the rep scheme for that week
+- **Variable Length**: Different weeks can have different numbers of sets
+- **String Format**: All reps stored as strings for consistency with app parsing
+- **Dynamic Sets**: The number of sets changes based on the array length for that week
+
+### When to Use Weekly Progression:
+- Complex powerlifting programs (nSuns, 5/3/1 variations)
+- Programs with specific rep schemes per week
+- When percentage-based loading isn't sufficient
+- Programs that change set/rep structure by week
+- Periodized programs with planned deload weeks
+
+### Integration with Exercises:
+When `weeklyProgression` is defined, exercises should reference it:
+```json
+{
+  "name": "Bench Press",
+  "category": "strength",
+  "sets": "{{weeklyProgression.benchPress}}",
+  "reps": "{{weeklyProgression.benchPress}}",
+  "weight": "{{training_max * 0.85}}",
+  "notes": "Follow weekly progression scheme"
+}
+```
+
 ## Parsing Instructions
 
 ### 1. **Identify Program Structure**
