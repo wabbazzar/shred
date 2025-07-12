@@ -1381,11 +1381,24 @@ class DayView {
         const exercise = this.app.dataManager.getExercisesForDay(this.currentWeek, this.currentDay)[exerciseIndex];
         const exerciseCategory = exercise?.category || 'general';
         
+        console.log(`🔍 Progressive values debug:`, {
+            exerciseName: exercise?.name,
+            exerciseCategory,
+            currentWeek,
+            sourceWeek,
+            previousData: Object.keys(previousData)
+        });
+        
         // Store exercise context for progression calculations
         this.currentExerciseContext = exercise;
         
         // Calculate how many weeks to progress (if sourceWeek is provided)
         const weeksToProgress = sourceWeek ? (currentWeek - sourceWeek) : 1;
+        
+        console.log(`📊 Progression calculation:`, {
+            weeksToProgress,
+            exerciseContext: this.currentExerciseContext?.name
+        });
         
         // Progressive overload rules based on exercise type and week progression
         Object.keys(previousData).forEach(field => {
@@ -1397,9 +1410,13 @@ class DayView {
                 return;
             }
             
+            console.log(`🔄 Processing field "${field}" with value "${previousValue}"`);
+            
             // Calculate progression based on field type
             if (field.includes('weight')) {
+                console.log(`⚖️ Calculating weight progression for ${field}`);
                 progressiveValue = this.calculateWeightProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
+                console.log(`✅ Weight progression result: ${previousValue} → ${progressiveValue}`);
             } else if (field.includes('reps')) {
                 progressiveValue = this.calculateRepsProgression(previousValue, currentWeek, exerciseCategory, weeksToProgress);
             } else if (field.includes('time')) {
@@ -1408,6 +1425,8 @@ class DayView {
             
             progressiveValues[field] = progressiveValue;
         });
+        
+        console.log(`📋 Final progressive values:`, progressiveValues);
         
         // Clear exercise context after calculations
         this.currentExerciseContext = null;
