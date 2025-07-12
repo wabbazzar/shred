@@ -109,14 +109,22 @@ class PreCommitValidator {
                 this.warning(`${file} may be missing class definition`);
             }
 
-            // Check for obvious syntax errors
-            const openBraces = (content.match(/\{/g) || []).length;
-            const closeBraces = (content.match(/\}/g) || []).length;
-            
-            if (openBraces !== closeBraces) {
-                this.error(`${file} has unmatched braces (${openBraces} open, ${closeBraces} close)`);
-            } else {
-                this.success(`${file} has balanced braces`);
+            // Basic syntax validation using Node.js
+            try {
+                // Create a temporary file to test syntax
+                const tempFile = path.join(__dirname, 'temp_syntax_check.js');
+                fs.writeFileSync(tempFile, content);
+                
+                // Use Node.js to check syntax
+                const { execSync } = require('child_process');
+                execSync(`node -c "${tempFile}"`, { stdio: 'pipe' });
+                
+                // Clean up temp file
+                fs.unlinkSync(tempFile);
+                
+                this.success(`${file} has valid JavaScript syntax`);
+            } catch (syntaxError) {
+                this.error(`${file} has syntax errors: ${syntaxError.message}`);
             }
 
             // Check for common event listener issues

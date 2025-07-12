@@ -1014,7 +1014,7 @@ class WorkoutApp {
     async shareApp() {
         const shareData = {
             title: 'Shred - Workout Tracker',
-            text: 'Track your workout progress with this awesome PWA! Complete gym and home workouts designed for your special day.',
+            text: 'Track your workout progress with this awesome PWA! Select from a variety of workouts to suit your needs.',
             url: 'https://wabbazzar.github.io/shred/'
         };
 
