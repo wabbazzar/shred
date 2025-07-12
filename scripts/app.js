@@ -1089,7 +1089,7 @@ Features:
 
     async showWorkoutDescription(programType) {
         try {
-            const filePath = `docs/${programType}.md`;
+            const filePath = `docs/workouts/${programType}.md`;
             const response = await fetch(filePath);
             
             if (!response.ok) {
