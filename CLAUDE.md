@@ -16,6 +16,52 @@
 - Always check `git log --oneline -5` to see recent commits
 - Test app functionality before proceeding to next phase
 
+## Commit Message Standards
+
+Follow Enhanced Conventional Commits format for all git commits:
+
+### Format:
+```
+<type>(<scope>): <subject under 50 chars>
+
+<body (optional)>
+- Brief explanation of what changed
+- Why this change was needed
+- Any testing notes or breaking changes
+
+```
+
+### Types (Required):
+- `feat` - New feature for the user
+- `fix` - Bug fix for the user
+- `docs` - Documentation changes
+- `style` - Code formatting, missing semicolons, etc (no production code change)
+- `refactor` - Refactoring production code (no feature change)
+- `test` - Adding/updating tests
+- `chore` - Updating dependencies, build tools, etc (no production code change)
+
+### Scopes (Common for Shred App):
+`day-view`, `week-view`, `calendar-view`, `navigation`, `data-manager`, `csv-handler`, `pwa`, `ui`, `mobile`, `desktop`, `settings`, `offline`, `performance`, `tests`
+
+### Examples:
+```
+feat(day-view): add progressive auto-fill from previous week data
+fix(navigation): resolve swipe gesture conflicts on mobile
+docs(readme): update PWA installation instructions
+style(mobile): improve touch target sizing for accessibility
+refactor(data-manager): consolidate program management methods
+test(csv-handler): add comprehensive export/import validation
+chore(pwa): update service worker cache strategy
+```
+
+### Rules:
+- Subject line: 50 characters max, lowercase after type/scope, no period, imperative mood
+- Body: Explain what and why, include testing notes for significant changes
+- Footer: NEVER include Claude Code attribution (NO Co-Authored-By line)
+- NEVER use "Co-Authored-By: Claude" - user preference is to exclude this line
+- Always test on both mobile and desktop before committing
+- Include testing notes for UI/UX changes
+
 ---
 
 ## Project Overview
